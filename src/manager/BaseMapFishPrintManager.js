@@ -125,6 +125,14 @@ export class BaseMapFishPrintManager extends Observable {
   layerFilter = () => true;
 
   /**
+   * A filter function that will be called before the print call. Should
+   * return a Boolean whether to serialize a legend of a layer for print or not.
+   *
+   * @type {Function}
+   */
+  legendFilter = () => true;
+
+  /**
    * The supported layouts by the print service.
    *
    * @type {Array}

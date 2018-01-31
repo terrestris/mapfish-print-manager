@@ -139,7 +139,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     const extentFeatureGeometry = this._extentFeature.getGeometry();
 
     const serializedLayers = mapLayers
-      .filter(layer => this.filterPrintableLayer(layer))
+      .filter(this.filterPrintableLayer)
       .reduce((acc, layer) => {
         const serializedLayer = this.serializeLayer(layer);
         if (serializedLayer) {
@@ -149,7 +149,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       }, []);
 
     const serializedLegends = mapLayers
-      .filter(layer => this.filterPrintableLayer(layer))
+      .filter(this.filterPrintableLegend)
       .reduce((acc, layer) => {
         const serializedLegend = this.serializeLegend(layer);
         if (serializedLegend) {
@@ -185,6 +185,16 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    */
   filterPrintableLayer = layer => {
     return layer !== this.extentLayer && layer.getVisible() && this.layerFilter(layer);
+  }
+
+  /**
+   * Checks if the legend of a given legend should be printed.
+   *
+   * @param {ol.layer.Layer} layer The layer to check.
+   * @return {Boolean} Whether the legend of the layer should be printed or not.
+   */
+  filterPrintableLegend = layer => {
+    return layer !== this.extentLayer && layer.getVisible() && this.legendFilter(layer);
   }
 
   /**

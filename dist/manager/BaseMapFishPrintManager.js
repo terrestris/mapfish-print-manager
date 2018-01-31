@@ -118,47 +118,55 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
 
 
   /**
-   * Custom options to apply to the transform interaction. See
-   * http://viglino.github.io/ol-ext/doc/doc-pages/ol.interaction.Transform.html
-   * for valid options.
+   * A filter function that will be called before the print call. Should
+   * return a Boolean whether to serialize a layer for print or not.
+   *
+   * @type {Function}
+   */
+
+
+  /**
+   * The color to apply to the mask around the extent feature. Will be applied
+   * to the default extentLayer only. If you don't want the mask to be shown on
+   * the map, provide a custom extentLayer.
+   *
+   * @type {String}
+   */
+
+
+  /**
+   * Key-value pairs of custom data to be sent to the print service. This is
+   * e.g. useful for complex layout definitions on the server side that
+   * require additional parameters. Optional.
    *
    * @type {Object}
    */
 
 
   /**
-   * The layer to show the actual print extent on. If not provided, a default
-   * one will be created.
+   * Additional headers to be send to the print servlet.
    *
-   * @type {ol.Layer.Vector}
+   * @type {Object}
    */
 
 
   /**
-   * The authentication credentials mode. Default is to 'same-origin'.
+   * The capabilities of the print service. Either filled automatically out of
+   * the the given print service or given manually.
    *
-   * @type {String}
+   * @type {Object}
    */
 
 
   /**
-   * Method to use when sending print requests to the servlet. Either `POST` or
-   * `GET` (case-sensitive). Default is to `POST`.
+   * The map this PrintManager is bound to. Required.
    *
-   * @type {String}
+   * @type {ol.Map}
    */
 
 
   /**
-   * Base url of the print service.
-   *
-   * @type {String}
-   */
-
-
-  /**
-   * The name of the transform interaction configured and created by the
-   * print manager.
+   * The name of the vector layer configured and created by the print manager.
    *
    * @type {String}
    */
@@ -179,6 +187,10 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
     _this.transformOpts = {};
 
     _this.layerFilter = function () {
+      return true;
+    };
+
+    _this.legendFilter = function () {
       return true;
     };
 
@@ -606,54 +618,54 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
 
   /**
    * A filter function that will be called before the print call. Should
-   * return a Boolean whether to serialize a layer for print or not.
+   * return a Boolean whether to serialize a legend of a layer for print or not.
    *
    * @type {Function}
    */
 
 
   /**
-   * The color to apply to the mask around the extent feature. Will be applied
-   * to the default extentLayer only. If you don't want the mask to be shown on
-   * the map, provide a custom extentLayer.
+   * Custom options to apply to the transform interaction. See
+   * http://viglino.github.io/ol-ext/doc/doc-pages/ol.interaction.Transform.html
+   * for valid options.
+   *
+   * @type {Object}
+   */
+
+
+  /**
+   * The layer to show the actual print extent on. If not provided, a default
+   * one will be created.
+   *
+   * @type {ol.Layer.Vector}
+   */
+
+
+  /**
+   * The authentication credentials mode. Default is to 'same-origin'.
    *
    * @type {String}
    */
 
 
   /**
-   * Key-value pairs of custom data to be sent to the print service. This is
-   * e.g. useful for complex layout definitions on the server side that
-   * require additional parameters. Optional.
+   * Method to use when sending print requests to the servlet. Either `POST` or
+   * `GET` (case-sensitive). Default is to `POST`.
    *
-   * @type {Object}
+   * @type {String}
    */
 
 
   /**
-   * Additional headers to be send to the print servlet.
+   * Base url of the print service.
    *
-   * @type {Object}
+   * @type {String}
    */
 
 
   /**
-   * The capabilities of the print service. Either filled automatically out of
-   * the the given print service or given manually.
-   *
-   * @type {Object}
-   */
-
-
-  /**
-   * The map this PrintManager is bound to. Required.
-   *
-   * @type {ol.Map}
-   */
-
-
-  /**
-   * The name of the vector layer configured and created by the print manager.
+   * The name of the transform interaction configured and created by the
+   * print manager.
    *
    * @type {String}
    */
