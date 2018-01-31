@@ -148,9 +148,7 @@ var MapFishPrintV2Manager = exports.MapFishPrintV2Manager = function (_BaseMapFi
       var mapLayers = _Shared2.default.getMapLayers(_this.map);
       var extentFeatureGeometry = _this._extentFeature.getGeometry();
 
-      var serializedLayers = mapLayers.filter(function (layer) {
-        return _this.filterPrintableLayer(layer);
-      }).reduce(function (acc, layer) {
+      var serializedLayers = mapLayers.filter(_this.filterPrintableLayer).reduce(function (acc, layer) {
         var serializedLayer = _this.serializeLayer(layer);
         if (serializedLayer) {
           acc.push(serializedLayer);
@@ -158,9 +156,7 @@ var MapFishPrintV2Manager = exports.MapFishPrintV2Manager = function (_BaseMapFi
         return acc;
       }, []);
 
-      var serializedLegends = mapLayers.filter(function (layer) {
-        return _this.filterPrintableLayer(layer);
-      }).reduce(function (acc, layer) {
+      var serializedLegends = mapLayers.filter(_this.filterPrintableLegend).reduce(function (acc, layer) {
         var serializedLegend = _this.serializeLegend(layer);
         if (serializedLegend) {
           acc.push(serializedLegend);
@@ -188,6 +184,10 @@ var MapFishPrintV2Manager = exports.MapFishPrintV2Manager = function (_BaseMapFi
 
     _this.filterPrintableLayer = function (layer) {
       return layer !== _this.extentLayer && layer.getVisible() && _this.layerFilter(layer);
+    };
+
+    _this.filterPrintableLegend = function (layer) {
+      return layer !== _this.extentLayer && layer.getVisible() && _this.legendFilter(layer);
     };
 
     _this.serializeLayer = function (layer) {
@@ -272,6 +272,14 @@ var MapFishPrintV2Manager = exports.MapFishPrintV2Manager = function (_BaseMapFi
    *
    * @param {ol.layer.Layer} layer The layer to check.
    * @return {Boolean} Whether the layer should be printed or not.
+   */
+
+
+  /**
+   * Checks if the legend of a given legend should be printed.
+   *
+   * @param {ol.layer.Layer} layer The layer to check.
+   * @return {Boolean} Whether the legend of the layer should be printed or not.
    */
 
 
