@@ -2,6 +2,8 @@ import OlSourceVector from 'ol/source/vector';
 import OlFormatGeoJSON from 'ol/format/geojson';
 import OlStyleStyle from 'ol/style/style';
 import OlStyleRegularShape from 'ol/style/regularshape';
+import OlGeomPolygon from 'ol/geom/polygon';
+import OlFeature from 'ol/feature';
 import OlStyleIcon from 'ol/style/icon';
 import OlStyleCircle from 'ol/style/circle';
 import OlStyleImage from 'ol/style/image';
@@ -27,6 +29,13 @@ export class VectorSerializer extends BaseSerializer {
    * @type {String}
    */
   static TYPE_VECTOR = 'Vector';
+
+  /**
+   * The circle geometry type name.
+   *
+   * @type {String}
+   */
+  static CIRCLE_GEOMETRY_TYPE = 'Circle';
 
   /**
    * The property to get the style dictionary key from.
@@ -76,7 +85,17 @@ export class VectorSerializer extends BaseSerializer {
     features.forEach(feature => {
       const geometry = feature.getGeometry();
       const geometryType = geometry.getType();
-      const serializedFeature = format.writeFeatureObject(feature);
+      let serializedFeature;
+
+      // as GeoJSON format doesn't support circle geometries, we need to
+      // transform circles to polygons.
+      if (geometryType === this.constructor.CIRCLE_GEOMETRY_TYPE) {
+        const style = feature.getStyle();
+        const polyFeature = new OlFeature(OlGeomPolygon.fromCircle(geometry));
+        polyFeature.setStyle(style);
+        feature = polyFeature;
+      }
+      serializedFeature = format.writeFeatureObject(feature);
 
       let styles;
       let styleFunction = feature.getStyleFunction();
@@ -186,6 +205,7 @@ export class VectorSerializer extends BaseSerializer {
         break;
       case 'Polygon':
       case 'MultiPolygon':
+      case 'Circle':
         style = {
           strokeColor: parseColor(strokeStyle.color).hex,
           strokeOpacity: get(parseColor(strokeStyle.color), 'rgba[3]'),
@@ -195,9 +215,6 @@ export class VectorSerializer extends BaseSerializer {
           fillColor: parseColor(fillStyle.color).hex,
           fillOpacity: get(parseColor(fillStyle.color), 'rgba[3]')
         };
-        break;
-      case 'Circle':
-        // TODO
         break;
       default:
         // TODO some fallback style?!
