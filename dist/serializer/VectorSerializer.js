@@ -27,6 +27,14 @@ var _regularshape = require('ol/style/regularshape');
 
 var _regularshape2 = _interopRequireDefault(_regularshape);
 
+var _polygon = require('ol/geom/polygon');
+
+var _polygon2 = _interopRequireDefault(_polygon);
+
+var _feature = require('ol/feature');
+
+var _feature2 = _interopRequireDefault(_feature);
+
 var _icon = require('ol/style/icon');
 
 var _icon2 = _interopRequireDefault(_icon);
@@ -91,6 +99,13 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
    *
    * @type {String}
    */
+
+
+  /**
+   * The vector layer type identificator.
+   *
+   * @type {String}
+   */
   function VectorSerializer() {
     _classCallCheck(this, VectorSerializer);
 
@@ -145,6 +160,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
           break;
         case 'Polygon':
         case 'MultiPolygon':
+        case 'Circle':
           style = {
             strokeColor: (0, _parseColor2.default)(strokeStyle.color).hex,
             strokeOpacity: (0, _lodash.get)((0, _parseColor2.default)(strokeStyle.color), 'rgba[3]'),
@@ -154,9 +170,6 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
             fillColor: (0, _parseColor2.default)(fillStyle.color).hex,
             fillOpacity: (0, _lodash.get)((0, _parseColor2.default)(fillStyle.color), 'rgba[3]')
           };
-          break;
-        case 'Circle':
-          // TODO
           break;
         default:
           // TODO some fallback style?!
@@ -325,7 +338,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
 
 
   /**
-   * The vector layer type identificator.
+   * The circle geometry type name.
    *
    * @type {String}
    */
@@ -353,7 +366,17 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
       features.forEach(function (feature) {
         var geometry = feature.getGeometry();
         var geometryType = geometry.getType();
-        var serializedFeature = format.writeFeatureObject(feature);
+        var serializedFeature = void 0;
+
+        // as GeoJSON format doesn't support circle geometries, we need to
+        // transform circles to polygons.
+        if (geometryType === _this2.constructor.CIRCLE_GEOMETRY_TYPE) {
+          var style = feature.getStyle();
+          var polyFeature = new _feature2.default(_polygon2.default.fromCircle(geometry));
+          polyFeature.setStyle(style);
+          feature = polyFeature;
+        }
+        serializedFeature = format.writeFeatureObject(feature);
 
         var styles = void 0;
         var styleFunction = feature.getStyleFunction();
@@ -486,6 +509,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
 }(_BaseSerializer3.default);
 
 VectorSerializer.TYPE_VECTOR = 'Vector';
+VectorSerializer.CIRCLE_GEOMETRY_TYPE = 'Circle';
 VectorSerializer.FEAT_STYLE_PROPERTY = '_style';
 VectorSerializer.sourceCls = [_vector2.default];
 exports.default = VectorSerializer;
