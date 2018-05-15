@@ -109,6 +109,11 @@ export class VectorSerializer extends BaseSerializer {
         }
       }
 
+      // assumption below: styles is an array of OlStyleStyle
+      if (styles instanceof OlStyleStyle) {
+        styles = [styles];
+      }
+
       if (styles) {
         serializedFeatures.push(serializedFeature);
 
