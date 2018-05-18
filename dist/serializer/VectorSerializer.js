@@ -390,6 +390,11 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
           }
         }
 
+        // assumption below: styles is an array of OlStyleStyle
+        if (styles instanceof _style2.default) {
+          styles = [styles];
+        }
+
         if (styles) {
           serializedFeatures.push(serializedFeature);
 
