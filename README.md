@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/terrestris/mapfish-print-manager.svg?branch=master)](https://travis-ci.com/terrestris/mapfish-print-manager)
+[![Build Status](https://travis-ci.com/terrestris/mapfish-print-manager.svg?branch=master)](https://travis-ci.com/terrestris/mapfish-print-manager) [![Greenkeeper badge](https://badges.greenkeeper.io/terrestris/mapfish-print-manager.svg)](https://greenkeeper.io/)
 
 # Mapfish Print Manager
 
