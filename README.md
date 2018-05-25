@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/terrestris/mapfish-print-manager.svg?branch=master)](https://travis-ci.com/terrestris/mapfish-print-manager)
+
 # Mapfish Print Manager
 
 An interface manager to easily communicate with the MapFish Print module via
