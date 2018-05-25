@@ -405,8 +405,9 @@ export class BaseMapFishPrintManager extends Observable {
         stretch: false,
         scale: true,
         rotate: true,
-        keepAspectRatio: true
-      }, ...this.transformOpts);
+        keepAspectRatio: true,
+        ...this.transformOpts
+      });
 
       transform.set('name', this.constructor.TRANSFORM_INTERACTION_NAME);
 
