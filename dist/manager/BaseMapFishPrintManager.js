@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.BaseMapFishPrintManager = undefined;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _map = require('ol/map');
 
 var _map2 = _interopRequireDefault(_map);
@@ -328,7 +330,7 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
 
     _this.initTransformInteraction = function () {
       if (_Shared2.default.getInteractionsByName(_this.map, _this.constructor.TRANSFORM_INTERACTION_NAME).length === 0) {
-        var transform = new (Function.prototype.bind.apply(_InteractionTransform2.default, [null].concat([{
+        var transform = new _InteractionTransform2.default(_extends({
           features: [_this._extentFeature],
           translateFeature: true,
           translate: true,
@@ -336,7 +338,7 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
           scale: true,
           rotate: true,
           keepAspectRatio: true
-        }], _toConsumableArray(_this.transformOpts))))();
+        }, _this.transformOpts));
 
         transform.set('name', _this.constructor.TRANSFORM_INTERACTION_NAME);
 
