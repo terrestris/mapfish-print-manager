@@ -10,7 +10,8 @@ import OlStyleImage from 'ol/style/image';
 import OlStyleText from 'ol/style/text';
 import OlStyleStroke from 'ol/style/stroke';
 import OlStyleFill from 'ol/style/fill';
-import { get, pickBy } from 'lodash';
+import get from 'lodash/get';
+import pickBy from 'lodash/pickBy';
 import parseColor from 'parse-color';
 import parseFont from 'parse-css-font';
 

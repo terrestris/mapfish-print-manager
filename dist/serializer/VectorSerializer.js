@@ -59,7 +59,13 @@ var _fill = require('ol/style/fill');
 
 var _fill2 = _interopRequireDefault(_fill);
 
-var _lodash = require('lodash');
+var _get2 = require('lodash/get');
+
+var _get3 = _interopRequireDefault(_get2);
+
+var _pickBy = require('lodash/pickBy');
+
+var _pickBy2 = _interopRequireDefault(_pickBy);
 
 var _parseColor = require('parse-color');
 
@@ -126,17 +132,17 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
         case 'Point':
         case 'MultiPoint':
           style = {
-            strokeColor: (0, _parseColor2.default)((0, _lodash.get)(imageStyle, 'stroke.color')).hex,
-            strokeOpacity: (0, _lodash.get)((0, _parseColor2.default)((0, _lodash.get)(imageStyle, 'stroke.color')), 'rgba[3]'),
-            strokeWidth: (0, _lodash.get)(imageStyle, 'stroke.width'),
-            strokeLinecap: (0, _lodash.get)(imageStyle, 'stroke.lineCap'),
-            strokeDashstyle: (0, _lodash.get)(imageStyle, 'stroke.lineDash'),
-            fillColor: (0, _parseColor2.default)((0, _lodash.get)(imageStyle, 'fill.color')).hex,
-            fillOpacity: (0, _lodash.get)((0, _parseColor2.default)((0, _lodash.get)(imageStyle, 'fill.color')), 'rgba[3]'),
+            strokeColor: (0, _parseColor2.default)((0, _get3.default)(imageStyle, 'stroke.color')).hex,
+            strokeOpacity: (0, _get3.default)((0, _parseColor2.default)((0, _get3.default)(imageStyle, 'stroke.color')), 'rgba[3]'),
+            strokeWidth: (0, _get3.default)(imageStyle, 'stroke.width'),
+            strokeLinecap: (0, _get3.default)(imageStyle, 'stroke.lineCap'),
+            strokeDashstyle: (0, _get3.default)(imageStyle, 'stroke.lineDash'),
+            fillColor: (0, _parseColor2.default)((0, _get3.default)(imageStyle, 'fill.color')).hex,
+            fillOpacity: (0, _get3.default)((0, _parseColor2.default)((0, _get3.default)(imageStyle, 'fill.color')), 'rgba[3]'),
             pointRadius: imageStyle.radius,
             externalGraphic: imageStyle.src,
-            graphicWidth: (0, _lodash.get)(imageStyle, 'size[0]'),
-            graphicHeight: (0, _lodash.get)(imageStyle, 'size[1]'),
+            graphicWidth: (0, _get3.default)(imageStyle, 'size[0]'),
+            graphicHeight: (0, _get3.default)(imageStyle, 'size[1]'),
             graphicOpacity: imageStyle instanceof _icon2.default ? imageStyle.opacity : undefined,
             // TODO not available in ol3?
             graphicXOffset: undefined,
@@ -152,7 +158,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
         case 'MultiLineString':
           style = {
             strokeColor: (0, _parseColor2.default)(strokeStyle.color).hex,
-            strokeOpacity: (0, _lodash.get)((0, _parseColor2.default)(strokeStyle.color), 'rgba[3]'),
+            strokeOpacity: (0, _get3.default)((0, _parseColor2.default)(strokeStyle.color), 'rgba[3]'),
             strokeWidth: strokeStyle.width,
             strokeLinecap: strokeStyle.lineCap,
             strokeDashstyle: strokeStyle.lineDash
@@ -163,12 +169,12 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
         case 'Circle':
           style = {
             strokeColor: (0, _parseColor2.default)(strokeStyle.color).hex,
-            strokeOpacity: (0, _lodash.get)((0, _parseColor2.default)(strokeStyle.color), 'rgba[3]'),
+            strokeOpacity: (0, _get3.default)((0, _parseColor2.default)(strokeStyle.color), 'rgba[3]'),
             strokeWidth: strokeStyle.width,
             strokeLinecap: strokeStyle.lineCap,
             strokeDashstyle: strokeStyle.lineDash,
             fillColor: (0, _parseColor2.default)(fillStyle.color).hex,
-            fillOpacity: (0, _lodash.get)((0, _parseColor2.default)(fillStyle.color), 'rgba[3]')
+            fillOpacity: (0, _get3.default)((0, _parseColor2.default)(fillStyle.color), 'rgba[3]')
           };
           break;
         default:
@@ -184,12 +190,12 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
           fontSize: parsedFont.size,
           fontWeight: parsedFont.weight,
           fontStyle: parsedFont.style,
-          fontColor: (0, _parseColor2.default)((0, _lodash.get)(textStyle, 'fill.color')).hex,
-          fontOpacity: (0, _lodash.get)((0, _parseColor2.default)((0, _lodash.get)(textStyle, 'fill.color')), 'rgba[3]')
+          fontColor: (0, _parseColor2.default)((0, _get3.default)(textStyle, 'fill.color')).hex,
+          fontOpacity: (0, _get3.default)((0, _parseColor2.default)((0, _get3.default)(textStyle, 'fill.color')), 'rgba[3]')
         });
       }
 
-      return (0, _lodash.pickBy)(style, function (v) {
+      return (0, _pickBy2.default)(style, function (v) {
         return v !== undefined;
       });
     };
