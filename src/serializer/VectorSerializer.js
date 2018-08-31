@@ -1,15 +1,15 @@
-import OlSourceVector from 'ol/source/vector';
-import OlFormatGeoJSON from 'ol/format/geojson';
-import OlStyleStyle from 'ol/style/style';
-import OlStyleRegularShape from 'ol/style/regularshape';
-import OlGeomPolygon from 'ol/geom/polygon';
-import OlFeature from 'ol/feature';
-import OlStyleIcon from 'ol/style/icon';
-import OlStyleCircle from 'ol/style/circle';
-import OlStyleImage from 'ol/style/image';
-import OlStyleText from 'ol/style/text';
-import OlStyleStroke from 'ol/style/stroke';
-import OlStyleFill from 'ol/style/fill';
+import OlSourceVector from 'ol/source/Vector';
+import OlFormatGeoJSON from 'ol/format/GeoJSON';
+import OlStyleStyle from 'ol/style/Style';
+import OlStyleRegularShape from 'ol/style/RegularShape';
+import { fromCircle } from 'ol/geom/Polygon';
+import OlFeature from 'ol/Feature';
+import OlStyleIcon from 'ol/style/Icon';
+import OlStyleCircle from 'ol/style/Circle';
+import OlStyleImage from 'ol/style/Image';
+import OlStyleText from 'ol/style/Text';
+import OlStyleStroke from 'ol/style/Stroke';
+import OlStyleFill from 'ol/style/Fill';
 import get from 'lodash/get';
 import pickBy from 'lodash/pickBy';
 import parseColor from 'parse-color';
@@ -92,7 +92,7 @@ export class VectorSerializer extends BaseSerializer {
       // transform circles to polygons.
       if (geometryType === this.constructor.CIRCLE_GEOMETRY_TYPE) {
         const style = feature.getStyle();
-        const polyFeature = new OlFeature(OlGeomPolygon.fromCircle(geometry));
+        const polyFeature = new OlFeature(fromCircle(geometry));
         polyFeature.setStyle(style);
         feature = polyFeature;
       }

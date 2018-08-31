@@ -1,15 +1,18 @@
-import OlCollection from 'ol/collection';
-import OlLayerVector from 'ol/layer/vector';
-import OlSourceVector from 'ol/source/vector';
-import OlInteractionPointer from 'ol/interaction/pointer';
-import OlStyleStyle from 'ol/style/style';
-import OlStyleStroke from 'ol/style/stroke';
-import OlStyleFill from 'ol/style/fill';
-import OlStyleRegularShape from 'ol/style/regularshape';
-import OlFeature from 'ol/feature';
-import OlGeomPoint from 'ol/geom/point';
-import OlGeomPolygon from 'ol/geom/polygon';
-import OlExtent from 'ol/extent';
+import OlCollection from 'ol/Collection';
+import OlLayerVector from 'ol/layer/Vector';
+import OlSourceVector from 'ol/source/Vector';
+import OlInteractionPointer from 'ol/interaction/Pointer';
+import OlStyleStyle from 'ol/style/Style';
+import OlStyleStroke from 'ol/style/Stroke';
+import OlStyleFill from 'ol/style/Fill';
+import OlStyleRegularShape from 'ol/style/RegularShape';
+import OlFeature from 'ol/Feature';
+import OlGeomPoint from 'ol/geom/Point';
+import { fromExtent } from 'ol/geom/Polygon';
+import {
+  getCenter,
+  boundingExtent
+} from 'ol/extent';
 
 /**
  * The transform interaction.
@@ -366,7 +369,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
           handle: 'rotate0'
         }));
         ext = this.feature_.getGeometry().getExtent();
-        geom = OlGeomPolygon.fromExtent(ext);
+        geom = fromExtent(ext);
         f = this.bbox_ = new OlFeature(geom);
         this.overlayLayer_.getSource().addFeature (f);
       }
@@ -374,12 +377,12 @@ export class OlInteractionTransform extends OlInteractionPointer {
       ext = this.feature_.getGeometry().getExtent();
       if (this.ispt_) {
         var p = this.getMap().getPixelFromCoordinate([ext[0], ext[1]]);
-        ext = OlExtent.boundingExtent([
+        ext = boundingExtent([
           this.getMap().getCoordinateFromPixel([p[0] - 10, p[1] - 10]),
           this.getMap().getCoordinateFromPixel([p[0] + 10, p[1] + 10])
         ]);
       }
-      geom = OlGeomPolygon.fromExtent(ext);
+      geom = fromExtent(ext);
       f = this.bbox_ = new OlFeature(geom);
       var features = [];
       var g = geom.getCoordinates()[0];
@@ -469,8 +472,8 @@ export class OlInteractionTransform extends OlInteractionPointer {
       this.coordinate_ = evt.coordinate;
       this.pixel_ = evt.pixel;
       this.geom_ = this.feature_.getGeometry().clone();
-      this.extent_ = (OlGeomPolygon.fromExtent(this.geom_.getExtent())).getCoordinates()[0];
-      this.center_ = OlExtent.getCenter(this.geom_.getExtent());
+      this.extent_ = (fromExtent(this.geom_.getExtent())).getCoordinates()[0];
+      this.center_ = getCenter(this.geom_.getExtent());
       this.angle_ = Math.atan2(
         this.center_[1] - evt.coordinate[1],
         this.center_[0] - evt.coordinate[0]
