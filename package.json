@@ -38,7 +38,7 @@
     "parse-css-font": "3.0.2"
   },
   "peerDependencies": {
-    "ol": "~4.0"
+    "ol": "~5.0"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
