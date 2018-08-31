@@ -1,6 +1,6 @@
-import OlExtent from 'ol/extent';
-import OlSourceTileWMS from 'ol/source/tilewms';
-import OlSourceImageWMS from 'ol/source/imagewms';
+import { getCenter } from 'ol/extent';
+import OlSourceTileWMS from 'ol/source/TileWMS';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
 
 import BaseMapFishPrintManager from './BaseMapFishPrintManager';
 import WMSSerializer from '../serializer/WMSSerializer';
@@ -166,7 +166,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       dpi: this.getDpi().value,
       layers: serializedLayers,
       pages: [{
-        center: OlExtent.getCenter(extentFeatureGeometry.getExtent()),
+        center: getCenter(extentFeatureGeometry.getExtent()),
         scale: this.getScale().value,
         rotation: this.calculateRotation() || 0
       }],
