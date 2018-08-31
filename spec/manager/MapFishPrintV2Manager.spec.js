@@ -1,8 +1,8 @@
 /*eslint-env jest*/
-import OlMap from 'ol/map';
-import OlLayerImage from 'ol/layer/image';
-import OlSourceImageWMS from 'ol/source/imagewms';
-import OlView from 'ol/view';
+import OlMap from 'ol/Map';
+import OlLayerImage from 'ol/layer/Image';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlView from 'ol/View';
 
 import { MapFishPrintV2Manager } from '../../src/index';
 
