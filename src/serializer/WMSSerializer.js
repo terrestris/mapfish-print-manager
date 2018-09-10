@@ -1,5 +1,5 @@
-import OlSourceImageWMS from 'ol/source/imagewms';
-import OlSourceTileWMS from 'ol/source/tilewms';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSourceTileWMS from 'ol/source/TileWMS';
 
 import BaseSerializer from './BaseSerializer';
 

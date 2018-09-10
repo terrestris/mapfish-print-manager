@@ -1,12 +1,16 @@
-import OlMap from 'ol/map';
-import OlLayerVector from 'ol/layer/vector';
-import OlSourceVector from 'ol/source/vector';
-import OlFeature from 'ol/feature';
-import OlGeomPolygon from 'ol/geom/polygon';
-import OlExtent from 'ol/extent';
+import OlMap from 'ol/Map';
+import OlLayerVector from 'ol/layer/Vector';
+import OlSourceVector from 'ol/source/Vector';
+import OlFeature from 'ol/Feature';
+import { fromExtent } from 'ol/geom/Polygon';
+import {
+  containsExtent,
+  getCenter,
+  getSize
+} from 'ol/extent';
 
-import OlStyleStyle from 'ol/style/style';
-import OlStyleFill from 'ol/style/fill';
+import OlStyleStyle from 'ol/style/Style';
+import OlStyleFill from 'ol/style/Fill';
 
 import OlInteractionTransform from '../interaction/InteractionTransform';
 import Shared from '../util/Shared';
@@ -381,7 +385,7 @@ export class BaseMapFishPrintManager extends Observable {
    */
   initPrintExtentFeature = () => {
     const printExtent = this.calculatePrintExtent();
-    const extentFeature = new OlFeature(OlGeomPolygon.fromExtent(printExtent));
+    const extentFeature = new OlFeature(fromExtent(printExtent));
     const extentLayerSource = this.extentLayer.getSource();
 
     this._extentFeature = extentFeature;
@@ -431,13 +435,13 @@ export class BaseMapFishPrintManager extends Observable {
   getClosestScaleToFitExtentFeature = () => {
     const scales = this.getScales();
     const printFeatureExtent = this._extentFeature.getGeometry().getExtent();
-    const printFeatureSize = OlExtent.getSize(printFeatureExtent);
+    const printFeatureSize = getSize(printFeatureExtent);
     let closest = Number.POSITIVE_INFINITY;
     let fitScale = scales[0];
 
     scales.forEach(scale => {
       const printScaleExtent = this.calculatePrintExtent(scale.value);
-      const printScaleSize = OlExtent.getSize(printScaleExtent);
+      const printScaleSize = getSize(printScaleExtent);
       const diff = Math.abs(printScaleSize[0] - printFeatureSize[0]) +
         Math.abs(printScaleSize[1] - printFeatureSize[1]);
 
@@ -462,7 +466,7 @@ export class BaseMapFishPrintManager extends Observable {
 
     scales.forEach(scale => {
       const printExtent = this.calculatePrintExtent(scale.value);
-      const contains = OlExtent.containsExtent(mapExtent, printExtent);
+      const contains = containsExtent(mapExtent, printExtent);
 
       if (contains) {
         fitScale = scale;
@@ -498,7 +502,7 @@ export class BaseMapFishPrintManager extends Observable {
    * @param {Number} rotation The amount to rotate.
    */
   setRotation = rotation => {
-    const center = OlExtent.getCenter(this._extentFeature.getGeometry().getExtent());
+    const center = getCenter(this._extentFeature.getGeometry().getExtent());
     this._extentFeature.getGeometry().rotate(rotation, center);
   }
 
@@ -509,7 +513,7 @@ export class BaseMapFishPrintManager extends Observable {
     if (this.isInitiated()) {
       const printExtent = this.calculatePrintExtent();
       if (this._extentFeature) {
-        this._extentFeature.setGeometry(OlGeomPolygon.fromExtent(printExtent));
+        this._extentFeature.setGeometry(fromExtent(printExtent));
       }
     }
   }
@@ -535,7 +539,7 @@ export class BaseMapFishPrintManager extends Observable {
 
     let center;
     if (this._extentFeature) {
-      center = OlExtent.getCenter(this._extentFeature.getGeometry().getExtent());
+      center = getCenter(this._extentFeature.getGeometry().getExtent());
     } else {
       center = this.map.getView().getCenter();
     }
