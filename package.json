@@ -1,5 +1,5 @@
 {
-  "name": "mapfish-print-manager",
+  "name": "@terrestris/mapfish-print-manager",
   "version": "1.0.0",
   "description": "An interface to easily communicate with the MapFish Print module",
   "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
@@ -27,7 +27,9 @@
     "test:watch": "jest --watchAll",
     "start": "webpack-dev-server --config webpack.development.config.js",
     "build:examples": "npm run clean && webpack --config webpack.production.config.js",
-    "build:dist": "npm run clean && babel src --out-dir dist"
+    "build:dist": "npm run clean && babel src --out-dir dist",
+    "prepublishOnly": "npm run build:dist",
+    "release": "np --no-yarn && git push https://github.com/terrestris/mapfish-print-manager.git master --tags"
   },
   "dependencies": {
     "js-logger": "1.4.1",
@@ -51,6 +53,7 @@
     "eslint": "5.0.0",
     "jest": "23.0.0",
     "jest-fetch-mock": "1.6.5",
+    "np": "3.0.4",
     "ol": "4.6.5",
     "rimraf": "2.6.2",
     "webpack": "4.17.1",
