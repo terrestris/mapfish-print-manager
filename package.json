@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "js-logger": "1.4.1",
-    "lodash": "4.17.10",
+    "lodash": "4.17.11",
     "parse-color": "1.0.0",
     "parse-css-font": "3.0.2"
   },
