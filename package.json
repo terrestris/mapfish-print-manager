@@ -52,7 +52,7 @@
     "canvas-prebuilt": "1.6.5-prerelease.1",
     "eslint": "5.0.0",
     "jest": "23.0.0",
-    "jest-fetch-mock": "1.6.5",
+    "jest-fetch-mock": "1.6.6",
     "np": "3.0.4",
     "ol": "5.2.0",
     "rimraf": "2.6.2",
