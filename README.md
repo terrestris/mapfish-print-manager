@@ -3,21 +3,29 @@
 # Mapfish Print Manager
 
 An interface manager to easily communicate with the MapFish Print module via
-an ol3 based webapplication.
+an ol based webapplication.
 
 Note: Currently the MapFish Print version 2 is supported only.
 
 # Installation
 
+If you're using ol in version 5 (or higher) just run:
+
 ```
-npm i --save mapfish-print-manager
+npm i --save @terrestris/mapfish-print-manager
+```
+
+For version 4 one might use the manager in version 1:
+
+```
+npm i --save @terrestris/mapfish-print-manager@1
 ```
 
 # Usage
 
 ```
 // Import the manager.
-import { MapFishPrintV2Manager } from 'mapfish-print-manager';
+import { MapFishPrintV2Manager } from '@terrestris/mapfish-print-manager';
 
 // Construct the manager with a remote print servlet and an `ol.Map` instance
 // (required).
