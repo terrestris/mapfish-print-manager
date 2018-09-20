@@ -1,9 +1,9 @@
 /*eslint-env jest*/
-import OlLayerImage from 'ol/layer/image';
-import OlLayerTile from 'ol/layer/tile';
-import OlSourceImageWMS from 'ol/source/imagewms';
-import OlSourceTileWMS from 'ol/source/tilewms';
-import OlSourceOSM from 'ol/source/osm';
+import OlLayerImage from 'ol/layer/Image';
+import OlLayerTile from 'ol/layer/Tile';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSourceTileWMS from 'ol/source/TileWMS';
+import OlSourceOSM from 'ol/source/OSM';
 
 import { WMSSerializer } from '../../src/index';
 

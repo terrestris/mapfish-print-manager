@@ -1,13 +1,13 @@
 /*eslint-env jest*/
-import OlMap from 'ol/map';
-import OlView from 'ol/view';
-import OlInteractionDragRotateAndZoom from 'ol/interaction/dragrotateandzoom';
-import OlLayerVector from 'ol/layer/vector';
-import OlLayerImage from 'ol/layer/image';
-import OlLayerTile from 'ol/layer/tile';
-import OlSourceImageWMS from 'ol/source/imagewms';
-import OlSourceTileWMS from 'ol/source/tilewms';
-import OlSourceVector from 'ol/source/vector';
+import OlMap from 'ol/Map';
+import OlView from 'ol/View';
+import OlInteractionDragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
+import OlLayerVector from 'ol/layer/Vector';
+import OlLayerImage from 'ol/layer/Image';
+import OlLayerTile from 'ol/layer/Tile';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSourceTileWMS from 'ol/source/TileWMS';
+import OlSourceVector from 'ol/source/Vector';
 
 import { Shared } from '../../src/util/Shared';
 

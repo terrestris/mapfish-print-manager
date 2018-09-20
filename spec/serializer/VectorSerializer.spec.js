@@ -1,17 +1,17 @@
 /*eslint-env jest*/
-import OlLayerVector from 'ol/layer/vector';
-import OlLayerTile from 'ol/layer/tile';
-import OlSourceVector from 'ol/source/vector';
-import OlSourceOSM from 'ol/source/osm';
-import OlStyleStyle from 'ol/style/style';
-import OlStyleCircle from 'ol/style/circle';
-import OlStyleText from 'ol/style/text';
-import OlStyleStroke from 'ol/style/stroke';
-import OlStyleFill from 'ol/style/fill';
-import OlFeature from 'ol/feature';
-import OlGeomPoint from 'ol/geom/point';
-import OlGeomLineString from 'ol/geom/linestring';
-import OlGeomPolygon from 'ol/geom/polygon';
+import OlLayerVector from 'ol/layer/Vector';
+import OlLayerTile from 'ol/layer/Tile';
+import OlSourceVector from 'ol/source/Vector';
+import OlSourceOSM from 'ol/source/OSM';
+import OlStyleStyle from 'ol/style/Style';
+import OlStyleCircle from 'ol/style/Circle';
+import OlStyleText from 'ol/style/Text';
+import OlStyleStroke from 'ol/style/Stroke';
+import OlStyleFill from 'ol/style/Fill';
+import OlFeature from 'ol/Feature';
+import OlGeomPoint from 'ol/geom/Point';
+import OlGeomLineString from 'ol/geom/LineString';
+import OlGeomPolygon from 'ol/geom/Polygon';
 
 import { VectorSerializer } from '../../src/index';
 

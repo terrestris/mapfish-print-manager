@@ -1,6 +1,6 @@
 {
-  "name": "mapfish-print-manager",
-  "version": "1.0.0",
+  "name": "@terrestris/mapfish-print-manager",
+  "version": "2.0.0",
   "description": "An interface to easily communicate with the MapFish Print module",
   "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
   "contributors": [
@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dnlkoch/mapfish-print-manager"
+    "url": "https://github.com/terrestris/mapfish-print-manager"
   },
   "main": "dist/index.js",
   "files": [
@@ -27,16 +27,18 @@
     "test:watch": "jest --watchAll",
     "start": "webpack-dev-server --config webpack.development.config.js",
     "build:examples": "npm run clean && webpack --config webpack.production.config.js",
-    "build:dist": "npm run clean && babel src --out-dir dist"
+    "build:dist": "npm run clean && babel src --out-dir dist",
+    "prepublishOnly": "npm run build:dist",
+    "release": "np --no-yarn && git push https://github.com/terrestris/mapfish-print-manager.git master --tags"
   },
   "dependencies": {
     "js-logger": "1.4.1",
-    "lodash": "4.17.10",
+    "lodash": "4.17.11",
     "parse-color": "1.0.0",
     "parse-css-font": "3.0.2"
   },
   "peerDependencies": {
-    "ol": "~4.0"
+    "ol": "~5.0"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
@@ -50,12 +52,13 @@
     "canvas-prebuilt": "1.6.5-prerelease.1",
     "eslint": "5.0.0",
     "jest": "23.0.0",
-    "jest-fetch-mock": "1.6.5",
-    "ol": "4.6.5",
+    "jest-fetch-mock": "1.6.6",
+    "np": "3.0.4",
+    "ol": "5.2.0",
     "rimraf": "2.6.2",
-    "webpack": "4.17.1",
+    "webpack": "4.19.1",
     "webpack-cli": "3.1.0",
-    "webpack-dev-server": "3.1.7",
+    "webpack-dev-server": "3.1.8",
     "webpack-merge": "4.1.4"
   }
 }

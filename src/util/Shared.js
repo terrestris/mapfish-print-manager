@@ -1,7 +1,7 @@
-import OlLayerGroup from 'ol/layer/group';
-import OlSourceTileWMS from 'ol/source/tilewms';
-import OlSourceImageWMS from 'ol/source/imagewms';
-import OlProjection from 'ol/proj';
+import OlLayerGroup from 'ol/layer/Group';
+import OlSourceTileWMS from 'ol/source/TileWMS';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import { METERS_PER_UNIT } from 'ol/proj/Units';
 
 /**
  * Some shared static utility methods.
@@ -104,7 +104,7 @@ export class Shared {
    */
   static getScaleForResolution = (resolution, units) => {
     const dpi = 25.4 / 0.28;
-    const mpu = OlProjection.METERS_PER_UNIT[units];
+    const mpu = METERS_PER_UNIT[units];
     const inchesPerMeter = 39.37;
 
     return parseFloat(resolution) * mpu * inchesPerMeter * dpi;
