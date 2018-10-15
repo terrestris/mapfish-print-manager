@@ -32,7 +32,7 @@
     "release": "np --no-yarn && git push https://github.com/terrestris/mapfish-print-manager.git master --tags"
   },
   "dependencies": {
-    "js-logger": "1.4.1",
+    "js-logger": "1.5.0",
     "lodash": "4.17.11",
     "parse-color": "1.0.0",
     "parse-css-font": "3.0.2"
