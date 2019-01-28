@@ -35,7 +35,7 @@
     "js-logger": "1.6.0",
     "lodash": "4.17.11",
     "parse-color": "1.0.0",
-    "parse-css-font": "3.0.2"
+    "parse-css-font": "3.0.3"
   },
   "peerDependencies": {
     "ol": "~5.0"
