@@ -59,7 +59,11 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * @return {Promise}
    */
   loadCapabilities = () => {
-    return fetch(this.url + this.constructor.INFO_JSON_ENDPOINT, {
+    let url = this.url;
+    if (this.useDefaultJsonEndpoint) {
+      url += this.constructor.INFO_JSON_ENDPOINT;
+    }
+    return fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

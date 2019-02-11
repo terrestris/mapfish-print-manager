@@ -137,6 +137,14 @@ export class BaseMapFishPrintManager extends Observable {
   legendFilter = () => true;
 
   /**
+   * Whether the default print capabilities endpoint (commonly `info.json`)
+   * should be used.
+   * If set to false, the mapfish manager has to be initialized with URL
+   * to configured capabilities endpoint. Default is true.
+   */
+  useDefaultJsonEndpoint = true;
+
+  /**
    * The supported layouts by the print service.
    *
    * @type {Array}
@@ -235,7 +243,7 @@ export class BaseMapFishPrintManager extends Observable {
       'or `capabilities`.');
     }
 
-    if (this.url && this.url.split('/').pop()) {
+    if (this.url && this.url.split('/').pop() && this.useDefaultJsonEndpoint) {
       this.url += '/';
     }
   }
