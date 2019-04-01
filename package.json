@@ -50,7 +50,7 @@
     "babel-preset-es2015": "6.24.1",
     "babel-preset-stage-0": "6.24.1",
     "canvas-prebuilt": "1.6.11",
-    "eslint": "5.15.3",
+    "eslint": "5.16.0",
     "jest": "23.6.0",
     "jest-fetch-mock": "2.1.1",
     "np": "4.0.2",
