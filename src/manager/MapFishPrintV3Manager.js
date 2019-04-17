@@ -11,6 +11,7 @@ import MapFishPrintV3TiledWMSSerializer from '../serializer/MapFishPrintV3TiledW
 import MapFishPrintV3WMSSerializer from '../serializer/MapFishPrintV3WMSSerializer';
 import Shared from '../util/Shared';
 import Logger from '../util/Logger';
+import scales from '../config/scales';
 
 /**
  * The MapFishPrintV3Manager.
@@ -117,19 +118,9 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this.setLayout(this.getLayouts()[0].name);
     this.setOutputFormat(this.getOutputFormats()[0]);
 
-    // const mapAttribute = this.getAttributeByName('map');
-
-    // // TODO some defaults if not given
-    // this._dpis = get(mapAttribute, 'clientInfo.dpiSuggestions');
-    // this.setDpi(this.getDpis()[0]);
-
-    // this.setPrintMapSize({
-    //   width: get(mapAttribute, 'clientInfo.width'),
-    //   height: get(mapAttribute, 'clientInfo.height')
-    // });
-
-    // TODO Get from print capabilities if defined.
-    this._scales = [1000, 5000, 50000, 100000];
+    // mapfish3 doesn't provide scales via capabilities, so we set some
+    // most common used values here manually
+    this._scales = scales;
     this.setScale(this.getClosestScaleToFitMap());
 
     this.initPrintExtentLayer();
@@ -140,11 +131,12 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   }
 
   /**
-   * TODO
+   * Returns attribute value contained in currently chosen layout by its name.
    *
-   * @param {*} attributeName
-   * @param {*} [layoutName=this.getLayout().name]
-   * @returns
+   * @param {String} attributeName The attribute name (key) to be searched.
+   * @param {String} layoutName Name of currently chosen layout.
+   *
+   * @return {*} Obtained attribute value.
    */
   getAttributeByName(attributeName, layoutName = this.getLayout().name) {
     const layout = this.getLayoutByName(layoutName);
@@ -158,10 +150,11 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   }
 
   /**
-   * TODO
+   * Returns an object containing configuration for layout based on its name
    *
-   * @param {*} layoutName
-   * @return {Object}
+   * @param {String} layoutName Layout name.
+   *
+   * @return {Object} Layout configuration object.
    */
   getLayoutByName(layoutName) {
     const layouts = this.getLayouts();
@@ -172,7 +165,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Returns all available print applications.
    *
-   * @private
+   * @return {Promise} Promise containing available print apps.
    */
   loadPrintApps() {
     return fetch(`${this.url}${this.constructor.APPS_JSON_ENDPOINT}`, {
@@ -197,7 +190,9 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * @return {Promise}
    */
   loadAppCapabilities(printApp) {
-    return fetch(`${this.url}${printApp}/${this.constructor.CAPABILITIES_JSON_ENDPOINT}`, {
+    const capEndpoint = this.constructor.CAPABILITIES_JSON_ENDPOINT;
+    const url = `${this.url}${printApp}/${capEndpoint}`;
+    return fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -450,8 +445,11 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
     const mapAttribute = this.getAttributeByName('map');
 
-    // TODO some defaults if not given
     this._dpis = get(mapAttribute, 'clientInfo.dpiSuggestions');
+    // set some defaults if not provided via capabilities
+    if (!this._dpis) {
+      this._dpis = [72, 150];
+    }
     this.setDpi(this.getDpis()[0]);
 
     this.setPrintMapSize({
@@ -489,6 +487,26 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
         return Promise.resolve(true);
       })
       .catch(error => Promise.reject(new Error(`${error.message}`)));
+  }
+
+  /**
+   * Sets the dpi to use.
+   *
+   * @param {number|string} value The value of the dpi to use.
+   */
+  setDpi(value) {
+    value = parseFloat(value);
+
+    const dpi = this.getDpis().find(dpi => dpi === value);
+
+    if (!dpi) {
+      Logger.warn(`No dpi '${value}' found.`);
+      return;
+    }
+
+    this._dpi = dpi;
+
+    this.dispatch('change:dpi', dpi);
   }
 }
 
