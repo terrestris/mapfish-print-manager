@@ -35,7 +35,16 @@ printProvider.init()
     fillCombos();
     registerPrintHandler();
     registerCancelPrintHandler();
+    printProvider.on('change:scale', onChangePrintExtent);
   });
+
+/**
+ *
+ */
+const onChangePrintExtent = scale => {
+  const scaleSelect = document.querySelector('select#scale-select');
+  scaleSelect.value = scale;
+};
 
 /**
  *
