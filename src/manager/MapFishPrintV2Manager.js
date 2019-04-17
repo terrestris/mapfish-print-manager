@@ -61,6 +61,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * TODO Input should be from Type PrintCapabilities, Managers must parse accordingly.
    *
    * @param {Object} capabilities The capabilities to set.
+   *
    * @return {Boolean}
    */
   initManager(capabilities) {
@@ -213,6 +214,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * Serializes/encodes the legend payload for the given layer.
    *
    * @param {ol.layer.Layer} layer The layer to serialize/encode the legend for.
+   *
    * @return {Object} The serialized/encoded legend.
    */
   serializeLegend(layer) {
@@ -228,6 +230,90 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     }
   }
 
+  /**
+   * Called on translate interaction's `scaling` event.
+   */
+  onTransformScaling() {
+    const scale = this.getClosestScaleToFitExtentFeature();
+    this.setScale(scale.name);
+  }
+
+  /**
+   * Calculates the extent based on a scale.
+   * Overrides the method from base class.
+   *
+   * @param {Number} scale The scale to calculate the extent for. If not given,
+   *                       the current scale of the provider will be used.
+   * @return {ol.Extent} The extent.
+   */
+  calculatePrintExtent(scale) {
+    const printMapSize = this.getLayout().map;
+    const printScale = scale || this.getScale().value;
+    const {
+      width,
+      height
+    } = this.getPrintExtentSize(printMapSize, printScale);
+
+    let center;
+    if (this._extentFeature) {
+      center = getCenter(this._extentFeature.getGeometry().getExtent());
+    } else {
+      center = this.map.getView().getCenter();
+    }
+
+    const printExtent = [
+      center[0] - (width / 2),
+      center[1] - (height / 2),
+      center[0] + (width / 2),
+      center[1] + (height / 2)
+    ];
+
+    return printExtent;
+  }
+
+  /**
+   * Sets the output format to use.
+   * Overrides the method from base class.
+   *
+   * @param {String} name The name of the output format to use.
+   */
+  setOutputFormat(name) {
+    const format = this.getOutputFormats().find(format => {
+      return format.name === name;
+    });
+
+    if (!format) {
+      Log.warn(`No output format named '${name}' found.`);
+      return;
+    }
+
+    this._outputFormat = format;
+
+    this.dispatch('change:outputformat', format);
+  }
+
+  /**
+   * Sets the scale to use. Updates the print extent accordingly.
+   * Overrides the method from base class.
+   *
+   * @param {String} name The name of the scale to use.
+   */
+  setScale = name => {
+    const scale = this.getScales().find(scale => {
+      return scale.name === name;
+    });
+
+    if (!scale) {
+      Log.warn(`No scale named '${name}' found.`);
+      return;
+    }
+
+    this._scale = scale;
+
+    this.updatePrintExtent();
+
+    this.dispatch('change:scale', scale);
+  }
 }
 
 export default MapFishPrintV2Manager;

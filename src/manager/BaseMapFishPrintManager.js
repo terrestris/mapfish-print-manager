@@ -14,7 +14,7 @@ import OlStyleFill from 'ol/style/Fill';
 
 import OlInteractionTransform from '../interaction/InteractionTransform';
 import Shared from '../util/Shared';
-import Log from '../util/Logger';
+import Logger from '../util/Logger';
 
 import Observable from '../observable/Observable';
 
@@ -208,7 +208,7 @@ export class BaseMapFishPrintManager extends Observable {
   _scale = {};
 
   /**
-   * TODO
+   * The currently set map size defined with its width and height.
    *
    * @type {Object}
    * @private
@@ -241,12 +241,12 @@ export class BaseMapFishPrintManager extends Observable {
     Object.assign(this, ...opts);
 
     if (!(this.map instanceof OlMap)) {
-      Log.warn('Invalid value given to config option `map`. You need to ' +
+      Logger.warn('Invalid value given to config option `map`. You need to ' +
         'provide an ol.Map to use the PrintManager.');
     }
 
     if (!this.url && !this.capabilities) {
-      Log.warn('Invalid init options given. Please provide either an `url` ' +
+      Logger.warn('Invalid init options given. Please provide either an `url` ' +
       'or `capabilities`.');
     }
 
@@ -276,6 +276,7 @@ export class BaseMapFishPrintManager extends Observable {
    * Validates the given HTTP fetch response.
    *
    * @param {Response} response The response to validate.
+   *
    * @return {Promise} The resolved or rejected promise.
    */
   validateResponse(response) {
@@ -412,7 +413,6 @@ export class BaseMapFishPrintManager extends Observable {
    */
   onTransformScaling() {
     const scale = this.getClosestScaleToFitExtentFeature();
-    // TODO Adjust vor V2
     this.setScale(scale);
   }
 
@@ -427,8 +427,8 @@ export class BaseMapFishPrintManager extends Observable {
     let fitScale = scales[0];
 
     scales.forEach(scale => {
-      // TODO Adjust for V2
-      const printScaleExtent = this.calculatePrintExtent(scale);
+      const scaleVal = scale.value ? scale.value : scale;
+      const printScaleExtent = this.calculatePrintExtent(scaleVal);
       const printScaleSize = getSize(printScaleExtent);
       const diff = Math.abs(printScaleSize[0] - printFeatureSize[0]) +
         Math.abs(printScaleSize[1] - printFeatureSize[1]);
@@ -453,8 +453,8 @@ export class BaseMapFishPrintManager extends Observable {
     let fitScale = scales[0];
 
     scales.forEach(scale => {
-      // TODO was scale.value before, needs to be adjusted in V2 for sure
-      const printExtent = this.calculatePrintExtent(scale);
+      const scaleVal = scale.value ? scale.value : scale;
+      const printExtent = this.calculatePrintExtent(scaleVal);
       const contains = containsExtent(mapExtent, printExtent);
 
       if (contains) {
@@ -512,21 +512,16 @@ export class BaseMapFishPrintManager extends Observable {
    *
    * @param {Number} scale The scale to calculate the extent for. If not given,
    *                       the current scale of the provider will be used.
+   *
    * @return {ol.Extent} The extent.
    */
   calculatePrintExtent(scale) {
-    // TODO Adjust for V2
     const printMapSize = this.getPrintMapSize();
-    // TODO Adjust for V2
     const printScale = scale || this.getScale();
-    const mapUnits = this.map.getView().getProjection().getUnits();
-    const inchesPerUnit = {
-      'degrees': 4374754,
-      'ft': 12,
-      'm': 39.37
-    };
-    const width = printMapSize.width / 72 / inchesPerUnit[mapUnits] * printScale;
-    const height = printMapSize.height / 72 / inchesPerUnit[mapUnits] * printScale;
+    const {
+      width,
+      height
+    } = this.getPrintExtentSize(printMapSize, printScale);
 
     let center;
     if (this._extentFeature) {
@@ -543,6 +538,27 @@ export class BaseMapFishPrintManager extends Observable {
     ];
 
     return printExtent;
+  }
+
+  /**
+   * Computes size of print extent in pixel depending on dimensions of print map
+   * and print scale.
+   * @param {Object} printMapSize Print map size containing its width and height.
+   * @param {Number} printScale Print scale.
+   *
+   * @return {Object} Print extent size.
+   */
+  getPrintExtentSize(printMapSize, printScale) {
+    const mapUnits = this.map.getView().getProjection().getUnits();
+    const inchesPerUnit = {
+      'degrees': 4374754,
+      'ft': 12,
+      'm': 39.37
+    };
+    return {
+      width: printMapSize.width / 72 / inchesPerUnit[mapUnits] * printScale,
+      height: printMapSize.height / 72 / inchesPerUnit[mapUnits] * printScale
+    };
   }
 
   /**
@@ -563,6 +579,7 @@ export class BaseMapFishPrintManager extends Observable {
    * Checks if a given layer should be printed.
    *
    * @param {ol.layer.Layer} layer The layer to check.
+   *
    * @return {Boolean} Whether the layer should be printed or not.
    */
   filterPrintableLayer(layer) {
@@ -573,6 +590,7 @@ export class BaseMapFishPrintManager extends Observable {
    * Checks if the legend of a given legend should be printed.
    *
    * @param {ol.layer.Layer} layer The layer to check.
+   *
    * @return {Boolean} Whether the legend of the layer should be printed or not.
    */
   filterPrintableLegend(layer) {
@@ -583,6 +601,7 @@ export class BaseMapFishPrintManager extends Observable {
    * Serializes/encodes the given layer.
    *
    * @param {ol.layer.Layer} layer The layer to serialize/encode.
+   *
    * @return {Object} The serialized/encoded layer.
    */
   serializeLayer(layer) {
@@ -598,7 +617,7 @@ export class BaseMapFishPrintManager extends Observable {
       return serializer.serialize(layer, layer.get(
         this.CUSTOM_PRINT_SERIALIZER_OPTS_KEY), viewResolution);
     } else {
-      Log.info('No suitable serializer for this layer/source found. ' +
+      Logger.info('No suitable serializer for this layer/source found. ' +
         'Please check the input layer or provide an own serializer capabale ' +
         'of serializing the given layer/source to the manager. Layer ' +
         'candidate is: ', layer);
@@ -609,6 +628,7 @@ export class BaseMapFishPrintManager extends Observable {
    * Serializes/encodes the legend payload for the given layer.
    *
    * @param {ol.layer.Layer} layer The layer to serialize/encode the legend for.
+   *
    * @return {Object} The serialized/encoded legend.
    */
   serializeLegend(layer) {
@@ -647,7 +667,7 @@ export class BaseMapFishPrintManager extends Observable {
     const layout = this.getLayouts().find(layout => layout.name === name);
 
     if (!layout) {
-      Log.warn(`No layout named '${name}' found.`);
+      Logger.warn(`No layout named '${name}' found.`);
       return;
     }
 
@@ -676,7 +696,7 @@ export class BaseMapFishPrintManager extends Observable {
     const format = this.getOutputFormats().find(format => format === name);
 
     if (!format) {
-      Log.warn(`No output format named '${name}' found.`);
+      Logger.warn(`No output format named '${name}' found.`);
       return;
     }
 
@@ -697,15 +717,15 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Sets the dpi to use.
    *
-   * @param {number|string} value The value of the dpi to use.
+   * @param {String} name The name of the dpi to use.
    */
-  setDpi(value) {
-    value = parseFloat(value);
-
-    const dpi = this.getDpis().find(dpi => dpi === value);
+  setDpi = name => {
+    const dpi = this.getDpis().find(dpi => {
+      return dpi.name === name;
+    });
 
     if (!dpi) {
-      Log.warn(`No dpi '${value}' found.`);
+      Logger.warn(`No dpi named '${name}' found.`);
       return;
     }
 
@@ -734,7 +754,7 @@ export class BaseMapFishPrintManager extends Observable {
     const scale = this.getScales().find(scale => scale === value);
 
     if (!scale) {
-      Log.warn(`No scale '${value}' found.`);
+      Logger.warn(`No scale '${value}' found.`);
       return;
     }
 
@@ -782,16 +802,19 @@ export class BaseMapFishPrintManager extends Observable {
   }
 
   /**
-   * TODO
+   * Returns print map size for chosen layout.
    *
-   * @returns
+   * @return {Object} The map.
    */
   getPrintMapSize() {
     return this._printMapSize;
   }
 
   /**
-   * TODO
+   * Sets the map size to use while printing.
+   *
+   * @param {Object} printMapSize The object containing width and height of
+   * printed map.
    */
   setPrintMapSize(printMapSize) {
     this._printMapSize = printMapSize;
