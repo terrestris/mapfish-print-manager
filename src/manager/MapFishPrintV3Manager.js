@@ -369,7 +369,6 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           dpi: this.getDpi(),
           layers: serializedLayers,
           projection: mapProjection.getCode(),
-          // TODO Rotation seems to be off
           rotation: this.calculateRotation() || 0,
           scale: this.getScale()
           // TODO Add support for customizable map attribute params,
