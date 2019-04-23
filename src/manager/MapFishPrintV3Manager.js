@@ -63,6 +63,15 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   _printApp = {};
 
   /**
+   * ID of currently started print job. Will be used while polling will be
+   * performed.
+   *
+   * @type {String}
+   * @private
+   */
+  _printJobReference = null;
+
+  /**
    * The constructor
    */
   constructor() {
@@ -97,7 +106,6 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this._layouts = capabilities.layouts;
     this._outputFormats = capabilities.formats;
 
-    // TODO Error handling if not found
     this.setLayout(this.getLayouts()[0].name);
     this.setOutputFormat(this.getOutputFormats()[0]);
 
@@ -222,12 +230,11 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           statusURL
         } = json;
 
-        // TODO docuemnt
-        this.printJobReference = ref;
+        this._printJobReference = ref;
 
         return this.pollUntilDone.call(this, statusURL, 1000, 5 * 1000)
           .then(downloadUrl => {
-            this.printJobReference = null;
+            this._printJobReference = null;
 
             if (forceDownload) {
               this.download(downloadUrl);
@@ -236,7 +243,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
             }
           })
           .catch(error => {
-            this.printJobReference = null;
+            this._printJobReference = null;
             Logger.error(error);
           });
       })
@@ -278,7 +285,6 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
             return Promise.reject(new Error('The job was cancelled.'));
           } else if (['waiting', 'running'].includes(status)) {
             if (timeout !== 0 && Date.now() - start > timeout) {
-              // TODO check if this is working as expected
               return Promise.reject(new Error('timeout error on pollUntilDone'));
             } else {
               return new Promise(resolve => {
@@ -293,11 +299,17 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   }
 
   /**
-   * TODO
+   * Cancels current print job by id.
    *
-   * Absolutely untested
+   * @param {String} id Print id to cancel.
+   *
+   * @return {Promise}
+   *
    */
   cancelPrint(id) {
+    if (!id) {
+      return;
+    }
     const cancelPrintJobUrl = `${this.url}cancel/${id}`;
 
     return fetch(cancelPrintJobUrl, {
@@ -429,6 +441,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
   /**
    * Sets the print application to use.
+   * For each print app the appropriate capabilities will be load and the
+   * manager will be initialized afterwards.
    *
    * @param {String} printAppName The name of the application to use.
    */
@@ -444,8 +458,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
     this.dispatch('change:app', printApp);
 
-    // TODO Document this
-    // TODO Implement cache for app capabilities, should be configurable (default = true)
+    // reinit print manager with capabilities from set app
     return this.loadAppCapabilities(printApp)
       .then(printCapabilities => {
         this.initManager(printCapabilities);
