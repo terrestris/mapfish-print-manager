@@ -84,16 +84,20 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * @return {Promise}
    */
   init() {
-    return this.loadPrintApps()
-      .then(printApps => {
-        this.setPrintApps(printApps);
+    if (this.url && !this.capabilities) {
+      return this.loadPrintApps()
+        .then(printApps => {
+          this.setPrintApps(printApps);
 
-        const defaultPrintApp = this.getPrintApps()[0];
+          const defaultPrintApp = this.getPrintApps()[0];
 
-        return this.setPrintApp(defaultPrintApp);
-      })
-      .catch(error => Promise.reject(new Error(`Could not initialize `+
-        `the manager: ${error.message}`)));
+          return this.setPrintApp(defaultPrintApp);
+        })
+        .catch(error => Promise.reject(new Error(`Could not initialize `+
+          `the manager: ${error.message}`)));
+    } else if (!this.url && this.capabilities) {
+      return this.initManager(this.capabilities);
+    }
   }
 
   /**
@@ -119,6 +123,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this.initTransformInteraction();
 
     this._initiated = true;
+
+    return this.isInitiated();
   }
 
   /**

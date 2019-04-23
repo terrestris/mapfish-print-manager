@@ -305,5 +305,5 @@
 			}
 		}]
 	}],
-	"formats": ["bmp", "gif", "jpeg", "jpg", "pdf", "png", "tif", "tiff"]
+	"formats": ["jpeg", "jpg", "pdf", "png"]
 }
