@@ -4,7 +4,6 @@ import {
 } from 'ol/extent';
 
 import BaseMapFishPrintManager from './BaseMapFishPrintManager';
-import PrintCapabilities from '../capabilities/PrintCapabilities';
 import MapFishPrintV3GeoJsonSerializer from '../serializer/MapFishPrintV3GeoJsonSerializer';
 import MapFishPrintV3OSMSerializer from '../serializer/MapFishPrintV3OSMSerializer';
 import MapFishPrintV3TiledWMSSerializer from '../serializer/MapFishPrintV3TiledWMSSerializer';
@@ -92,24 +91,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @param {*} capabilities
    */
-  parseCapabilities(capabilities) {
-    const printCapabilities = new PrintCapabilities();
-
-    print.app = capabilities.name;
-    print.layouts = capabilities.layouts;
-    print.outputFormats = capabilities.formats;
-
-    return printCapabilities;
-  }
-
-  /**
-   *
-   * @param {*} capabilities
-   */
   initManager(capabilities) {
     this.capabilities = capabilities;
-
-    //const printCapabilities = this.parseCapabilities(capabilities);
 
     this._layouts = capabilities.layouts;
     this._outputFormats = capabilities.formats;
@@ -377,29 +360,9 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
         legend: {
           classes: serializedLegends
         },
-        // "scalebar": {
-        //     "projection": "EPSG:21781"
-        // },
-        // "title": "Sample Print"
+        ...this.customParams
       }
     };
-
-    // const payload = {
-    //   units: mapProjection.getUnits(),
-    //   srs: mapProjection.getCode(),
-    //   layout: this.getLayout().name,
-    //   outputFormat: this.getOutputFormat().name,
-    //   dpi: this.getDpi().value,
-    //   layers: serializedLayers,
-    //   pages: [{
-    //     center: getCenter(extentFeatureGeometry.getExtent()),
-    //     scale: this.getScale().value,
-    //     rotation: this.calculateRotation() || 0
-    //   }],
-    //   legends: serializedLegends,
-    //   ...this.customParams
-    // };
-
     return payload;
   }
 

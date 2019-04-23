@@ -58,7 +58,6 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * TODO Implement as interface (-> TS) and move to MapFishPrintV2Manager
    * TODO Check return type Boolean?
-   * TODO Input should be from Type PrintCapabilities, Managers must parse accordingly.
    *
    * @param {Object} capabilities The capabilities to set.
    *
