@@ -221,7 +221,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     if (layer.getSource() instanceof OlSourceTileWMS ||
       layer.getSource() instanceof OlSourceImageWMS) {
       return {
-        name: layer.get('name') || '',
+        name: layer.get('name') || layer.getSource().getParams().LAYERS || '',
         classes: [{
           name: '',
           icons: [Shared.getLegendGraphicUrl(layer)]

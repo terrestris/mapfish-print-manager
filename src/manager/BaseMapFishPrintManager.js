@@ -1,5 +1,7 @@
 import OlMap from 'ol/Map';
 import OlLayerVector from 'ol/layer/Vector';
+import OlSourceTileWMS from 'ol/source/TileWMS';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceVector from 'ol/source/Vector';
 import OlFeature from 'ol/Feature';
 import { fromExtent } from 'ol/geom/Polygon';
@@ -632,21 +634,13 @@ export class BaseMapFishPrintManager extends Observable {
    * @return {Object} The serialized/encoded legend.
    */
   serializeLegend(layer) {
-
-    return {
-      TODO: 'TODO'
-    };
-    // TODO make use of customizable serializer (like in serializeLayer)
-    // if (layer.getSource() instanceof OlSourceTileWMS ||
-    //   layer.getSource() instanceof OlSourceImageWMS) {
-    //   return {
-    //     name: layer.get('name') || '',
-    //     classes: [{
-    //       name: '',
-    //       icons: [Shared.getLegendGraphicUrl(layer)]
-    //     }]
-    //   };
-    // }
+    if (layer.getSource() instanceof OlSourceTileWMS ||
+      layer.getSource() instanceof OlSourceImageWMS) {
+      return {
+        name: layer.get('name') || layer.getSource().getParams().LAYERS || '',
+        icons: [Shared.getLegendGraphicUrl(layer)]
+      };
+    }
   }
 
   /**

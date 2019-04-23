@@ -374,7 +374,10 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           scale: this.getScale()
           // TODO Add support for customizable map attribute params,
           // e.g. zoomToFeatures, see http://mapfish.github.io/mapfish-print-doc/attributes.html#!map
-        }
+        },
+        legend: {
+          classes: serializedLegends
+        },
         // "scalebar": {
         //     "projection": "EPSG:21781"
         // },
@@ -467,7 +470,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @param {String} printAppName The name of the application to use.
    */
-  setPrintApp(printAppName) {
+  setPrintApp = printAppName => {
     const printApp = this.getPrintApps().find(pa => pa === printAppName);
 
     if (!printApp) {
@@ -494,7 +497,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @param {number|string} value The value of the dpi to use.
    */
-  setDpi(value) {
+  setDpi = value => {
     value = parseFloat(value);
 
     const dpi = this.getDpis().find(dpi => dpi === value);
