@@ -23,6 +23,7 @@
     "clean": "rimraf ./dist/* ./build/*",
     "lint": "eslint --ext js src/ spec/",
     "lint:fix": "npm run lint -- --fix",
+    "pretest": "npm run lint",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "start": "webpack-dev-server --config webpack.development.config.js",
