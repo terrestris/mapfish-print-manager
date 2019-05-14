@@ -11,7 +11,7 @@ const map = new OlMap({
   layers: [
     new OlLayerTile({
       source: new OlSourceTileWMS({
-        url: 'http://ows.terrestris.de/osm/service',
+        url: 'https://ows.terrestris.de/osm/service',
         params: {
           'LAYERS': 'OSM-WMS'
         }
@@ -110,12 +110,6 @@ function onPrintClick() {
     .catch(error => {
       console.log('Error while printing: ' + error);
     });
-
-  // TODO: This should work as expected, but error handling is untested!
-  // printProvider.print()
-  //   .then(url => {
-  //     console.log(url);
-  //   });
 }
 
 /**

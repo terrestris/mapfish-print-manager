@@ -11,7 +11,7 @@ const map = new OlMap({
   layers: [
     new OlLayerTile({
       source: new OlSourceTileWMS({
-        url: 'http://ows.terrestris.de/osm/service',
+        url: 'https://ows.terrestris.de/osm/service',
         params: {
           'LAYERS': 'OSM-WMS'
         }

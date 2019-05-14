@@ -45,7 +45,7 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
    */
   serialize(layer, opts = {}) {
     defaultsDeep(opts, {
-      baseURL: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      baseURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       customParams: {},
       dpi: 72,
       failOnError: false,
