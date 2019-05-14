@@ -113,9 +113,14 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this.setLayout(this.getLayouts()[0].name);
     this.setOutputFormat(this.getOutputFormats()[0]);
 
-    // mapfish3 doesn't provide scales via capabilities, so we set some
-    // most common used values here manually
-    this._scales = scales;
+    // mapfish3 doesn't provide scales via capabilities, so we get them from
+    // initialized manager if set or set some most common used values here
+    // manually as fallback
+    if (this.customPrintScales) {
+      this._scales = this.customPrintScales;
+    } else {
+      this._scales = scales;
+    }
     this.setScale(this.getClosestScaleToFitMap());
 
     this.initPrintExtentLayer();

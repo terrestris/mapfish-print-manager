@@ -146,6 +146,14 @@ export class BaseMapFishPrintManager extends Observable {
   legendFilter = () => true;
 
   /**
+   * An array determining custom print scales. If provided, these will override
+   * the scales retrieved from print capabilities.
+   *
+   * @type {Array}
+   */
+  customPrintScales = [];
+
+  /**
    * The supported layouts by the print service.
    *
    * @type {Array}
