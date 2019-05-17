@@ -3,13 +3,11 @@
 # Mapfish Print Manager
 
 An interface manager to easily communicate with the MapFish Print module via
-an ol based webapplication.
-
-Note: Currently the MapFish Print version 2 is supported only.
+an [OpenLayers](https://openlayers.org/) based webapplication.
 
 # Installation
 
-If you're using ol in version 5 (or higher) just run:
+If you're using OpenLayers in version 5 just run:
 
 ```
 npm i --save @terrestris/mapfish-print-manager
@@ -24,12 +22,13 @@ npm i --save @terrestris/mapfish-print-manager@1
 # Usage
 
 ```
-// Import the manager.
-import { MapFishPrintV2Manager } from '@terrestris/mapfish-print-manager';
+// Import the manager. If you're using MapFish in version 2, you might want to
+// import the `MapFishPrintV2Manager` instead.
+import { MapFishPrintV3Manager } from '@terrestris/mapfish-print-manager';
 
 // Construct the manager with a remote print servlet and an `ol.Map` instance
 // (required).
-const printManager = new MapFishPrintV2Manager({
+const printManager = new MapFishPrintV3Manager({
   url: 'https://10.10.10.10/print/',
   map: olMap
 });
