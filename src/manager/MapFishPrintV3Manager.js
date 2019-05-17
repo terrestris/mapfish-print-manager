@@ -72,6 +72,13 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   _printJobReference = null;
 
   /**
+   * Default timeout in ms after which print job polling will be canceled.
+   *
+   * @type {Number}
+   */
+  timeout = 5000;
+
+  /**
    * The constructor
    */
   constructor() {
@@ -243,7 +250,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
         this._printJobReference = ref;
 
-        return this.pollUntilDone.call(this, statusURL, 1000, 5 * 1000)
+        return this.pollUntilDone.call(this, baseHost + statusURL, 1000, this.timeout)
           .then(downloadUrl => {
             this._printJobReference = null;
 
