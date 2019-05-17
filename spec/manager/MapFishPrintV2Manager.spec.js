@@ -6,7 +6,7 @@ import OlView from 'ol/View';
 
 import { MapFishPrintV2Manager } from '../../src/index';
 
-import mockResponse from '../../assets/info.json';
+import mockResponse from '../../assets/v2/info.json';
 
 describe('MapFishPrintV2Manager', () => {
 
