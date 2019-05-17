@@ -8,7 +8,7 @@ module.exports = {
   },
 
   output: {
-    path: path.join(__dirname, 'build'),
+    path: path.join(__dirname, 'build/examples'),
     filename: '[name].js'
   },
 
@@ -23,8 +23,6 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([{
       from: path.resolve('assets/info.json')
-    },
-    ]),
-
+    }])
   ]
 };
