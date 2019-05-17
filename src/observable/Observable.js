@@ -15,7 +15,7 @@ export class Observable {
   /**
   * Registers an event.
   *
-  * @param {String} name The name of the event to register.
+  * @param {string} name The name of the event to register.
   * @param {Function} callback The callback function to register.
   */
   on(name, callback) {
@@ -30,7 +30,7 @@ export class Observable {
   /**
   * Unregisters an event.
   *
-  * @param {String} name The name of the event to unregister.
+  * @param {string} name The name of the event to unregister.
   * @param {Function} callback The callback function to unregister.
   */
   un(name, callback) {
@@ -46,7 +46,7 @@ export class Observable {
   /**
    * Dispatches the given event with the provided data.
    *
-   * @param {String} name The name of the event to dispatch.
+   * @param {string} name The name of the event to dispatch.
    * @param {Object} data The data to apply to the event callback.
    */
   dispatch(name, data) {

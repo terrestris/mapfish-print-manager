@@ -13,7 +13,7 @@ export class MapFishPrintV2WMSSerializer extends BaseSerializer {
   /**
    * The WMS layer type identificator.
    *
-   * @type {String}
+   * @type {string}
    */
   static TYPE_WMS = 'WMS';
 

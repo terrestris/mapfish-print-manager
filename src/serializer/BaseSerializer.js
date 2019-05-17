@@ -45,7 +45,7 @@ export class BaseSerializer {
    * called by subclasses.
    *
    * @param {ol.source.Source} source The source to validate.
-   * @return {Boolean} Whether it is a valid source or not.
+   * @return {boolean} Whether it is a valid source or not.
    */
   validateSource = source => {
     const isValidSource = this.constructor.sourceCls.some(cls => {

@@ -14,7 +14,7 @@ export class MapFishPrintV3TiledWMSSerializer extends MapFishPrintV3WMSSerialize
   /**
    * The WMS layer type identificator.
    *
-   * @type {String}
+   * @type {string}
    */
   static TYPE_WMS = 'tiledwms';
 

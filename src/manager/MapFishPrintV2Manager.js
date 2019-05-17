@@ -18,7 +18,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   /**
    * The capabilities endpoint of the print service.
    *
-   * @type {String}
+   * @type {string}
    */
   static INFO_JSON_ENDPOINT = 'info.json';
 
@@ -61,7 +61,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * @param {Object} capabilities The capabilities to set.
    *
-   * @return {Boolean}
+   * @return {boolean}
    */
   initManager(capabilities) {
     this.capabilities = capabilities;
@@ -113,7 +113,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * Note: The manager has to been initialized prior this method's usage.
    *
-   * @param {Boolean} forceDownload Whether to force a direct download of the
+   * @param {boolean} forceDownload Whether to force a direct download of the
    *                                print result or to return the download url.
    * @return {Promise|undefined} If forceDownload is set to false, the download
    *                             url of the print result will be returned in a
@@ -241,7 +241,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * Calculates the extent based on a scale.
    * Overrides the method from base class.
    *
-   * @param {Number} scale The scale to calculate the extent for. If not given,
+   * @param {number} scale The scale to calculate the extent for. If not given,
    *                       the current scale of the provider will be used.
    * @return {ol.Extent} The extent.
    */
@@ -274,7 +274,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * Sets the output format to use.
    * Overrides the method from base class.
    *
-   * @param {String} name The name of the output format to use.
+   * @param {string} name The name of the output format to use.
    */
   setOutputFormat(name) {
     const format = this.getOutputFormats().find(format => {
@@ -295,7 +295,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * Sets the scale to use. Updates the print extent accordingly.
    * Overrides the method from base class.
    *
-   * @param {String} name The name of the scale to use.
+   * @param {string} name The name of the scale to use.
    */
   setScale = name => {
     const scale = this.getScales().find(scale => {
