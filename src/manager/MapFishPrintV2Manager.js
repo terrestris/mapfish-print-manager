@@ -3,8 +3,8 @@ import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 
 import BaseMapFishPrintManager from './BaseMapFishPrintManager';
-import WMSSerializer from '../serializer/WMSSerializer';
-import VectorSerializer from '../serializer/VectorSerializer';
+import MapFishPrintV2WMSSerializer from '../serializer/MapFishPrintV2WMSSerializer';
+import MapFishPrintV2VectorSerializer from '../serializer/MapFishPrintV2VectorSerializer';
 import Shared from '../util/Shared';
 import Log from '../util/Logger';
 
@@ -28,7 +28,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * @type {Array}
    */
-  serializers = [WMSSerializer, VectorSerializer];
+  serializers = [MapFishPrintV2WMSSerializer, MapFishPrintV2VectorSerializer];
 
   /**
    * The constructor
@@ -42,7 +42,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * @return {Promise}
    */
-  init = () => {
+  init() {
     if (!this.url && this.capabilities) {
       return this.initManager(this.capabilities);
     } else if (this.url && !this.capabilities) {
@@ -54,11 +54,43 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   }
 
   /**
+   * Initializes the manager instance. Typically called by subclasses via init().
+   *
+   * TODO Implement as interface (-> TS) and move to MapFishPrintV2Manager
+   * TODO Check return type Boolean?
+   *
+   * @param {Object} capabilities The capabilities to set.
+   *
+   * @return {Boolean}
+   */
+  initManager(capabilities) {
+    this.capabilities = capabilities;
+
+    this._layouts = this.capabilities.layouts;
+    this._outputFormats = this.capabilities.outputFormats;
+    this._dpis = this.capabilities.dpis;
+    this._scales = this.capabilities.scales;
+
+    this.setLayout(this.getLayouts()[0].name);
+    this.setOutputFormat(this.getOutputFormats()[0].name);
+    this.setDpi(this.getDpis()[0].name);
+    this.setScale(this.getClosestScaleToFitMap().name);
+
+    this.initPrintExtentLayer();
+    this.initPrintExtentFeature();
+    this.initTransformInteraction();
+
+    this._initiated = true;
+
+    return this.isInitiated();
+  }
+
+  /**
    * Loads the print capabilities from the provided remote source.
    *
    * @return {Promise}
    */
-  loadCapabilities = () => {
+  loadCapabilities() {
     return fetch(this.url + this.constructor.INFO_JSON_ENDPOINT, {
       method: 'GET',
       headers: {
@@ -87,7 +119,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *                             url of the print result will be returned in a
    *                             Promise.
    */
-  print = forceDownload => {
+  print(forceDownload) {
     if (!(this.isInitiated())) {
       Log.warn('The manager hasn\'t been initiated yet. Please call init() first.');
       return;
@@ -132,14 +164,14 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * @return {Object} The print payload.
    */
-  getPrintPayload = () => {
+  getPrintPayload() {
     const mapView = this.map.getView();
     const mapProjection = mapView.getProjection();
     const mapLayers = Shared.getMapLayers(this.map);
     const extentFeatureGeometry = this._extentFeature.getGeometry();
 
     const serializedLayers = mapLayers
-      .filter(this.filterPrintableLayer)
+      .filter(this.filterPrintableLayer.bind(this))
       .reduce((acc, layer) => {
         const serializedLayer = this.serializeLayer(layer);
         if (serializedLayer) {
@@ -149,7 +181,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       }, []);
 
     const serializedLegends = mapLayers
-      .filter(this.filterPrintableLegend)
+      .filter(this.filterPrintableLegend.bind(this))
       .reduce((acc, layer) => {
         const serializedLegend = this.serializeLegend(layer);
         if (serializedLegend) {
@@ -178,60 +210,17 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   }
 
   /**
-   * Checks if a given layer should be printed.
-   *
-   * @param {ol.layer.Layer} layer The layer to check.
-   * @return {Boolean} Whether the layer should be printed or not.
-   */
-  filterPrintableLayer = layer => {
-    return layer !== this.extentLayer && layer.getVisible() && this.layerFilter(layer);
-  }
-
-  /**
-   * Checks if the legend of a given legend should be printed.
-   *
-   * @param {ol.layer.Layer} layer The layer to check.
-   * @return {Boolean} Whether the legend of the layer should be printed or not.
-   */
-  filterPrintableLegend = layer => {
-    return layer !== this.extentLayer && layer.getVisible() && this.legendFilter(layer);
-  }
-
-  /**
-   * Serializes/encodes the given layer.
-   *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode.
-   * @return {Object} The serialized/encoded layer.
-   */
-  serializeLayer = layer => {
-    const layerSource = layer.getSource();
-    const viewResolution = this.map.getView().getResolution();
-
-    const serializerCand = this.serializers.find(serializer => {
-      return serializer.sourceCls.some(cls => layerSource instanceof cls);
-    });
-
-    if (serializerCand) {
-      const serializer = new serializerCand();
-      return serializer.serialize(layer, viewResolution);
-    } else {
-      Log.info('No suitable serializer for this layer/source found. ' +
-        'Please check the input layer or provide an own serializer capabale ' +
-        'of serializing the given layer/source to the manager.');
-    }
-  }
-
-  /**
    * Serializes/encodes the legend payload for the given layer.
    *
    * @param {ol.layer.Layer} layer The layer to serialize/encode the legend for.
+   *
    * @return {Object} The serialized/encoded legend.
    */
-  serializeLegend = layer => {
+  serializeLegend(layer) {
     if (layer.getSource() instanceof OlSourceTileWMS ||
       layer.getSource() instanceof OlSourceImageWMS) {
       return {
-        name: layer.get('name') || '',
+        name: layer.get('name') || layer.getSource().getParams().LAYERS || '',
         classes: [{
           name: '',
           icons: [Shared.getLegendGraphicUrl(layer)]
@@ -240,6 +229,90 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     }
   }
 
+  /**
+   * Called on translate interaction's `scaling` event.
+   */
+  onTransformScaling() {
+    const scale = this.getClosestScaleToFitExtentFeature();
+    this.setScale(scale.name);
+  }
+
+  /**
+   * Calculates the extent based on a scale.
+   * Overrides the method from base class.
+   *
+   * @param {Number} scale The scale to calculate the extent for. If not given,
+   *                       the current scale of the provider will be used.
+   * @return {ol.Extent} The extent.
+   */
+  calculatePrintExtent(scale) {
+    const printMapSize = this.getLayout().map;
+    const printScale = scale || this.getScale().value;
+    const {
+      width,
+      height
+    } = this.getPrintExtentSize(printMapSize, printScale);
+
+    let center;
+    if (this._extentFeature) {
+      center = getCenter(this._extentFeature.getGeometry().getExtent());
+    } else {
+      center = this.map.getView().getCenter();
+    }
+
+    const printExtent = [
+      center[0] - (width / 2),
+      center[1] - (height / 2),
+      center[0] + (width / 2),
+      center[1] + (height / 2)
+    ];
+
+    return printExtent;
+  }
+
+  /**
+   * Sets the output format to use.
+   * Overrides the method from base class.
+   *
+   * @param {String} name The name of the output format to use.
+   */
+  setOutputFormat(name) {
+    const format = this.getOutputFormats().find(format => {
+      return format.name === name;
+    });
+
+    if (!format) {
+      Log.warn(`No output format named '${name}' found.`);
+      return;
+    }
+
+    this._outputFormat = format;
+
+    this.dispatch('change:outputformat', format);
+  }
+
+  /**
+   * Sets the scale to use. Updates the print extent accordingly.
+   * Overrides the method from base class.
+   *
+   * @param {String} name The name of the scale to use.
+   */
+  setScale = name => {
+    const scale = this.getScales().find(scale => {
+      return scale.name === name;
+    });
+
+    if (!scale) {
+      Log.warn(`No scale named '${name}' found.`);
+      return;
+    }
+
+    this._scale = scale;
+
+    this.updatePrintExtent();
+
+    this.dispatch('change:scale', scale);
+  }
 }
 
 export default MapFishPrintV2Manager;
