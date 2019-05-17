@@ -25,7 +25,7 @@ const map = new OlMap({
 });
 
 const printProvider = new MapFishPrintV2Manager({
-  url: './',
+  url: 'http://localhost:9000/print-v2',
   map: map
 });
 
