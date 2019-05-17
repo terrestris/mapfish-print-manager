@@ -72,6 +72,13 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   _printJobReference = null;
 
   /**
+   * Default timeout in ms after which print job polling will be canceled.
+   *
+   * @type {Number}
+   */
+  timeout = 5000;
+
+  /**
    * The constructor
    */
   constructor() {
@@ -241,16 +248,25 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           statusURL
         } = json;
 
+        // get absolute url of print status and download to ensure we will be
+        // redirected correctly while printing
+        const matches = this.url.match(/[^/](\/[^/].*)/);
+        let baseHost = '';
+        if (matches && matches[1]) {
+          const idx = this.url.indexOf(matches[1]);
+          baseHost = this.url.substring(0, idx);
+        }
+
         this._printJobReference = ref;
 
-        return this.pollUntilDone.call(this, statusURL, 1000, 5 * 1000)
+        return this.pollUntilDone.call(this, baseHost + statusURL, 1000, this.timeout)
           .then(downloadUrl => {
             this._printJobReference = null;
 
             if (forceDownload) {
-              this.download(downloadUrl);
+              this.download(baseHost + downloadUrl);
             } else {
-              return Promise.resolve(downloadUrl);
+              return Promise.resolve(baseHost + downloadUrl);
             }
           })
           .catch(error => {
