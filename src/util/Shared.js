@@ -14,7 +14,7 @@ export class Shared {
    * Returns all map interactions with the given name.
    *
    * @param {ol.Map} map The map to get the interactions from.
-   * @param {String} name The name to filter with.
+   * @param {string} name The name to filter with.
    * @return {Array} The matching candidates.
    */
   static getInteractionsByName = (map, name) => {
@@ -26,7 +26,7 @@ export class Shared {
    * Returns all map layers with the given name.
    *
    * @param {ol.Map} map The map to get the layers from.
-   * @param {String} name The name to filter with.
+   * @param {string} name The name to filter with.
    * @return {Array} The matching candidates.
    */
   static getLayersByName = (map, name) => {
@@ -61,7 +61,7 @@ export class Shared {
    * Generates the GetLegendGraphic url for the given layer.
    *
    * @param {ol.layer.Layer} layer The layer to generate the GetLegendGraphic for.
-   * @return {String} The GetLegendGraphic url.
+   * @return {string} The GetLegendGraphic url.
    */
   static getLegendGraphicUrl = layer => {
     if (layer.getSource() instanceof OlSourceTileWMS ||
@@ -97,10 +97,10 @@ export class Shared {
   /**
    * Returns the appropriate scale for the given resolution and units.
    *
-   * @param {Number} resolution The resolution to calculate the scale for.
-   * @param {String} units The units the resolution is based on, typically
+   * @param {number} resolution The resolution to calculate the scale for.
+   * @param {string} units The units the resolution is based on, typically
    *                       either 'm' or 'degrees'.
-   * @return {Number} The appropriate scale.
+   * @return {number} The appropriate scale.
    */
   static getScaleForResolution = (resolution, units) => {
     const dpi = 25.4 / 0.28;

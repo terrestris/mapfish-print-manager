@@ -6,7 +6,7 @@ export class ObservableEvent {
   /**
    * The name of the event.
    *
-   * @type {String}
+   * @type {string}
    */
   eventName = '';
 

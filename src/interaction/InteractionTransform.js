@@ -24,7 +24,7 @@ import {
  *
  * @extends {ol.interaction.Pointer}
  * @fires select | rotatestart | rotating | rotateend | translatestart | translating | translateend | scalestart | scaling | scaleend
- * @param {olx.interaction.TransformOptions}
+ * @param {Object} options The options to apply.
  *  - layers {Array<ol.Layer>} array of layers to transform,
  *  - features {ol.Collection<ol.Feature>} collection of feature to transform,
  *  - translateFeature {bool} Translate when click on feature
@@ -39,8 +39,6 @@ export class OlInteractionTransform extends OlInteractionPointer {
 
   /**
    * The constructor.
-   *
-   * @param {Object} options The options to apply.
    */
   constructor(options) {
     if (!options) {
@@ -92,17 +90,17 @@ export class OlInteractionTransform extends OlInteractionPointer {
       });
     }
 
-    /** Translate when click on feature */
+    // Translate when click on feature
     this.set('translateFeature', (options.translateFeature !== false));
-    /** Can translate the feature */
+    // Can translate the feature
     this.set('translate', (options.translate !== false));
-    /** Can stretch the feature */
+    // Can stretch the feature
     this.set('stretch', (options.stretch !== false));
-    /** Can scale the feature */
+    // Can scale the feature
     this.set('scale', (options.scale !== false));
-    /** Can rotate the feature */
+    // Can rotate the feature
     this.set('rotate', (options.rotate !== false));
-    /** Keep aspect ratio */
+    // Keep aspect ratio
     this.set('keepAspectRatio', (
       options.keepAspectRatio ||
       function(e) {
@@ -141,7 +139,6 @@ export class OlInteractionTransform extends OlInteractionPointer {
    * Remove the interaction from its current map, if any,  and attach it to a new
    * map, if any. Pass `null` to just remove the interaction from the current map.
    * @param {ol.Map} map Map.
-   * @api stable
    */
   setMap = function(map) {
     if (this.getMap()) {
@@ -159,8 +156,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
 
   /**
    * Activate/deactivate interaction
-   * @param {bool}
-   * @api stable
+   * @param {boolean} b
    */
   setActive = function(b) {
     this.select(null);
@@ -214,14 +210,13 @@ export class OlInteractionTransform extends OlInteractionPointer {
     });
 
     /**
-     * [createStyle description]
-     * @method createStyle
-     * @param  {[type]}    img    [description]
-     * @param  {[type]}    stroke [description]
-     * @param  {[type]}    fill   [description]
-     * @return {[type]}           [description]
+     * @param {ol.style.Image} img
+     * @param {ol.style.Stroke} stroke
+     * @param {ol.style.Fill} fill
+     * @return {ol.style.Style}
+     * @ignore
      */
-    function createStyle (img, stroke, fill) {
+    function createStyle(img, stroke, fill) {
       return [
         new OlStyleStyle({
           image: img,
@@ -231,7 +226,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
       ];
     }
 
-    /** Style for handles */
+    // Style for handles.
     this.style = {
       'default': createStyle(bigpt, strokedash, fill0),
       'translate': createStyle(bigpt, stroke, fill),
@@ -252,8 +247,8 @@ export class OlInteractionTransform extends OlInteractionPointer {
 
   /**
    * Set sketch style.
-   * @param {ol.Map} map Map.
-   * @api stable
+   * @param {ol.style.Style} style Map.
+   * @param {ol.style.Style[]} olstyle
    */
   setStyle = function(style, olstyle) {
     if (!olstyle) {
@@ -290,7 +285,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
   };
 
   /** Get Feature at pixel
-   * @param {ol.Pixel}
+   * @param {ol.Pixel} pixel
    * @return {ol.feature}
    * @private
    */
@@ -349,7 +344,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
   /**
    * Draws the transform sketch.
    *
-   * @param {boolean} draw only the center
+   * @param {boolean} center only the center
    */
   drawSketch_ = function(center) {
     this.overlayLayer_.getSource().clear();
@@ -626,7 +621,6 @@ export class OlInteractionTransform extends OlInteractionPointer {
   };
 
   /**
-   * @param {ol.MapBrowserEvent} evt Map browser event.
    * @return {boolean} `false` to stop the drag sequence.
    */
   handleUpEvent = function() {

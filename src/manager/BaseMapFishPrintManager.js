@@ -31,7 +31,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * The name of the vector layer configured and created by the print manager.
    *
-   * @type {String}
+   * @type {string}
    */
   static EXTENT_LAYER_NAME = 'PrintManager Vector Layer';
 
@@ -39,14 +39,14 @@ export class BaseMapFishPrintManager extends Observable {
    * The name of the transform interaction configured and created by the
    * print manager.
    *
-   * @type {String}
+   * @type {string}
    */
   static TRANSFORM_INTERACTION_NAME = 'PrintManager Transform Interaction';
 
   /**
    * The key in the layer properties to lookup for custom serializer options.
    *
-   * @type {String}
+   * @type {string}
    */
   static CUSTOM_PRINT_SERIALIZER_OPTS_KEY = 'customPrintSerializerOpts';
 
@@ -60,7 +60,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Base url of the print service.
    *
-   * @type {String}
+   * @type {string}
    */
   url = null;
 
@@ -76,7 +76,7 @@ export class BaseMapFishPrintManager extends Observable {
    * Method to use when sending print requests to the servlet. Either `POST` or
    * `GET` (case-sensitive). Default is to `POST`.
    *
-   * @type {String}
+   * @type {string}
    */
   method = 'POST';
 
@@ -90,7 +90,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * The authentication credentials mode. Default is to 'same-origin'.
    *
-   * @type {String}
+   * @type {string}
    */
   credentialsMode = 'same-origin';
 
@@ -116,7 +116,7 @@ export class BaseMapFishPrintManager extends Observable {
    * to the default extentLayer only. If you don't want the mask to be shown on
    * the map, provide a custom extentLayer.
    *
-   * @type {String}
+   * @type {string}
    */
   maskColor = 'rgba(130, 130, 130, 0.5)';
 
@@ -228,7 +228,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Whether this manger has been initiated or not.
    *
-   * @type {Boolean}
+   * @type {boolean}
    * @private
    */
   _initiated = false;
@@ -498,7 +498,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Rotates the print extent by the amount of the given rotation.
    *
-   * @param {Number} rotation The amount to rotate.
+   * @param {number} rotation The amount to rotate.
    */
   setRotation(rotation) {
     const center = getCenter(this._extentFeature.getGeometry().getExtent());
@@ -520,7 +520,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Calculates the extent based on a scale.
    *
-   * @param {Number} scale The scale to calculate the extent for. If not given,
+   * @param {number} scale The scale to calculate the extent for. If not given,
    *                       the current scale of the provider will be used.
    *
    * @return {ol.Extent} The extent.
@@ -554,7 +554,7 @@ export class BaseMapFishPrintManager extends Observable {
    * Computes size of print extent in pixel depending on dimensions of print map
    * and print scale.
    * @param {Object} printMapSize Print map size containing its width and height.
-   * @param {Number} printScale Print scale.
+   * @param {number} printScale Print scale.
    *
    * @return {Object} Print extent size.
    */
@@ -575,7 +575,7 @@ export class BaseMapFishPrintManager extends Observable {
    * Opens the given URL in a new browser tab to download the given response
    * (if header are set correctly).
    *
-   * @param {String} url The url to open.
+   * @param {string} url The url to open.
    */
   download(url) {
     if (/Opera|OPR\//.test(navigator.userAgent)) {
@@ -590,7 +590,7 @@ export class BaseMapFishPrintManager extends Observable {
    *
    * @param {ol.layer.Layer} layer The layer to check.
    *
-   * @return {Boolean} Whether the layer should be printed or not.
+   * @return {boolean} Whether the layer should be printed or not.
    */
   filterPrintableLayer(layer) {
     return layer !== this.extentLayer && layer.getVisible() && this.layerFilter(layer);
@@ -601,7 +601,7 @@ export class BaseMapFishPrintManager extends Observable {
    *
    * @param {ol.layer.Layer} layer The layer to check.
    *
-   * @return {Boolean} Whether the legend of the layer should be printed or not.
+   * @return {boolean} Whether the legend of the layer should be printed or not.
    */
   filterPrintableLegend(layer) {
     return layer !== this.extentLayer && layer.getVisible() && this.legendFilter(layer);
@@ -663,7 +663,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Sets the layout to use. Updates the print extent accordingly.
    *
-   * @param {String} name The name of the layout to use.
+   * @param {string} name The name of the layout to use.
    */
   setLayout(name) {
     const layout = this.getLayouts().find(layout => layout.name === name);
@@ -692,7 +692,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Sets the output format to use.
    *
-   * @param {String} name The name of the output format to use.
+   * @param {string} name The name of the output format to use.
    */
   setOutputFormat(name) {
     const format = this.getOutputFormats().find(format => format === name);
@@ -719,7 +719,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Sets the dpi to use.
    *
-   * @param {String} name The name of the dpi to use.
+   * @param {string} name The name of the dpi to use.
    */
   setDpi = name => {
     const dpi = this.getDpis().find(dpi => {
@@ -825,7 +825,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Whether this manager has been initiated or not.
    *
-   * @return {Boolean} Whether this manager has been initiated or not.
+   * @return {boolean} Whether this manager has been initiated or not.
    */
   isInitiated() {
     return this._initiated;

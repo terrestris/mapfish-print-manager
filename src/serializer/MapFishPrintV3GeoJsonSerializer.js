@@ -29,21 +29,21 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
   /**
    * The vector GeoJSON type identificator.
    *
-   * @type {String}
+   * @type {string}
    */
   static TYPE_GEOJSON = 'geojson';
 
   /**
    * The circle geometry type name.
    *
-   * @type {String}
+   * @type {string}
    */
   static CIRCLE_GEOMETRY_TYPE = 'Circle';
 
   /**
    * The property to get the style dictionary key from.
    *
-   * @type {String}
+   * @type {string}
    */
   static FEAT_STYLE_PROPERTY = '_style';
 
@@ -70,7 +70,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
    * @param {Object} opts Additional properties to pass to the serialized
    *   layer object that can't be obtained by the layer itself. It can also be
    *   used to override all generated layer values, e.g. the image format.
-   * @param {Number} viewResolution The resolution to calculate the styles for.
+   * @param {number} viewResolution The resolution to calculate the styles for.
    * @return {Object} The serialized/encoded layer.
    */
   serialize(layer, opts, viewResolution) {

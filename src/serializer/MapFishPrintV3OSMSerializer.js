@@ -14,7 +14,7 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
   /**
    * The WMS layer type identificator.
    *
-   * @type {String}
+   * @type {string}
    */
   static TYPE_OSM = 'osm';
 

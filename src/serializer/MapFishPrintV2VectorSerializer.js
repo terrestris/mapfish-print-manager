@@ -27,21 +27,21 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
   /**
    * The vector layer type identificator.
    *
-   * @type {String}
+   * @type {string}
    */
   static TYPE_VECTOR = 'Vector';
 
   /**
    * The circle geometry type name.
    *
-   * @type {String}
+   * @type {string}
    */
   static CIRCLE_GEOMETRY_TYPE = 'Circle';
 
   /**
    * The property to get the style dictionary key from.
    *
-   * @type {String}
+   * @type {string}
    */
   static FEAT_STYLE_PROPERTY = '_style';
 
@@ -65,7 +65,7 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
    * Serializes/Encodes the given layer.
    *
    * @param {ol.layer.Layer} layer The layer to serialize/encode.
-   * @param {Number} viewResolution The resolution to calculate the styles for.
+   * @param {number} viewResolution The resolution to calculate the styles for.
    * @return {Object} The serialized/encoded layer.
    */
   serialize(layer, viewResolution) {

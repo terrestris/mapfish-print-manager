@@ -22,14 +22,14 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * The capabilities endpoint of the print service.
    *
-   * @type {String}
+   * @type {string}
    */
   static APPS_JSON_ENDPOINT = 'apps.json';
 
   /**
    * The capabilities endpoint of the print service.
    *
-   * @type {String}
+   * @type {string}
    */
   static CAPABILITIES_JSON_ENDPOINT = 'capabilities.json';
 
@@ -66,7 +66,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * ID of currently started print job. Will be used while polling will be
    * performed.
    *
-   * @type {String}
+   * @type {string}
    * @private
    */
   _printJobReference = null;
@@ -74,7 +74,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Default timeout in ms after which print job polling will be canceled.
    *
-   * @type {Number}
+   * @type {number}
    */
   timeout = 5000;
 
@@ -142,8 +142,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Returns attribute value contained in currently chosen layout by its name.
    *
-   * @param {String} attributeName The attribute name (key) to be searched.
-   * @param {String} layoutName Name of currently chosen layout.
+   * @param {string} attributeName The attribute name (key) to be searched.
+   * @param {string} layoutName Name of currently chosen layout.
    *
    * @return {*} Obtained attribute value.
    */
@@ -161,7 +161,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Returns an object containing configuration for layout based on its name
    *
-   * @param {String} layoutName Layout name.
+   * @param {string} layoutName Layout name.
    *
    * @return {Object} Layout configuration object.
    */
@@ -219,7 +219,9 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
   /**
    *
-   * @returns
+   *
+   * @param {boolean} forceDownload
+   * @return {Promise}
    */
   print(forceDownload) {
     if (!(this.isInitiated())) {
@@ -283,13 +285,13 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * @param {*} url
    * @param {*} interval
    * @param {*} timeout
-   * @returns
+   * @return {Promise}
    */
   pollUntilDone(url, interval, timeout) {
     let start = Date.now();
 
     /**
-     *
+     * @ignore
      */
     function run() {
       return fetch(url, {
@@ -328,7 +330,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Cancels current print job by id.
    *
-   * @param {String} id Print id to cancel.
+   * @param {string} id Print id to cancel.
    *
    * @return {Promise}
    *
@@ -426,7 +428,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Returns the currently selected print application.
    *
-   * @return {String} The currently selected print application.
+   * @return {string} The currently selected print application.
    */
   getPrintApp() {
     return this._printApp;
@@ -435,7 +437,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Sets the layout to use. Updates the print extent accordingly.
    *
-   * @param {String} name The name of the layout to use.
+   * @param {string} name The name of the layout to use.
    */
   setLayout(name) {
     const layout = this.getLayouts().find(layout => layout.name === name);
@@ -471,7 +473,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * For each print app the appropriate capabilities will be load and the
    * manager will be initialized afterwards.
    *
-   * @param {String} printAppName The name of the application to use.
+   * @param {string} printAppName The name of the application to use.
    */
   setPrintApp = printAppName => {
     const printApp = this.getPrintApps().find(pa => pa === printAppName);
