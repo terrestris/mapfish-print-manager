@@ -50,8 +50,9 @@ export class Shared {
         Shared.getMapLayers(layer).forEach(l => {
           mapLayers.push(l);
         });
+      } else {
+        mapLayers.push(layer);
       }
-      mapLayers.push(layer);
     });
 
     return mapLayers;

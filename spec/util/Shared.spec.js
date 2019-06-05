@@ -8,6 +8,8 @@ import OlLayerTile from 'ol/layer/Tile';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceVector from 'ol/source/Vector';
+import OlLayerGroup from 'ol/layer/Group';
+import OlCollection from 'ol/Collection';
 
 import { Shared } from '../../src/util/Shared';
 
@@ -64,6 +66,114 @@ describe('Shared', () => {
         map, `${dragInteractionName} NOT AVAILABLE`);
 
       expect(returnedInteractions).toHaveLength(0);
+    });
+  });
+
+  describe('#getMapLayers', () => {
+    it('is defined', () => {
+      expect(Shared.getMapLayers).toBeDefined();
+    });
+
+    it('handles flat layer lists properly', () => {
+      expect(Shared.getMapLayers).toBeDefined();
+
+      const names = [
+        'layer1',
+        'layer2',
+        'layer3',
+        'layer4',
+        'layer5',
+        'layer6'
+      ];
+      names.map(name => {
+        const source = new OlSourceTileWMS({
+          url: 'https://ows.terrestris.de/osm/service',
+          params: {
+            'LAYERS': 'OSM-WMS',
+            'TILED': true
+          },
+          serverType: 'geoserver'
+        });
+        const layer = new OlLayerTile({
+          source: source
+        });
+
+        layer.setProperties({
+          name: name
+        });
+
+        return layer;
+      }).forEach(l => map.addLayer(l));
+
+      const layerArrayReturned = Shared.getMapLayers(map);
+      expect(layerArrayReturned).toHaveLength(names.length + 1);
+      for (var i = 0; i < names.length; i++) {
+        expect(layerArrayReturned[i + 1].get('name')).toEqual(names[i]);
+      }
+    });
+
+    it('handles nested group layers properly', () => {
+
+      const names = [
+        'layer1',
+        'layer2',
+        'layer3',
+        'layer4',
+        'layer5',
+        'layer6'
+      ];
+      const layers = names.map(name => {
+        const source = new OlSourceTileWMS({
+          url: 'https://ows.terrestris.de/osm/service',
+          params: {
+            'LAYERS': 'OSM-WMS',
+            'TILED': true
+          },
+          serverType: 'geoserver'
+        });
+        const layer = new OlLayerTile({
+          source: source
+        });
+
+        layer.setProperties({
+          name: name
+        });
+
+        return layer;
+      });
+
+      const expectedNamesOrdered = [
+        ...names.slice(4),
+        ...names.slice(1, 4),
+        names[0]
+      ];
+
+      const baseLayers = layers.slice(4);
+      const topicLayers = layers.slice(1, 4);
+      const thirdLgLayers = [layers[0]];
+
+      const baseLayerGroup = new OlLayerGroup({
+        layers: baseLayers,
+        visible: true
+      });
+      const secondLayerGroup = new OlLayerGroup({
+        layers: topicLayers,
+        visible: true
+      });
+      const thirdLayerGroup = new OlLayerGroup({
+        layers: thirdLgLayers,
+        visible: true
+      });
+
+      const layerGroup = new OlCollection([
+        baseLayerGroup,
+        secondLayerGroup,
+        thirdLayerGroup
+      ]);
+      map.getLayerGroup().setLayers(layerGroup);
+
+      const result = Shared.getMapLayers(map).map(l => l.get('name'));
+      expect(result).toEqual(expectedNamesOrdered);
     });
   });
 
