@@ -366,7 +366,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           acc.push(serializedLayer);
         }
         return acc;
-      }, []);
+      }, []).reverse();
 
     const serializedLegends = mapLayers
       .filter(this.filterPrintableLegend.bind(this))
@@ -376,7 +376,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           acc.push(serializedLegend);
         }
         return acc;
-      }, []);
+      }, []).reverse();
 
     const payload = {
       layout: this.getLayout().name,
