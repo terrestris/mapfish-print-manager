@@ -72,13 +72,6 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   _printJobReference = null;
 
   /**
-   * Default timeout in ms after which print job polling will be canceled.
-   *
-   * @type {number}
-   */
-  timeout = 5000;
-
-  /**
    * The constructor
    */
   constructor() {
