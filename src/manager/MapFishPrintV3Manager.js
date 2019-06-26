@@ -387,7 +387,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           layers: serializedLayers,
           projection: mapProjection.getCode(),
           rotation: this.calculateRotation() || 0,
-          scale: this.getScale()
+          scale: this.getScale(),
+          longitudeFirst: mapProjection.getUnits() !== 'm',
           // TODO Add support for customizable map attribute params,
           // e.g. zoomToFeatures, see http://mapfish.github.io/mapfish-print-doc/attributes.html#!map
         },
