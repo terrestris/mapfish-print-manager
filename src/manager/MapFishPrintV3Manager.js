@@ -116,7 +116,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     // mapfish3 doesn't provide scales via capabilities, so we get them from
     // initialized manager if set or set some most common used values here
     // manually as fallback
-    if (this.customPrintScales) {
+    if (this.customPrintScales.length > 0) {
       this._scales = this.customPrintScales;
     } else {
       this._scales = scales;
@@ -387,9 +387,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           layers: serializedLayers,
           projection: mapProjection.getCode(),
           rotation: this.calculateRotation() || 0,
-          scale: this.getScale()
-          // TODO Add support for customizable map attribute params,
-          // e.g. zoomToFeatures, see http://mapfish.github.io/mapfish-print-doc/attributes.html#!map
+          scale: this.getScale(),
+          ...this.customMapParams
         },
         legend: {
           classes: serializedLegends
