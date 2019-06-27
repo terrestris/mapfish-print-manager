@@ -104,34 +104,6 @@ export class BaseMapFishPrintManager extends Observable {
   customParams = {};
 
   /**
-   * Custom parameters which can be additionally set on map to determine its
-   * special handling while printing.
-   *
-   * The list of allowed properties is as follows:
-   *  * areaOfInterest
-   *  * bbox
-   *  * center
-   *  * rotation
-   *  * scale
-   *  * useNearestScale
-   *  * dpiSensitiveStyle
-   *  * useAdjustBounds
-   *  * layers
-   *  * width
-   *  * longitudeFirst
-   *  * projection
-   *  * dpi
-   *  * zoomToFeatures
-   *  * height
-   *
-   * Please refer to http://mapfish.github.io/mapfish-print-doc/attributes.html#!map
-   * for further details.
-   *
-   * @type {Object}
-   */
-  customMapParams = {};
-
-  /**
    * The layer to show the actual print extent on. If not provided, a default
    * one will be created.
    *
