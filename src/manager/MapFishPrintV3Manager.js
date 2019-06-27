@@ -47,6 +47,38 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   ];
 
   /**
+   * Custom parameters which can be additionally set on map to determine its
+   * special handling while printing.
+   *
+   * The list of all allowed properties is as follows:
+   *  * center (default)
+   *  * dpi (default)
+   *  * layers (default)
+   *  * projection (default)
+   *  * rotation (default)
+   *  * scale (default)
+   *  * areaOfInterest
+   *  * bbox
+   *  * useNearestScale
+   *  * dpiSensitiveStyle
+   *  * useAdjustBounds
+   *  * width
+   *  * longitudeFirst
+   *  * zoomToFeatures
+   *  * height
+   *
+   * Note: Properties marked as default will be handled by the manager itself
+   * and don't need to be explicitly provided as customized params (s.
+   * https://github.com/terrestris/mapfish-print-manager/blob/master/src/manager/MapFishPrintV3Manager.js#L416)
+   *
+   * Please refer to http://mapfish.github.io/mapfish-print-doc/attributes.html#!map
+   * for further details.
+   *
+   * @type {Object}
+   */
+  customMapParams = {};
+
+  /**
    * The supported print applications by the print service.
    *
    * @type {Array}
@@ -116,7 +148,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     // mapfish3 doesn't provide scales via capabilities, so we get them from
     // initialized manager if set or set some most common used values here
     // manually as fallback
-    if (this.customPrintScales) {
+    if (this.customPrintScales.length > 0) {
       this._scales = this.customPrintScales;
     } else {
       this._scales = scales;
@@ -387,9 +419,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           layers: serializedLayers,
           projection: mapProjection.getCode(),
           rotation: this.calculateRotation() || 0,
-          scale: this.getScale()
-          // TODO Add support for customizable map attribute params,
-          // e.g. zoomToFeatures, see http://mapfish.github.io/mapfish-print-doc/attributes.html#!map
+          scale: this.getScale(),
+          ...this.customMapParams
         },
         legend: {
           classes: serializedLegends
