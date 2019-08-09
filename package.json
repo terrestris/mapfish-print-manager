@@ -63,7 +63,7 @@
     "copy-webpack-plugin": "5.0.4",
     "documentation": "12.1.1",
     "eslint": "6.1.0",
-    "gh-pages": "2.1.0",
+    "gh-pages": "2.1.1",
     "jest": "24.7.1",
     "jest-fetch-mock": "2.1.2",
     "np": "5.0.3",
