@@ -1,15 +1,15 @@
 version: '3'
 services:
   mapfish-print-v2:
-    image: mapfish-print:2.1.4
     build:
       context: mapfish-print-v2/
+      args:
+        - MAPFISH2_VERSION=2.1.5
     ports:
       - 18082:8080
     volumes:
       - ./mapfish-print-v2/print-config/config.yaml:/opt/apache-tomcat-8.5.37/webapps/print/config.yaml:Z
   mapfish-print-v3:
-    image: mapfish-print:3.16.1
     build:
       context: mapfish-print-v3/
     ports:
