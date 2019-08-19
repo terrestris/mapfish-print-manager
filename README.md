@@ -42,3 +42,29 @@ printManager.init()
     // `printManager.print()` to create the print document.
   });
 ```
+
+# Examples
+
+Do you want to see the Mapfish Print Manager in action? There are two examples
+showing how does it work.
+
+Just start docker container including both versions of mapfish print servlet via
+
+```
+cd docker
+docker-compose -f docker-compose.yml up --build
+```
+
+The print servlets are available under http://localhost:18083 (v2) and
+http://localhost:18082/print (v3) now.
+
+Install needed dependencies and start `webpack` devServer with
+
+```
+npm i
+npm run start
+```
+
+Now just try out the example applications:
+* http://localhost:9000/print-manager-v2-example.html (v2)
+* http://localhost:9000/print-manager-v3-example.html (v3)
