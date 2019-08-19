@@ -25,7 +25,7 @@ const map = new OlMap({
 });
 
 const printProvider = new MapFishPrintV2Manager({
-  url: 'http://localhost:9000/print-v2',
+  url: 'http://localhost:9000/print-v2/pdf',
   map: map
 });
 
@@ -88,7 +88,10 @@ const registerPrintHandler = () => {
  *
  */
 const onPrintClick = () => {
-  printProvider.print();
+  printProvider.print(true)
+    .catch(error => {
+      console.log('Error while printing: ' + error);
+    });
 };
 
 /**
