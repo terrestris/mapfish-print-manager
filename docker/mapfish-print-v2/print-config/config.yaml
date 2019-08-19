@@ -56,7 +56,7 @@ layouts:
         height: 50
         items:
           - !text
-            font: Helvetica
+            font: arial
             fontSize: 30
             align: right
             text: 'Title'
