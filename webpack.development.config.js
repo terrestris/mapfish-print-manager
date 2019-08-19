@@ -25,6 +25,33 @@ module.exports = merge(commonConfig, {
         pathRewrite: {
           '^/print-v3': '/print'
         }
+      },
+      '/print/pdf/**': {
+        target: {
+          host: '127.0.0.1',
+          port: 18082
+        },
+        pathRewrite: {
+          '^/print/pdf': '/print/pdf'
+        }
+      },
+      '/print/status/**': {
+        target: {
+          host: '127.0.0.1',
+          port: 18083
+        },
+        pathRewrite: {
+          '^/print/status': '/print/status'
+        }
+      },
+      '/print/report/**': {
+        target: {
+          host: '127.0.0.1',
+          port: 18083
+        },
+        pathRewrite: {
+          '^/print/report': '/print/report'
+        }
       }
     }
   }
