@@ -70,7 +70,7 @@
     "ol": "5.3.3",
     "rimraf": "3.0.0",
     "webpack": "4.39.2",
-    "webpack-cli": "3.3.6",
+    "webpack-cli": "3.3.7",
     "webpack-dev-server": "3.8.0",
     "webpack-merge": "4.2.1"
   }
