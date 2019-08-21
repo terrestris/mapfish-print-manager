@@ -1,0 +1,70 @@
+#===========================================================================
+# allowed DPIs
+#===========================================================================
+dpis:
+  - 254
+  - 190
+  - 127
+  - 56
+
+#===========================================================================
+# allowed Formats
+#===========================================================================
+# '*' means any formats
+formats: ['*']
+
+#===========================================================================
+# the allowed scales
+#===========================================================================
+scales:
+  - 25000
+  - 50000
+  - 100000
+  - 200000
+  - 500000
+  - 1000000
+  - 2000000
+  - 4000000
+  - 8000000
+  - 16000000
+  - 32000000
+  - 64000000
+
+#===========================================================================
+# the list of allowed hosts
+#===========================================================================
+hosts:
+  - !localMatch
+    dummy: true
+  - !dnsMatch
+    host: ows.terrestris.de
+    port: 443
+
+# the default fileName for the files downloaded from the servlet
+outputFilename: MapFish_PrintOut
+
+layouts:
+  #===========================================================================
+  A4 portrait:
+  #===========================================================================
+    # override the default outputFileName defined above
+#    outputFilename: A4_Layout
+    mainPage:
+      rotation: true
+      pageSize: A4
+      header:
+        height: 50
+        items:
+          - !text
+            font: arial
+            fontSize: 30
+            align: right
+            text: 'Title'
+      items:
+        - !map
+          spacingAfter: 30
+          width: 440
+          height: 483
+        - !text
+          text: 'Title'
+          spacingAfter: 30

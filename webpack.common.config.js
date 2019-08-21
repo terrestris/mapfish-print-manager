@@ -1,5 +1,4 @@
 const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -18,11 +17,5 @@ module.exports = {
       exclude: /node_modules/,
       use: 'babel-loader'
     }]
-  },
-
-  plugins: [
-    new CopyWebpackPlugin([{
-      from: path.resolve('assets/info.json')
-    }])
-  ]
+  }
 };
