@@ -306,7 +306,6 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
       rotateWithView: olCircleStyle.getRotateWithView(),
       rotation: olCircleStyle.getRotation(),
       scale: olCircleStyle.getScale(),
-      snapToPixel: olCircleStyle.getSnapToPixel(),
       stroke: this.writeStrokeStyle(olCircleStyle.getStroke())
     };
   }
@@ -335,7 +334,6 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
       rotation: olIconStyle.getRotation(),
       scale: olIconStyle.getScale(),
       size: olIconStyle.getSize(),
-      snapToPixel: olIconStyle.getSnapToPixel(),
       src: olIconStyle.getSrc()
     };
   }
@@ -364,7 +362,6 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
       rotateWithView: olRegularShape.getRotateWithView(),
       rotation: olRegularShape.getRotation(),
       scale: olRegularShape.getScale(),
-      snapToPixel: olRegularShape.getSnapToPixel(),
       stroke: this.writeStrokeStyle(olRegularShape.getStroke())
     };
   }
