@@ -143,10 +143,10 @@ describe('MapFishPrintV2VectorSerializer', () => {
       image: new OlStyleCircle({
         radius: 5,
         fill: new OlStyleFill({
-          color: 'black'
+          color: '#000'
         }),
         stroke: new OlStyleStroke({
-          color: 'gray'
+          color: '#808080'
         })
       }),
       fill: new OlStyleFill({
