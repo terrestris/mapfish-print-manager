@@ -60,7 +60,7 @@
     "babel-loader": "8.0.6",
     "babel-plugin-import": "1.12.2",
     "canvas-prebuilt": "1.6.11",
-    "copy-webpack-plugin": "5.0.5",
+    "copy-webpack-plugin": "5.1.0",
     "documentation": "12.1.4",
     "eslint": "6.7.2",
     "gh-pages": "2.1.1",
