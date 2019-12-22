@@ -50,11 +50,11 @@
     "ol": "~5.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.7.5",
-    "@babel/core": "7.7.5",
+    "@babel/cli": "7.7.7",
+    "@babel/core": "7.7.7",
     "@babel/plugin-proposal-class-properties": "7.7.4",
     "@babel/plugin-syntax-dynamic-import": "7.7.4",
-    "@babel/preset-env": "7.7.6",
+    "@babel/preset-env": "7.7.7",
     "babel-eslint": "10.0.3",
     "babel-jest": "24.7.1",
     "babel-loader": "8.0.6",
