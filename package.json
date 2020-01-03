@@ -65,7 +65,7 @@
     "eslint": "6.8.0",
     "gh-pages": "2.1.1",
     "jest": "24.7.1",
-    "jest-fetch-mock": "3.0.0",
+    "jest-fetch-mock": "3.0.1",
     "np": "5.2.1",
     "ol": "5.3.3",
     "rimraf": "3.0.0",
