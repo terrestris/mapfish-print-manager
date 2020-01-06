@@ -21,7 +21,7 @@ npm i --save @terrestris/mapfish-print-manager@1
 
 # Usage
 
-```
+```javascript
 // Import the manager. If you're using MapFish in version 2, you might want to
 // import the `MapFishPrintV2Manager` instead.
 import { MapFishPrintV3Manager } from '@terrestris/mapfish-print-manager';
