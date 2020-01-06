@@ -62,7 +62,7 @@ Install needed dependencies and start `webpack` devServer with
 
 ```
 npm i
-npm run start
+npm start
 ```
 
 Now just try out the example applications:
