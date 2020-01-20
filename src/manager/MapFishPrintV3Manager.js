@@ -1,4 +1,6 @@
 import get from 'lodash/get';
+import URL from 'url-parse';
+import QueryString from 'query-string';
 import {
   getCenter
 } from 'ol/extent';
@@ -243,6 +245,16 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   }
 
   /**
+   * Determine the base path the application is running
+   * @return {string} The base host path
+   */
+  getBasePath() {
+    const baseUrlObj = new URL(this.url, null, QueryString.parse);
+    const baseHost = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.port ? ':' + baseUrlObj.port : ''}${baseUrlObj.pathname}`;
+    return baseHost;
+  }
+
+  /**
    *
    *
    * @param {boolean} forceDownload
@@ -275,25 +287,17 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           statusURL
         } = json;
 
-        // get absolute url of print status and download to ensure we will be
-        // redirected correctly while printing
-        const matches = this.url.match(/[^/](\/[^/].*)/);
-        let baseHost = '';
-        if (matches && matches[1]) {
-          const idx = this.url.indexOf(matches[1]);
-          baseHost = this.url.substring(0, idx);
-        }
-
+        const basePath = this.getBasePath();
         this._printJobReference = ref;
 
-        return this.pollUntilDone.call(this, baseHost + statusURL, 1000, this.timeout)
+        return this.pollUntilDone.call(this, basePath + statusURL, 1000, this.timeout)
           .then(downloadUrl => {
             this._printJobReference = null;
 
             if (forceDownload) {
-              this.download(baseHost + downloadUrl);
+              this.download(basePath + downloadUrl);
             } else {
-              return Promise.resolve(baseHost + downloadUrl);
+              return Promise.resolve(basePath + downloadUrl);
             }
           })
           .catch(error => {

@@ -100,4 +100,15 @@ describe('MapFishPrintV3Manager', () => {
         fetch.resetMocks();
       });
   });
+
+  describe('#getBasePath', () => {
+    it('is defined', () => {
+      const manager = new MapFishPrintV3Manager({
+        map: testMap,
+        url: 'https://mock:8080/print/pdf/'
+      });
+      expect(manager.getBasePath).not.toBeUndefined();
+    });
+  });
+
 });
