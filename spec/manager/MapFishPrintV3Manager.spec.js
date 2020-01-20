@@ -110,5 +110,5 @@ describe('MapFishPrintV3Manager', () => {
       expect(manager.getBasePath).not.toBeUndefined();
     });
   });
-1
+
 });
