@@ -250,7 +250,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    */
   getBasePath() {
     const baseUrlObj = new URL(this.url, null, QueryString.parse);
-    const baseHost = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.port ? ':' + baseUrlObj.port : ''}${baseUrlObj.pathname}`;
+    const baseHost = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
     return baseHost;
   }
 
