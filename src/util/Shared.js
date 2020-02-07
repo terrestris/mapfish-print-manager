@@ -91,7 +91,11 @@ export class Shared {
         return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
       }).join('&');
 
-      return `${url}?${queryParams}`;
+      if (url.endsWith('?')) {
+        return `${url}${queryParams}`;
+      } else {
+        return `${url}?${queryParams}`;
+      }
     }
   }
 
