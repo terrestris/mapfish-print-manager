@@ -278,6 +278,38 @@ describe('Shared', () => {
 
       expect(Shared.getLegendGraphicUrl(layer)).toEqual(expected);
     });
+
+    it('adds a question mark to the URL if needed', () => {
+      const expected = 'http://bvb.de/maps?LAYER=SHINJI%3AKAGAWA&VERSION=1.3.0&SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image%2Fpng&SCALE=5000';
+
+      const layer = new OlLayerTile({
+        source: new OlSourceTileWMS({
+          url: 'http://bvb.de/maps',
+          params: {
+            LAYERS: 'SHINJI:KAGAWA'
+          }
+        }),
+        customPrintLegendParams: {
+          SCALE: 5000
+        }
+      });
+
+      expect(Shared.getLegendGraphicUrl(layer)).toEqual(expected);
+
+      const anotherLayer = new OlLayerTile({
+        source: new OlSourceTileWMS({
+          url: 'http://bvb.de/maps?',
+          params: {
+            LAYERS: 'SHINJI:KAGAWA'
+          }
+        }),
+        customPrintLegendParams: {
+          SCALE: 5000
+        }
+      });
+
+      expect(Shared.getLegendGraphicUrl(anotherLayer)).toEqual(expected);
+    });
   });
 
   describe('#getScaleForResolution', () => {
