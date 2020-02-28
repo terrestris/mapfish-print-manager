@@ -154,11 +154,12 @@ export class BaseMapFishPrintManager extends Observable {
   customPrintScales = [];
 
   /**
-   * Default timeout in ms after which print job polling will be canceled.
+   * Default timeout in ms after which print job polling will be canceled. The
+   * default is set to 30 seconds.
    *
    * @type {number}
    */
-  timeout = 5000;
+  timeout = 30000;
 
   /**
    * The supported layouts by the print service.
