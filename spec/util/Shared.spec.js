@@ -113,14 +113,14 @@ describe('Shared', () => {
     });
 
     it('handles nested group layers properly', () => {
-
       const names = [
         'layer1',
         'layer2',
         'layer3',
         'layer4',
         'layer5',
-        'layer6'
+        'layer6',
+        'layer7'
       ];
       const layers = names.map(name => {
         const source = new OlSourceTileWMS({
@@ -144,13 +144,12 @@ describe('Shared', () => {
 
       const expectedNamesOrdered = [
         ...names.slice(4),
-        ...names.slice(1, 4),
-        names[0]
+        ...names.slice(1, 4)
       ];
 
       const baseLayers = layers.slice(4);
       const topicLayers = layers.slice(1, 4);
-      const thirdLgLayers = [layers[0]];
+      const thirdLgLayers = [layers[0], layers[1]];
 
       const baseLayerGroup = new OlLayerGroup({
         layers: baseLayers,
@@ -162,7 +161,7 @@ describe('Shared', () => {
       });
       const thirdLayerGroup = new OlLayerGroup({
         layers: thirdLgLayers,
-        visible: true
+        visible: false
       });
 
       const layerGroup = new OlCollection([

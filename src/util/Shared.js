@@ -47,9 +47,11 @@ export class Shared {
 
     layers.forEach(layer => {
       if (layer instanceof OlLayerGroup) {
-        Shared.getMapLayers(layer).forEach(l => {
-          mapLayers.push(l);
-        });
+        if (layer.getVisible()) {
+          Shared.getMapLayers(layer).forEach(l => {
+            mapLayers.push(l);
+          });
+        }
       } else {
         mapLayers.push(layer);
       }
