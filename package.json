@@ -38,7 +38,9 @@
     "build:docs": "npm run clean:docs && documentation build -g -f html -o ./build/docs ./src/index.js",
     "prepublishOnly": "npm run build:dist && npm run build:docs",
     "release": "np --no-yarn",
-    "postpublish": "node ./tasks/update-gh-pages.js"
+    "postpublish": "node ./tasks/update-gh-pages.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "js-logger": "^1.6.0",
@@ -46,7 +48,8 @@
     "parse-color": "^1.0.0",
     "parse-css-font": "^4.0.0",
     "query-string": "^6.8.2",
-    "url-parse": "^1.4.7"
+    "url-parse": "^1.4.7",
+    "snyk": "^1.316.1"
   },
   "peerDependencies": {
     "ol": "^6.0"
@@ -76,5 +79,6 @@
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1",
     "webpack-merge": "^4.2.2"
-  }
+  },
+  "snyk": true
 }
