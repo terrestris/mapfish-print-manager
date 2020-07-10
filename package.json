@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "js-logger": "^1.6.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.16",
     "parse-color": "^1.0.0",
     "parse-css-font": "^4.0.0",
     "query-string": "^6.8.2",
