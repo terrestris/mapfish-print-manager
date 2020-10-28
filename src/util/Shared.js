@@ -69,6 +69,11 @@ export class Shared {
   static getLegendGraphicUrl = layer => {
     if (layer.getSource() instanceof OlSourceTileWMS ||
       layer.getSource() instanceof OlSourceImageWMS) {
+
+      if (layer.get('legendUrl')) {
+        return layer.get('legendUrl');
+      }
+
       const customParams = layer.get('customPrintLegendParams');
       const source = layer.getSource();
       const {
