@@ -47,7 +47,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     MapFishPrintV3OSMSerializer,
     MapFishPrintV3TiledWMSSerializer,
     MapFishPrintV3WMSSerializer,
-    MapFishPrintV3WMTSSerializer,
+    MapFishPrintV3WMTSSerializer
   ];
 
   /**
