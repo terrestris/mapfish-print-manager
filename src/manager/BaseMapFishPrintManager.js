@@ -2,6 +2,7 @@ import OlMap from 'ol/Map';
 import OlLayerVector from 'ol/layer/Vector';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSourceWMTS from 'ol/source/WMTS';
 import OlSourceVector from 'ol/source/Vector';
 import OlFeature from 'ol/Feature';
 import { fromExtent } from 'ol/geom/Polygon';
@@ -651,7 +652,8 @@ export class BaseMapFishPrintManager extends Observable {
    */
   serializeLegend(layer) {
     if (layer.getSource() instanceof OlSourceTileWMS ||
-      layer.getSource() instanceof OlSourceImageWMS) {
+      layer.getSource() instanceof OlSourceImageWMS ||
+      layer.getSource() instanceof OlSourceWMTS) {
       return {
         name: layer.get('name') || layer.getSource().getParams().LAYERS || '',
         icons: [Shared.getLegendGraphicUrl(layer)]

@@ -1,6 +1,7 @@
 import { getCenter } from 'ol/extent';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSourceWMTS from 'ol/source/WMTS';
 
 import BaseMapFishPrintManager from './BaseMapFishPrintManager';
 import MapFishPrintV2WMSSerializer from '../serializer/MapFishPrintV2WMSSerializer';
@@ -218,7 +219,8 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    */
   serializeLegend(layer) {
     if (layer.getSource() instanceof OlSourceTileWMS ||
-      layer.getSource() instanceof OlSourceImageWMS) {
+      layer.getSource() instanceof OlSourceImageWMS ||
+      layer.getSource() instanceof OlSourceWMTS) {
       return {
         name: layer.get('name') || layer.getSource().getParams().LAYERS || '',
         classes: [{
