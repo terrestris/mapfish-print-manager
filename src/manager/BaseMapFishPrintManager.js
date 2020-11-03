@@ -265,7 +265,7 @@ export class BaseMapFishPrintManager extends Observable {
 
     if (!this.url && !this.capabilities) {
       Logger.warn('Invalid init options given. Please provide either an `url` ' +
-      'or `capabilities`.');
+        'or `capabilities`.');
     }
 
     if (this.url && this.url.split('/').pop()) {
