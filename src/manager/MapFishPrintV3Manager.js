@@ -10,6 +10,7 @@ import MapFishPrintV3GeoJsonSerializer from '../serializer/MapFishPrintV3GeoJson
 import MapFishPrintV3OSMSerializer from '../serializer/MapFishPrintV3OSMSerializer';
 import MapFishPrintV3TiledWMSSerializer from '../serializer/MapFishPrintV3TiledWMSSerializer';
 import MapFishPrintV3WMSSerializer from '../serializer/MapFishPrintV3WMSSerializer';
+import MapFishPrintV3WMTSSerializer from '../serializer/MapFishPrintV3WMTSSerializer';
 import Shared from '../util/Shared';
 import Logger from '../util/Logger';
 import scales from '../config/scales';
@@ -46,6 +47,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     MapFishPrintV3OSMSerializer,
     MapFishPrintV3TiledWMSSerializer,
     MapFishPrintV3WMSSerializer,
+    MapFishPrintV3WMTSSerializer
   ];
 
   /**
@@ -127,7 +129,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
           return this.setPrintApp(defaultPrintApp);
         })
-        .catch(error => Promise.reject(new Error(`Could not initialize `+
+        .catch(error => Promise.reject(new Error(`Could not initialize ` +
           `the manager: ${error.message}`)));
     } else if (!this.url && this.capabilities) {
       return this.initManager(this.capabilities);
