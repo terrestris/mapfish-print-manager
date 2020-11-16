@@ -41,7 +41,7 @@
     "postpublish": "node ./tasks/update-gh-pages.js"
   },
   "dependencies": {
-    "js-logger": "^1.6.0",
+    "js-logger": "^1.6.1",
     "lodash": "^4.17.20",
     "parse-color": "^1.0.0",
     "parse-css-font": "^4.0.0",
