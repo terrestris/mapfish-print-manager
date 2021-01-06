@@ -290,9 +290,10 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
         } = json;
 
         const basePath = this.getBasePath();
+        const fullStatusUrl = Shared.sanitizeUrl(basePath + statusURL);
         this._printJobReference = ref;
 
-        return this.pollUntilDone.call(this, basePath + statusURL, 1000, this.timeout)
+        return this.pollUntilDone.call(this, fullStatusUrl, 1000, this.timeout)
           .then(downloadUrl => {
             this._printJobReference = null;
 
