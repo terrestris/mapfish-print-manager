@@ -296,11 +296,12 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
         return this.pollUntilDone.call(this, fullStatusUrl, 1000, this.timeout)
           .then(downloadUrl => {
             this._printJobReference = null;
+            const fullDownloadUrl = Shared.sanitizeUrl(basePath + downloadUrl);
 
             if (forceDownload) {
-              this.download(basePath + downloadUrl);
+              this.download(fullDownloadUrl);
             } else {
-              return Promise.resolve(basePath + downloadUrl);
+              return Promise.resolve(fullDownloadUrl);
             }
           })
           .catch(error => {
