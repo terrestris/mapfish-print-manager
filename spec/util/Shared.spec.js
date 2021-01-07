@@ -321,4 +321,23 @@ describe('Shared', () => {
       expect(Shared.getScaleForResolution(100, 'degrees')).toEqual(39712375676.76163);
     });
   });
+
+  describe('#sanitizeUrl', () => {
+    it('is defined', () => {
+      expect(Shared.sanitizeUrl).toBeDefined();
+    });
+
+    it('removes doubled forward slashes from url', () => {
+      const wrongUrl1 = 'https://///www.terrestris.de/welcome//to//us/';
+      const wrongUrl2 = 'https://///www.terrestris.de/welcome////to//us//';
+      const wrongUrl3 = 'https:///www.terrestris.de/welcome////to//us////';
+      const goodUrl = 'https://www.terrestris.de/welcome/to/us';
+      const sanitizedUrl = 'https://www.terrestris.de/welcome/to/us';
+
+      expect(Shared.sanitizeUrl(wrongUrl1)).toEqual(sanitizedUrl);
+      expect(Shared.sanitizeUrl(wrongUrl2)).toEqual(sanitizedUrl);
+      expect(Shared.sanitizeUrl(wrongUrl3)).toEqual(sanitizedUrl);
+      expect(Shared.sanitizeUrl(goodUrl)).toEqual(sanitizedUrl);
+    });
+  });
 });

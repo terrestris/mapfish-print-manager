@@ -123,6 +123,15 @@ export class Shared {
 
     return parseFloat(resolution) * mpu * inchesPerMeter * dpi;
   }
+
+  /**
+   * Removes duplicated forward slashes as well as trailing slash
+   * and returns normalized URL string
+   * @param {*} url
+   */
+  static sanitizeUrl = (url) => {
+    return url.replace(/([^:]\/)\/+/g, '$1').replace(/\/+$/, '');
+  }
 }
 
 export default Shared;
