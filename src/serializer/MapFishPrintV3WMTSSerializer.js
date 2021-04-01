@@ -49,6 +49,14 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
       return;
     }
 
+    let baseUrl = source.getUrls()[0];
+
+    // MapFish Print replaces {style}
+    // https://mapfish.github.io/mapfish-print-doc/layers.html#WMTS%20Layer
+    if (baseUrl.indexOf('{Style}') > -1) {
+      baseUrl = baseUrl.replace('{Style}', '{style}');
+    }
+
     const tileGrid = source.getTileGrid();
     // 28mm is the pixel size
     const scaleDenominators = tileGrid.getResolutions().map(resolution => resolution / 0.00028);
