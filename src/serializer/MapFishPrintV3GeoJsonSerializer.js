@@ -249,7 +249,10 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
         fontWeight: parsedFont.weight,
         fontStyle: parsedFont.style,
         fontColor: parseColor(get(textStyle, 'fill.color')).hex,
-        fontOpacity: get(parseColor(get(textStyle, 'fill.color')), 'rgba[3]')
+        fontOpacity: get(parseColor(get(textStyle, 'fill.color')), 'rgba[3]'),
+        strokeOpacity: 0,
+        fillOpacity: 0,
+        graphicOpacity: 0
       }};
     }
 
