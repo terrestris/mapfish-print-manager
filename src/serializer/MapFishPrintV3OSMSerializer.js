@@ -64,7 +64,6 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
     }
 
     const serialized = {
-      ...super.serialize(layer, opts),
       ...{
         name: layer.get('name'),
         opacity: layer.getOpacity(),

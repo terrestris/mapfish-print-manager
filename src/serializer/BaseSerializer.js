@@ -1,4 +1,3 @@
-import Shared from '../util/Shared';
 import Log from '../util/Logger';
 
 /**
@@ -14,31 +13,6 @@ export class BaseSerializer {
    * @type {Array}
    */
   static sourceCls = [];
-
-  /**
-   * Serializes/Encodes the given layer.
-   *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode.
-   * @return {Object} The serialized/encoded layer.
-   */
-  serialize(layer) {
-    const serialized = {};
-    const source = layer.getSource();
-    const units = source.getProjection() ?
-      source.getProjection().getUnits() :
-      'm';
-
-    if (layer.getMinResolution() > 0) {
-      serialized.minScaleDenominator = Shared.getScaleForResolution(
-        layer.getMinResolution(), units);
-    }
-    if (layer.getMaxResolution() !== Infinity) {
-      serialized.maxScaleDenominator = Shared.getScaleForResolution(
-        layer.getMaxResolution(), units);
-    }
-
-    return serialized;
-  }
 
   /**
    * Validates if the given ol source is compatible with the serializer. Usally

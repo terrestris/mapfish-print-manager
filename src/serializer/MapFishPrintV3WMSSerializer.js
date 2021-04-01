@@ -79,7 +79,6 @@ export class MapFishPrintV3WMSSerializer extends BaseSerializer {
     } = source.getParams();
 
     const serialized = {
-      ...super.serialize(layer, opts),
       ...{
         baseURL: source instanceof OlSourceImageWMS ? source.getUrl() : source.getUrls()[0],
         customParams,
