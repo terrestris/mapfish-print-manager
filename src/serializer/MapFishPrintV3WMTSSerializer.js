@@ -75,7 +75,7 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
         matrixSize: [Math.pow(2, index), Math.pow(2, index)],
         scaleDenominator: scaleDenominators[index],
         tileSize: [tileGrid.getTileSize(index), tileGrid.getTileSize(index)],
-        topLeftCorner: tileGrid.getOrigin()
+        topLeftCorner: tileGrid.getOrigin(index) || tileGrid.getOrigin()
       })),
       matrixSet: source.getMatrixSet(),
       mergeableParams: undefined,
