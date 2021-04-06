@@ -62,7 +62,7 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
     const scaleDenominators = tileGrid.getResolutions().map(resolution => resolution / 0.00028);
     const serialized = {
       ...opts,
-      baseURL: source.getUrls()[0],
+      baseURL: baseUrl,
       customParams: undefined,
       dimensionParams: undefined,
       dimensions: source.getDimensions(),
