@@ -122,8 +122,7 @@ describe('MapFishPrintV2WMSSerializer', () => {
       opacity: 1,
       singleTile: true,
       styles: [customStyles.STYLES],
-      type: 'WMS',
-      maxScaleDenominator: 6817843.507142856,
+      type: 'WMS'
     });
 
     const minResolution = 1909;
@@ -139,9 +138,7 @@ describe('MapFishPrintV2WMSSerializer', () => {
       opacity: 1,
       singleTile: true,
       styles: [customStyles.STYLES],
-      type: 'WMS',
-      maxScaleDenominator: 6817843.507142856,
-      minScaleDenominator: 6817843.507142856
+      type: 'WMS'
     });
   });
 
