@@ -1,7 +1,6 @@
 import OlLayerGroup from 'ol/layer/Group';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
-import OlSourceWMTS from 'ol/source/WMTS';
 import { METERS_PER_UNIT } from 'ol/proj/Units';
 
 /**
@@ -68,13 +67,12 @@ export class Shared {
    * @return {string} The GetLegendGraphic url.
    */
   static getLegendGraphicUrl = layer => {
-    if (layer.getSource() instanceof OlSourceTileWMS ||
-      layer.getSource() instanceof OlSourceImageWMS ||
-      layer.getSource() instanceof OlSourceWMTS) {
+    if (layer.get('legendUrl')) {
+      return layer.get('legendUrl');
+    }
 
-      if (layer.get('legendUrl')) {
-        return layer.get('legendUrl');
-      }
+    if (layer.getSource() instanceof OlSourceTileWMS ||
+      layer.getSource() instanceof OlSourceImageWMS) {
 
       const customParams = layer.get('customPrintLegendParams');
       const source = layer.getSource();
