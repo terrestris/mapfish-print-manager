@@ -53,7 +53,6 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
     // 28mm is the pixel size
     const scaleDenominators = tileGrid.getResolutions().map(resolution => resolution / 0.00028);
     const serialized = {
-      ...super.serialize(layer, opts),
       ...opts,
       baseURL: source.getUrls()[0],
       customParams: undefined,

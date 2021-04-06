@@ -148,7 +148,6 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
     });
 
     const serialized = {
-      ...super.serialize(layer, opts, viewResolution),
       ...{
         geoJson: {
           type: 'FeatureCollection',

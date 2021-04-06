@@ -138,7 +138,6 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
     });
 
     const serialized = {
-      ...super.serialize(layer, source),
       ...{
         name: layer.get('name') || 'Vector Layer',
         opacity: layer.getOpacity(),
