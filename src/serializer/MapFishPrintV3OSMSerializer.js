@@ -69,9 +69,11 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
         name: layer.get('name'),
         opacity: layer.getOpacity(),
         type: this.constructor.TYPE_OSM,
-        resolutions: tileGridResolutions
       },
-      ...opts
+      ...{
+        ...opts,
+        resolutions: tileGridResolutions
+      }
     };
 
     return serialized;
