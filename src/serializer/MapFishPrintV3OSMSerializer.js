@@ -68,7 +68,7 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
       ...{
         name: layer.get('name'),
         opacity: layer.getOpacity(),
-        type: this.constructor.TYPE_OSM,
+        type: this.constructor.TYPE_OSM
       },
       ...{
         ...opts,
