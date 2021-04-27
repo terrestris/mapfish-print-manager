@@ -34,15 +34,14 @@ export class MapFishPrintV3StamenSerializer extends MapFishPrintV3OSMSerializer 
      * @return {Object} The serialized/encoded layer.
      */
     serialize(layer, opts = {}) {
-        const serialized = super.serialize(layer, opts);
         const source = layer.getSource();
-
 
         if (!this.validateSource(source)) {
             return;
         }
+        const serialized = super.serialize(layer, opts);
+
         serialized.baseURL = source.getUrls()[0];
-        serialized.tileSize = [256, 256]
 
         return serialized;
     }
