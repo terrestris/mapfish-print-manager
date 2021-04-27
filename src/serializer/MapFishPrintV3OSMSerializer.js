@@ -52,12 +52,12 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
       imageExtension: 'png',
       maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
       rasterStyle: undefined,
-      resolutionTolerance: 0,
-      resolutions: [],
       tileSize: [256, 256]
     });
 
     const source = layer.getSource();
+    const tileGrid = source.getTileGrid();
+    const tileGridResolutions = tileGrid.getResolutions() || [];
 
     if (!this.validateSource(source)) {
       return;
@@ -67,9 +67,10 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
       ...{
         name: layer.get('name'),
         opacity: layer.getOpacity(),
+        resolutions: tileGridResolutions,
         type: this.constructor.TYPE_OSM
       },
-      ...opts
+      ...opts,
     };
 
     return serialized;
