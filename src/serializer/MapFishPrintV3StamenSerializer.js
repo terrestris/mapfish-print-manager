@@ -48,4 +48,3 @@ export class MapFishPrintV3StamenSerializer extends MapFishPrintV3OSMSerializer 
 }
 
 export default MapFishPrintV3StamenSerializer;
-
