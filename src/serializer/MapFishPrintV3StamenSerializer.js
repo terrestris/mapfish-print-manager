@@ -37,7 +37,6 @@ export class MapFishPrintV3StamenSerializer extends MapFishPrintV3OSMSerializer 
         const serialized = super.serialize(layer, opts);
         const source = layer.getSource();
 
-
         if (!this.validateSource(source)) {
             return;
         }
@@ -49,4 +48,3 @@ export class MapFishPrintV3StamenSerializer extends MapFishPrintV3OSMSerializer 
 }
 
 export default MapFishPrintV3StamenSerializer;
-
