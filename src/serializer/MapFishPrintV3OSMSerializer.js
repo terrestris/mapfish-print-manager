@@ -56,12 +56,13 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
     });
 
     const source = layer.getSource();
-    const tileGrid = source.getTileGrid();
-    const tileGridResolutions = tileGrid.getResolutions() || [];
 
     if (!this.validateSource(source)) {
       return;
     }
+
+    const tileGrid = source.getTileGrid();
+    const tileGridResolutions = tileGrid.getResolutions() || [];
 
     const serialized = {
       ...{
