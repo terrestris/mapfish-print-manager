@@ -3,16 +3,56 @@ import OlLayerVector from 'ol/layer/Vector';
 import OlSourceVector from 'ol/source/Vector';
 import OlInteractionPointer from 'ol/interaction/Pointer';
 import OlStyleStyle from 'ol/style/Style';
+import OlStyleImage from 'ol/style/Image';
 import OlStyleStroke from 'ol/style/Stroke';
 import OlStyleFill from 'ol/style/Fill';
 import OlStyleRegularShape from 'ol/style/RegularShape';
 import OlFeature from 'ol/Feature';
 import OlGeomPoint from 'ol/geom/Point';
+// eslint-disable-next-line no-unused-vars
+import OlGeometry from 'ol/geom/Geometry';
+import OlPluggableMap from 'ol/PluggableMap';
+import OlBaseEvent from 'ol/events/Event';
+import OlMapBrowserEvent from 'ol/MapBrowserEvent';
+// eslint-disable-next-line no-unused-vars
+import { Coordinate as OlCoordinate } from 'ol/coordinate';
+import { Pixel as OlPixel } from 'ol/pixel';
 import { fromExtent } from 'ol/geom/Polygon';
 import {
   getCenter,
   boundingExtent
 } from 'ol/extent';
+
+/**
+ * @typedef {Object} InteractionTransformEventOptions
+ * @property {OlFeature} feature
+ * @property {OlPixel} [pixel]
+ * @property {OlCoordinate} [coordinate]
+ * @property {number} [angle]
+ * @property {[number, number]} [delta]
+ * @property {[number, number]} [scale]
+ * @property {OlGeometry} [oldgeom]
+ */
+
+/**
+ * An interaction transform event
+ */
+class InteractionTransformEvent extends OlBaseEvent {
+  /**
+   * @param {string} type
+   * @param {InteractionTransformEventOptions} options
+   */
+  constructor(type, options) {
+    super(type);
+    this.feature = options.feature;
+    this.pixel = options.pixel;
+    this.coordinate = options.coordinate;
+    this.angle = options.angle;
+    this.delta = options.delta;
+    this.scale = options.scale;
+    this.oldgeom = options.oldgeom;
+  }
+}
 
 /**
  * The transform interaction.
@@ -22,7 +62,7 @@ import {
  *
  * This is just a port to use it in an es6 module environment.
  *
- * @extends {ol.interaction.Pointer}
+ * @extends {OlInteractionPointer}
  * @fires select | rotatestart | rotating | rotateend | translatestart | translating | translateend | scalestart | scaling | scaleend
  * @param {Object} options The options to apply.
  *  - layers {Array<ol.Layer>} array of layers to transform,
@@ -38,14 +78,25 @@ import {
 export class OlInteractionTransform extends OlInteractionPointer {
 
   /**
+   * @type {Object.<string, OlStyleStyle[]>}
+   */
+  style;
+
+  /**
+   * @type {OlLayerVector}
+   * @private
+   */
+  overlayLayer_;
+
+  /**
    * The constructor.
    */
   constructor(options) {
+    super();
+
     if (!options) {
       options = {};
     }
-
-    super();
 
     // Create a new overlay layer for the sketch.
     this.handles_ = new OlCollection();
@@ -71,7 +122,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
     if (Array.isArray(this.features_)) {
       this.features_.forEach(feat => {
         feat.on('change:geometry', () => {
-          this.drawSketch_();
+          this.drawSketch_(false);
         });
       });
     }
@@ -85,7 +136,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
     if (Array.isArray(this.layers_)) {
       this.layers_.forEach(layer => {
         layer.getSource().on('changefeature', () => {
-          this.drawSketch_();
+          this.drawSketch_(false);
         });
       });
     }
@@ -110,7 +161,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
 
     // Force redraw when changed.
     this.on('propertychange', () => {
-      this.drawSketch_();
+      this.drawSketch_(false);
     });
 
     // setstyle
@@ -138,9 +189,9 @@ export class OlInteractionTransform extends OlInteractionPointer {
   /**
    * Remove the interaction from its current map, if any,  and attach it to a new
    * map, if any. Pass `null` to just remove the interaction from the current map.
-   * @param {ol.Map} map Map.
+   * @param {OlPluggableMap} map Map.
    */
-  setMap = function(map) {
+  setMap (map) {
     if (this.getMap()) {
       this.getMap().removeLayer(this.overlayLayer_);
     }
@@ -152,22 +203,22 @@ export class OlInteractionTransform extends OlInteractionPointer {
       this.isTouch = /touch/.test(map.getViewport().className);
       this.setDefaultStyle();
     }
-  };
+  }
 
   /**
    * Activate/deactivate interaction
    * @param {boolean} b
    */
-  setActive = function(b) {
+  setActive (b) {
     this.select(null);
     this.overlayLayer_.setVisible(b);
     OlInteractionPointer.prototype.setActive.call(this, b);
-  };
+  }
 
   /**
    * Set default sketch style
    */
-  setDefaultStyle = function() {
+  setDefaultStyle () {
     // Style
     var stroke = new OlStyleStroke({
       color: 'rgba(255, 0, 0, 1)',
@@ -210,10 +261,10 @@ export class OlInteractionTransform extends OlInteractionPointer {
     });
 
     /**
-     * @param {ol.style.Image} img
-     * @param {ol.style.Stroke} stroke
-     * @param {ol.style.Fill} fill
-     * @return {ol.style.Style}
+     * @param {OlStyleImage} img
+     * @param {OlStyleStroke} stroke
+     * @param {OlStyleFill} fill
+     * @return {OlStyleStyle[]}
      * @ignore
      */
     function createStyle(img, stroke, fill) {
@@ -242,15 +293,15 @@ export class OlInteractionTransform extends OlInteractionPointer {
       'scaleh3': createStyle(smallpt, stroke, fill)
     };
 
-    this.drawSketch_();
-  };
+    this.drawSketch_(false);
+  }
 
   /**
    * Set sketch style.
-   * @param {ol.style.Style} style Map.
-   * @param {ol.style.Style[]} olstyle
+   * @param {string} style Map.
+   * @param {OlStyleStyle[]|OlStyleStyle} olstyle
    */
-  setStyle = function(style, olstyle) {
+  setStyle (style, olstyle) {
     if (!olstyle) {
       return;
     }
@@ -281,18 +332,23 @@ export class OlInteractionTransform extends OlInteractionPointer {
         }
       }
     }
-    this.drawSketch_();
-  };
+    this.drawSketch_(false);
+  }
 
   /** Get Feature at pixel
-   * @param {ol.Pixel} pixel
-   * @return {ol.feature}
+   * @param {OlPixel} pixel
+   * @return {{
+   *   feature?: OlFeature,
+   *   handle?: string,
+   *   constraint?: *,
+   *   option?: *
+   * }}
    * @private
    */
-  getFeatureAtPixel_ = function(pixel) {
+  getFeatureAtPixel_ (pixel) {
     var self = this;
-    return this.getMap().forEachFeatureAtPixel(pixel, function(feature, layer) {
-      var found = false;
+    var found = {};
+    this.getMap().forEachFeatureAtPixel(pixel, function(feature, layer) {
       // Overlay ?
       if (!layer) {
         if (feature === self.bbox_) {
@@ -300,23 +356,24 @@ export class OlInteractionTransform extends OlInteractionPointer {
         }
         self.handles_.forEach(function(f) {
           if (f === feature) {
-            found=true;
+            found = {
+              feature: feature,
+              handle: feature.get('handle'),
+              constraint: feature.get('constraint'),
+              option: feature.get('option')
+            };
           }
         });
         if (found) {
-          return {
-            feature: feature,
-            handle: feature.get('handle'),
-            constraint: feature.get('constraint'),
-            option: feature.get('option')
-          };
+          return true;
         }
       }
       // feature belong to a layer
       if (self.layers_) {
         for (var i = 0; i < self.layers_.length; i++) {
           if (self.layers_[i]===layer) {
-            return { feature: feature };
+            found = { feature: feature };
+            return true;
           }
         }
         return null;
@@ -324,29 +381,31 @@ export class OlInteractionTransform extends OlInteractionPointer {
         // feature in the collection
         self.features_.forEach(function(f) {
           if (f === feature) {
-            found=true;
+            found = {
+              feature: feature
+            };
           }
         });
         if (found) {
-          return {
-            feature: feature
-          };
+          return true;
         } else {
-          return null;
+          return false;
         }
       } else {
         // Others
-        return { feature: feature };
+        found = { feature: feature };
+        return true;
       }
-    }) || {};
-  };
+    });
+    return found;
+  }
 
   /**
    * Draws the transform sketch.
    *
    * @param {boolean} center only the center
    */
-  drawSketch_ = function(center) {
+  drawSketch_ (center) {
     this.overlayLayer_.getSource().clear();
 
     if (!this.feature_) {
@@ -428,29 +487,27 @@ export class OlInteractionTransform extends OlInteractionPointer {
       // Add sketch
       this.overlayLayer_.getSource().addFeatures(features);
     }
-
-  };
+  }
 
   /**
    * Selects a feature to transform.
    *
-   * @param {ol.Feature} feature The feature to transform.
+   * @param {OlFeature} feature The feature to transform.
    */
-  select = function(feature) {
+  select (feature) {
     this.feature_ = feature;
     this.ispt_ = this.feature_ ? (this.feature_.getGeometry().getType() == 'Point') : false;
-    this.drawSketch_();
-    this.dispatchEvent({
-      type: 'select',
+    this.drawSketch_(false);
+    this.dispatchEvent(new InteractionTransformEvent('select', {
       feature: this.feature_
-    });
-  };
+    }));
+  }
 
   /**
-   * @param {ol.MapBrowserEvent} evt Map browser event.
+   * @param {OlMapBrowserEvent} evt Map browser event.
    * @return {boolean} `true` to start the drag sequence.
    */
-  handleDownEvent = function(evt) {
+  handleDownEvent (evt) {
     var sel = this.getFeatureAtPixel_(evt.pixel);
     var feature = sel.feature;
 
@@ -474,12 +531,11 @@ export class OlInteractionTransform extends OlInteractionPointer {
         this.center_[0] - evt.coordinate[0]
       );
 
-      this.dispatchEvent({
-        type: this.mode_ + 'start',
+      this.dispatchEvent(new InteractionTransformEvent(this.mode_ + 'start', {
         feature: this.feature_,
         pixel: evt.pixel,
         coordinate: evt.coordinate
-      });
+      }));
 
       return true;
     } else {
@@ -487,40 +543,38 @@ export class OlInteractionTransform extends OlInteractionPointer {
       this.ispt_ = this.feature_ ?
         (this.feature_.getGeometry().getType() == 'Point') :
         false;
-      this.drawSketch_();
-      this.dispatchEvent({
-        type: 'select',
+      this.drawSketch_(false);
+      this.dispatchEvent(new InteractionTransformEvent('select', {
         feature: this.feature_,
         pixel: evt.pixel,
         coordinate: evt.coordinate
-      });
+      }));
       return false;
     }
-  };
+  }
 
   /**
-   * @param {ol.MapBrowserEvent} evt Map browser event.
+   * @param {OlMapBrowserEvent} evt Map browser event.
    */
-  handleDragEvent = function(evt) {
+  handleDragEvent (evt) {
     var geometry;
 
     switch (this.mode_) {
       case 'rotate': {
         var a = Math.atan2(this.center_[1] - evt.coordinate[1], this.center_[0] - evt.coordinate[0]);
-        if (!this.ispt) {
+        if (!this.ispt_) {
           geometry = this.geom_.clone();
           geometry.rotate(a - this.angle_, this.center_);
 
           this.feature_.setGeometry(geometry);
         }
         this.drawSketch_(true);
-        this.dispatchEvent({
-          type: 'rotating',
+        this.dispatchEvent(new InteractionTransformEvent('rotating', {
           feature: this.feature_,
           angle: a - this.angle_,
           pixel: evt.pixel,
           coordinate: evt.coordinate
-        });
+        }));
         break;
       }
       case 'translate': {
@@ -533,18 +587,18 @@ export class OlInteractionTransform extends OlInteractionPointer {
         });
 
         this.coordinate_ = evt.coordinate;
-        this.dispatchEvent({
-          type: 'translating',
+        this.dispatchEvent(new InteractionTransformEvent('translating', {
           feature: this.feature_,
           delta: [deltaX,deltaY],
           pixel: evt.pixel,
           coordinate: evt.coordinate
-        });
+        }));
         break;
       }
       case 'scale': {
         var center = this.center_;
-        if (evt.originalEvent.metaKey || evt.originalEvent.ctrlKey) {
+        var mouseEvent = /** @type {MouseEvent} */ (evt.originalEvent);
+        if (mouseEvent.metaKey || mouseEvent.ctrlKey) {
           center = this.extent_[(Number(this.opt_) + 2) % 4];
         }
 
@@ -581,24 +635,23 @@ export class OlInteractionTransform extends OlInteractionPointer {
           return g2;
         });
         this.feature_.setGeometry(geometry);
-        this.drawSketch_();
-        this.dispatchEvent({
-          type: 'scaling',
+        this.drawSketch_(false);
+        this.dispatchEvent(new InteractionTransformEvent('scaling', {
           feature: this.feature_,
           scale: [scx,scy],
           pixel: evt.pixel,
           coordinate: evt.coordinate
-        });
+        }));
         break;
       }
       default: break;
     }
-  };
+  }
 
   /**
-   * @param {ol.MapBrowserEvent} evt Event.
+   * @param {OlMapBrowserEvent} evt Event.
    */
-  handleMoveEvent = function(evt) {
+  handleMoveEvent (evt) {
     if (!this.mode_) {
       var sel = this.getFeatureAtPixel_(evt.pixel);
       var element = evt.map.getTargetElement();
@@ -618,22 +671,21 @@ export class OlInteractionTransform extends OlInteractionPointer {
         this.previousCursor_ = undefined;
       }
     }
-  };
+  }
 
   /**
    * @return {boolean} `false` to stop the drag sequence.
    */
-  handleUpEvent = function() {
-    this.dispatchEvent({
-      type: this.mode_ + 'end',
+  handleUpEvent () {
+    this.dispatchEvent(new InteractionTransformEvent(this.mode_ + 'end', {
       feature: this.feature_,
       oldgeom: this.geom_
-    });
+    }));
 
-    this.drawSketch_();
+    this.drawSketch_(false);
     this.mode_ = null;
     return false;
-  };
+  }
 }
 
 export default OlInteractionTransform;

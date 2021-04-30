@@ -1,4 +1,6 @@
+import OlSource from 'ol/source/Source';
 import OlSourceTileWMS from 'ol/source/TileWMS';
+import OlLayer from 'ol/layer/Layer';
 
 import defaultsDeep from 'lodash/defaultsDeep';
 
@@ -19,31 +21,33 @@ export class MapFishPrintV3TiledWMSSerializer extends MapFishPrintV3WMSSerialize
   static TYPE_WMS = 'tiledwms';
 
   /**
-   * The ol sources this serializer is capable of serializing.
-   *
-   * @type {Array}
-   */
-  static sourceCls = [
-    OlSourceTileWMS
-  ];
-
-  /**
    * The constructor
    */
   constructor() {
-    super(arguments);
+    super();
+  }
+
+  /**
+   * @param {OlSource} source
+   * @return {boolean}
+   */
+  canSerialize(source) {
+    return source instanceof OlSourceTileWMS;
   }
 
   /**
    * Serializes/Encodes the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode.
+   * @abstract
+   * @param {OlLayer} layer The layer to serialize/encode.
    * @param {Object} opts Additional properties to pass to the serialized
    *   layer object that can't be obtained by the layer itself. It can also be
-   *   used to override all generated layer values, e.g. the image format.
+   *   used to override all generated layer values, e.g. the image format. Only
+   *   used in V3.
+   * @param {number} viewResolution The resolution to calculate the styles for.
    * @return {Object} The serialized/encoded layer.
    */
-  serialize(layer, opts = {}) {
+  serialize(layer, opts = {}, viewResolution) {
     defaultsDeep(opts, {
       tileSize: [512, 512]
     });
@@ -54,15 +58,13 @@ export class MapFishPrintV3TiledWMSSerializer extends MapFishPrintV3WMSSerialize
       return;
     }
 
-    const serialized = {
-      ...super.serialize(layer, opts),
+    return {
+      ...super.serialize(layer, opts, viewResolution),
       ...{
-        type: this.constructor.TYPE_WMS
+        type: MapFishPrintV3TiledWMSSerializer.TYPE_WMS
       },
       ...opts
     };
-
-    return serialized;
   }
 }
 

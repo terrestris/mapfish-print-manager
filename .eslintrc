@@ -8,7 +8,8 @@
   },
   "parser": "babel-eslint",
     "globals": {
-      "Promise": false
+      "Promise": false,
+      "RequestCredentials": true
     },
   "rules": {
     "no-console": "error",
@@ -32,6 +33,15 @@
         "ClassDeclaration": true,
         "ArrowFunctionExpression": true
       }
-    }]
+    }],
+    "jsdoc/no-undefined-types": ["error"]
+  },
+  "plugins": [
+    "jsdoc"
+  ],
+  "settings": {
+    "jsdoc": {
+      "mode": "typescript"
+    }
   }
 }

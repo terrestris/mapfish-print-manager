@@ -5,6 +5,7 @@ import {
   getCenter
 } from 'ol/extent';
 
+import BaseSerializer from '../serializer/BaseSerializer';
 import BaseMapFishPrintManager from './BaseMapFishPrintManager';
 import MapFishPrintV3GeoJsonSerializer from '../serializer/MapFishPrintV3GeoJsonSerializer';
 import MapFishPrintV3OSMSerializer from '../serializer/MapFishPrintV3OSMSerializer';
@@ -40,45 +41,47 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * The layer serializers to use. May be overridden or extented to obtain
    * custom functionality.
    *
-   * @type {Array}
+   * @type {BaseSerializer[]}
    */
   serializers = [
-    MapFishPrintV3GeoJsonSerializer,
-    MapFishPrintV3OSMSerializer,
-    MapFishPrintV3TiledWMSSerializer,
-    MapFishPrintV3WMSSerializer,
-    MapFishPrintV3WMTSSerializer
+    new MapFishPrintV3GeoJsonSerializer(),
+    new MapFishPrintV3OSMSerializer(),
+    new MapFishPrintV3TiledWMSSerializer(),
+    new MapFishPrintV3WMSSerializer(),
+    new MapFishPrintV3WMTSSerializer()
   ];
+
+  /**
+   * @typedef {Object} V3CustomMapParams
+   * @property [center] (default)
+   * @property [dpi] (default)
+   * @property [layers] (default)
+   * @property [projection] (default)
+   * @property [rotation] (default)
+   * @property [scale] (default)
+   * @property [areaOfInterest]
+   * @property [bbox]
+   * @property [useNearestScale]
+   * @property [dpiSensitiveStyle]
+   * @property [useAdjustBounds]
+   * @property [width]
+   * @property [longitudeFirst]
+   * @property [zoomToFeatures]
+   * @property [height]
+   */
 
   /**
    * Custom parameters which can be additionally set on map to determine its
    * special handling while printing.
    *
-   * The list of all allowed properties is as follows:
-   *  * center (default)
-   *  * dpi (default)
-   *  * layers (default)
-   *  * projection (default)
-   *  * rotation (default)
-   *  * scale (default)
-   *  * areaOfInterest
-   *  * bbox
-   *  * useNearestScale
-   *  * dpiSensitiveStyle
-   *  * useAdjustBounds
-   *  * width
-   *  * longitudeFirst
-   *  * zoomToFeatures
-   *  * height
-   *
-   * Note: Properties marked as default will be handled by the manager itself
+   * Note: Properties of {V3CustomMapParams} marked as default will be handled by the manager itself
    * and don't need to be explicitly provided as customized params (s.
    * https://github.com/terrestris/mapfish-print-manager/blob/master/src/manager/MapFishPrintV3Manager.js#L416)
    *
    * Please refer to http://mapfish.github.io/mapfish-print-doc/attributes.html#!map
    * for further details.
    *
-   * @type {Object}
+   * @type {V3CustomMapParams}
    */
   customMapParams = {};
 
@@ -132,7 +135,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
         .catch(error => Promise.reject(new Error(`Could not initialize ` +
           `the manager: ${error.message}`)));
     } else if (!this.url && this.capabilities) {
-      return this.initManager(this.capabilities);
+      return Promise.resolve(this.initManager(this.capabilities));
     }
   }
 
@@ -206,7 +209,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * @return {Promise} Promise containing available print apps.
    */
   loadPrintApps() {
-    return fetch(`${this.url}${this.constructor.APPS_JSON_ENDPOINT}`, {
+    return fetch(`${this.url}${MapFishPrintV3Manager.APPS_JSON_ENDPOINT}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -228,7 +231,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * @return {Promise}
    */
   loadAppCapabilities(printApp) {
-    const capEndpoint = this.constructor.CAPABILITIES_JSON_ENDPOINT;
+    const capEndpoint = MapFishPrintV3Manager.CAPABILITIES_JSON_ENDPOINT;
     const url = `${this.url}${printApp}/${capEndpoint}`;
     return fetch(url, {
       method: 'GET',
@@ -534,7 +537,9 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * @param {number|string} value The value of the dpi to use.
    */
   setDpi = value => {
-    value = parseFloat(value);
+    if (typeof value === 'string') {
+      value = parseFloat(value);
+    }
 
     const dpi = this.getDpis().find(dpi => dpi === value);
 

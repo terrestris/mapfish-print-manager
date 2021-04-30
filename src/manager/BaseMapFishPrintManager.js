@@ -5,17 +5,16 @@ import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceWMTS from 'ol/source/WMTS';
 import OlSourceVector from 'ol/source/Vector';
 import OlFeature from 'ol/Feature';
-import { fromExtent } from 'ol/geom/Polygon';
-import {
-  containsExtent,
-  getCenter,
-  getSize
-} from 'ol/extent';
+import OlRenderEvent from 'ol/render/Event';
+import OlLayer from 'ol/layer/Layer';
+import {containsExtent, Extent as OlExtent, getCenter, getSize} from 'ol/extent';
+import OlPolygon, {fromExtent} from 'ol/geom/Polygon';
 
 import OlStyleStyle from 'ol/style/Style';
 import OlStyleFill from 'ol/style/Fill';
 
-import OlInteractionTransform from '../interaction/InteractionTransform';
+import BaseSerializer from '../serializer/BaseSerializer';
+import InteractionTransform from '../interaction/InteractionTransform';
 import Shared from '../util/Shared';
 import Logger from '../util/Logger';
 
@@ -54,7 +53,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * The map this PrintManager is bound to. Required.
    *
-   * @type {ol.Map}
+   * @type {OlMap}
    */
   map = null;
 
@@ -91,7 +90,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * The authentication credentials mode. Default is to 'same-origin'.
    *
-   * @type {string}
+   * @type {RequestCredentials}
    */
   credentialsMode = 'same-origin';
 
@@ -108,7 +107,7 @@ export class BaseMapFishPrintManager extends Observable {
    * The layer to show the actual print extent on. If not provided, a default
    * one will be created.
    *
-   * @type {ol.Layer.Vector}
+   * @type {OlLayerVector}
    */
   extentLayer = null;
 
@@ -134,7 +133,7 @@ export class BaseMapFishPrintManager extends Observable {
    * A filter function that will be called before the print call. Should
    * return a Boolean whether to serialize a layer for print or not.
    *
-   * @type {Function}
+   * @type {(layer: OlLayer) => boolean}
    */
   layerFilter = () => true;
 
@@ -142,7 +141,7 @@ export class BaseMapFishPrintManager extends Observable {
    * A filter function that will be called before the print call. Should
    * return a Boolean whether to serialize a legend of a layer for print or not.
    *
-   * @type {Function}
+   * @type {(layer: OlLayer) => boolean}
    */
   legendFilter = () => true;
 
@@ -150,7 +149,7 @@ export class BaseMapFishPrintManager extends Observable {
    * An array determining custom print scales. If provided, these will override
    * the scales retrieved from print capabilities.
    *
-   * @type {Array}
+   * @type {number[]}
    */
   customPrintScales = [];
 
@@ -163,10 +162,15 @@ export class BaseMapFishPrintManager extends Observable {
   timeout = 30000;
 
   /**
+   * @type {BaseSerializer[]}
+   */
+  serializers = [];
+
+  /**
    * The supported layouts by the print service.
    *
    * @type {Array}
-   * @private
+   * @protected
    */
   _layouts = [];
 
@@ -174,7 +178,7 @@ export class BaseMapFishPrintManager extends Observable {
    * The supported output formats by the print service.
    *
    * @type {Array}
-   * @private
+   * @protected
    */
   _outputFormats = [];
 
@@ -182,7 +186,7 @@ export class BaseMapFishPrintManager extends Observable {
    * The supported DPIs by the print service.
    *
    * @type {Array}
-   * @private
+   * @protected
    */
   _dpis = [];
 
@@ -190,7 +194,7 @@ export class BaseMapFishPrintManager extends Observable {
    * The supported scales by the print service.
    *
    * @type {Array}
-   * @private
+   * @protected
    */
   _scales = [];
 
@@ -198,7 +202,7 @@ export class BaseMapFishPrintManager extends Observable {
    * The currently selected layout.
    *
    * @type {Object}
-   * @private
+   * @protected
    */
   _layout = {};
 
@@ -206,7 +210,7 @@ export class BaseMapFishPrintManager extends Observable {
    * The currently selected output format.
    *
    * @type {Object}
-   * @private
+   * @protected
    */
   _outputFormat = {};
 
@@ -214,7 +218,7 @@ export class BaseMapFishPrintManager extends Observable {
    * The currently selected dpi.
    *
    * @type {Object}
-   * @private
+   * @protected
    */
   _dpi = {};
 
@@ -222,7 +226,7 @@ export class BaseMapFishPrintManager extends Observable {
    * The currently selected scale.
    *
    * @type {Object}
-   * @private
+   * @protected
    */
   _scale = {};
 
@@ -230,7 +234,7 @@ export class BaseMapFishPrintManager extends Observable {
    * The currently set map size defined with its width and height.
    *
    * @type {Object}
-   * @private
+   * @protected
    */
   _printMapSize = {};
 
@@ -238,15 +242,15 @@ export class BaseMapFishPrintManager extends Observable {
    * Whether this manger has been initiated or not.
    *
    * @type {boolean}
-   * @private
+   * @protected
    */
   _initiated = false;
 
   /**
    * Feature representing the page extent.
    *
-   * @type {ol.Feature}
-   * @private
+   * @type {OlFeature<OlPolygon>}
+   * @protected
    */
   _extentFeature = null;
 
@@ -255,7 +259,7 @@ export class BaseMapFishPrintManager extends Observable {
    */
   constructor(opts) {
 
-    super(opts);
+    super();
 
     Object.assign(this, ...opts);
 
@@ -280,13 +284,13 @@ export class BaseMapFishPrintManager extends Observable {
   shutdownManager() {
     // Remove print layer from map. But only if not given by user.
     const layerCandidates = Shared.getLayersByName(this.map,
-      this.constructor.EXTENT_LAYER_NAME);
+      BaseMapFishPrintManager.EXTENT_LAYER_NAME);
 
     layerCandidates.forEach(layer => this.map.removeLayer(layer));
 
     // Remove transform interaction from map.
     const interactionCandidates = Shared.getInteractionsByName(this.map,
-      this.constructor.TRANSFORM_INTERACTION_NAME);
+      BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
 
     interactionCandidates.forEach(interaction => this.map.removeInteraction(interaction));
   }
@@ -313,7 +317,7 @@ export class BaseMapFishPrintManager extends Observable {
   initPrintExtentLayer() {
     if (!(this.extentLayer instanceof OlLayerVector)) {
       const extentLayer = new OlLayerVector({
-        name: this.constructor.EXTENT_LAYER_NAME,
+        name: BaseMapFishPrintManager.EXTENT_LAYER_NAME,
         source: new OlSourceVector(),
         style: new OlStyleStyle({
           fill: new OlStyleFill({
@@ -328,7 +332,7 @@ export class BaseMapFishPrintManager extends Observable {
       this.extentLayer = extentLayer;
 
       if (Shared.getLayersByName(this.map,
-        this.constructor.EXTENT_LAYER_NAME).length === 0) {
+        BaseMapFishPrintManager.EXTENT_LAYER_NAME).length === 0) {
         this.map.addLayer(this.extentLayer);
       }
     }
@@ -337,7 +341,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Called on the extentLayer's `prerender` event.
    *
-   * @param {ol.render.Event} olEvt The ol render event.
+   * @param {import("ol/render/Event").default} olEvt The ol render event.
    */
   onExtentLayerPreRender(olEvt) {
     const ctx = olEvt.context;
@@ -347,7 +351,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Called on the extentLayer's `postrender` event.
    *
-   * @param {ol.render.Event} olEvt The ol render event.
+   * @param {OlRenderEvent} olEvt The ol render event.
    */
   onExtentLayerPostRender(olEvt) {
     const ctx = olEvt.context;
@@ -387,7 +391,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Initializes the print extent feature.
    *
-   * @return {ol.Feature} The extent feature.
+   * @return {OlFeature} The extent feature.
    */
   initPrintExtentFeature() {
     const printExtent = this.calculatePrintExtent();
@@ -407,8 +411,8 @@ export class BaseMapFishPrintManager extends Observable {
    */
   initTransformInteraction() {
     if (Shared.getInteractionsByName(this.map,
-      this.constructor.TRANSFORM_INTERACTION_NAME).length === 0) {
-      const transform = new OlInteractionTransform({
+      BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME).length === 0) {
+      const transform = new InteractionTransform({
         features: [this._extentFeature],
         translateFeature: true,
         translate: true,
@@ -419,7 +423,7 @@ export class BaseMapFishPrintManager extends Observable {
         ...this.transformOpts
       });
 
-      transform.set('name', this.constructor.TRANSFORM_INTERACTION_NAME);
+      transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
 
       transform.on('scaling', this.onTransformScaling.bind(this));
 
@@ -529,10 +533,10 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Calculates the extent based on a scale.
    *
-   * @param {number} scale The scale to calculate the extent for. If not given,
+   * @param {number} [scale] The scale to calculate the extent for. If not given,
    *                       the current scale of the provider will be used.
    *
-   * @return {ol.Extent} The extent.
+   * @return {OlExtent} The extent.
    */
   calculatePrintExtent(scale) {
     const printMapSize = this.getPrintMapSize();
@@ -549,14 +553,12 @@ export class BaseMapFishPrintManager extends Observable {
       center = this.map.getView().getCenter();
     }
 
-    const printExtent = [
+    return [
       center[0] - (width / 2),
       center[1] - (height / 2),
       center[0] + (width / 2),
       center[1] + (height / 2)
     ];
-
-    return printExtent;
   }
 
   /**
@@ -575,8 +577,8 @@ export class BaseMapFishPrintManager extends Observable {
       'm': 39.37
     };
     return {
-      width: printMapSize.width / 72 / inchesPerUnit[mapUnits] * printScale,
-      height: printMapSize.height / 72 / inchesPerUnit[mapUnits] * printScale
+      width: (printMapSize.width * printScale) / (72 * inchesPerUnit[mapUnits]),
+      height: (printMapSize.height * printScale) / (72 * inchesPerUnit[mapUnits])
     };
   }
 
@@ -597,7 +599,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Checks if a given layer should be printed.
    *
-   * @param {ol.layer.Layer} layer The layer to check.
+   * @param {OlLayer} layer The layer to check.
    *
    * @return {boolean} Whether the layer should be printed or not.
    */
@@ -608,7 +610,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Checks if the legend of a given legend should be printed.
    *
-   * @param {ol.layer.Layer} layer The layer to check.
+   * @param {OlLayer} layer The layer to check.
    *
    * @return {boolean} Whether the legend of the layer should be printed or not.
    */
@@ -619,7 +621,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Serializes/encodes the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode.
+   * @param {OlLayer} layer The layer to serialize/encode.
    *
    * @return {Object} The serialized/encoded layer.
    */
@@ -627,14 +629,13 @@ export class BaseMapFishPrintManager extends Observable {
     const viewResolution = this.map.getView().getResolution();
     const layerSource = layer.getSource();
 
-    const serializerCand = this.serializers.find(serializer => {
-      return serializer.sourceCls.some(cls => layerSource instanceof cls);
+    const serializer = this.serializers.find(serializer => {
+      return serializer.canSerialize(layerSource);
     });
 
-    if (serializerCand) {
-      const serializer = new serializerCand();
+    if (serializer) {
       return serializer.serialize(layer, layer.get(
-        this.CUSTOM_PRINT_SERIALIZER_OPTS_KEY), viewResolution);
+        BaseMapFishPrintManager.CUSTOM_PRINT_SERIALIZER_OPTS_KEY), viewResolution);
     } else {
       Logger.info('No suitable serializer for this layer/source found. ' +
         'Please check the input layer or provide an own serializer capabale ' +
@@ -646,16 +647,17 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Serializes/encodes the legend payload for the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode the legend for.
+   * @param {OlLayer} layer The layer to serialize/encode the legend for.
    *
    * @return {Object} The serialized/encoded legend.
    */
   serializeLegend(layer) {
-    if (layer.getSource() instanceof OlSourceTileWMS ||
-      layer.getSource() instanceof OlSourceImageWMS ||
-      layer.getSource() instanceof OlSourceWMTS) {
+    const source = layer.getSource();
+    if (source instanceof OlSourceTileWMS ||
+      source instanceof OlSourceImageWMS ||
+      source instanceof OlSourceWMTS) {
       return {
-        name: layer.get('name') || layer.getSource().getParams().LAYERS || '',
+        name: layer.get('name') || (!(source instanceof OlSourceWMTS) && source.getParams().LAYERS) || '',
         icons: [Shared.getLegendGraphicUrl(layer)]
       };
     }
@@ -761,7 +763,9 @@ export class BaseMapFishPrintManager extends Observable {
    * @param {number|string} value The value of the scale to use.
    */
   setScale(value) {
-    value = parseFloat(value);
+    if (typeof value === 'string') {
+      value = parseFloat(value);
+    }
 
     const scale = this.getScales().find(scale => scale === value);
 
