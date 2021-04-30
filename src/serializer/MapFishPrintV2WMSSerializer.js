@@ -1,5 +1,7 @@
+import OlSource from 'ol/source/Source';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceTileWMS from 'ol/source/TileWMS';
+import OlLayer from 'ol/layer/Layer';
 
 import BaseSerializer from './BaseSerializer';
 
@@ -18,30 +20,34 @@ export class MapFishPrintV2WMSSerializer extends BaseSerializer {
   static TYPE_WMS = 'WMS';
 
   /**
-   * The ol sources this serializer is capable of serializing.
-   *
-   * @type {Array}
-   */
-  static sourceCls = [
-    OlSourceImageWMS,
-    OlSourceTileWMS
-  ];
-
-  /**
    * The constructor
    */
   constructor() {
-    super(arguments);
+    super();
+  }
+
+  /**
+   * @param {OlSource} source
+   * @return {boolean}
+   */
+  canSerialize(source) {
+    return source instanceof OlSourceImageWMS || source instanceof OlSourceTileWMS;
   }
 
   /**
    * Serializes/Encodes the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode.
+   * @abstract
+   * @param {OlLayer} oLayer The layer to serialize/encode.
+   * @param {Object} opts Additional properties to pass to the serialized
+   *   layer object that can't be obtained by the layer itself. It can also be
+   *   used to override all generated layer values, e.g. the image format. Only
+   *   used in V3.
+   * @param {number} viewResolution The resolution to calculate the styles for.
    * @return {Object} The serialized/encoded layer.
    */
-  serialize(layer) {
-    const source = layer.getSource();
+  serialize(oLayer, opts, viewResolution) { // eslint-disable-line no-unused-vars
+    const source = /** @type {OlSourceImageWMS|OlSourceTileWMS} */ (oLayer.getSource());
 
     if (!this.validateSource(source)) {
       return;
@@ -71,10 +77,10 @@ export class MapFishPrintV2WMSSerializer extends BaseSerializer {
         customParams: customParams,
         format: source.getParams().FORMAT || 'image/png',
         layers: layersArray,
-        opacity: layer.getOpacity(),
+        opacity: oLayer.getOpacity(),
         singleTile: source instanceof OlSourceImageWMS,
         styles: stylesArray,
-        type: this.constructor.TYPE_WMS
+        type: MapFishPrintV2WMSSerializer.TYPE_WMS
       }
     };
 

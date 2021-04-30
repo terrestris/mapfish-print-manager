@@ -1,4 +1,8 @@
+import OlSource from 'ol/source/Source';
 import OlWMTS from 'ol/source/WMTS';
+import OlLayer from 'ol/layer/Layer';
+// eslint-disable-next-line no-unused-vars
+import OlWMTSTileGrid from 'ol/tilegrid/WMTS';
 
 import BaseSerializer from './BaseSerializer';
 
@@ -18,32 +22,34 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
   static TYPE_WMTS = 'wmts';
 
   /**
-   * The ol sources this serializer is capable of serializing.
-   *
-   * @type {Array}
-   */
-  static sourceCls = [
-    OlWMTS
-  ];
-
-  /**
    * The constructor
    */
   constructor() {
-    super(arguments);
+    super();
+  }
+
+  /**
+   * @param {OlSource} source
+   * @return {boolean}
+   */
+  canSerialize(source) {
+    return source instanceof OlWMTS;
   }
 
   /**
    * Serializes/Encodes the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode.
+   * @abstract
+   * @param {OlLayer} layer The layer to serialize/encode.
    * @param {Object} opts Additional properties to pass to the serialized
    *   layer object that can't be obtained by the layer itself. It can also be
-   *   used to override all generated layer values, e.g. the image format.
+   *   used to override all generated layer values, e.g. the image format. Only
+   *   used in V3.
+   * @param {number} viewResolution The resolution to calculate the styles for.
    * @return {Object} The serialized/encoded layer.
    */
-  serialize(layer, opts = {}) {
-    const source = layer.getSource();
+  serialize(layer, opts = {}, viewResolution) { // eslint-disable-line no-unused-vars
+    const source = /** @type {OlWMTS} */ (layer.getSource());
 
     if (!this.validateSource(source)) {
       return;
@@ -57,7 +63,7 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
       baseUrl = baseUrl.replace('{Style}', '{style}');
     }
 
-    const tileGrid = source.getTileGrid();
+    const tileGrid = /** @type {OlWMTSTileGrid} */ (source.getTileGrid());
     // 28mm is the pixel size
     const scaleDenominators = tileGrid.getResolutions().map(resolution => resolution / 0.00028);
     const serialized = {
@@ -69,12 +75,12 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
       failOnError: true,
       imageFormat: source.getFormat() || 'image/png',
       layer: source.getLayer(),
-      matrices: source.getTileGrid().getMatrixIds().map((matrixId, index) => ({
+      matrices: tileGrid.getMatrixIds().map((matrixId, index) => ({
         identifier: matrixId,
         matrixSize: [Math.pow(2, index), Math.pow(2, index)],
         scaleDenominator: scaleDenominators[index],
         tileSize: [tileGrid.getTileSize(index), tileGrid.getTileSize(index)],
-        topLeftCorner: tileGrid.getOrigin(index) || tileGrid.getOrigin()
+        topLeftCorner: tileGrid.getOrigin(index) || tileGrid.getOrigin(0)
       })),
       matrixSet: source.getMatrixSet(),
       mergeableParams: undefined,
@@ -84,7 +90,7 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
       requestEncoding: source.getRequestEncoding(),
       style: source.getStyle(),
       version: source.getVersion() || '1.1.0',
-      type: this.constructor.TYPE_WMTS,
+      type: MapFishPrintV3WMTSSerializer.TYPE_WMTS
     };
     return serialized;
   }

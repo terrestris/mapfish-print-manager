@@ -1,8 +1,13 @@
+import OlSource from 'ol/source/Source';
 import OlSourceVector from 'ol/source/Vector';
+import OlLayer from 'ol/layer/Layer';
+// eslint-disable-next-line no-unused-vars
+import OlLayerVector from 'ol/layer/Vector';
 import OlFormatGeoJSON from 'ol/format/GeoJSON';
 import OlStyleStyle from 'ol/style/Style';
 import OlStyleRegularShape from 'ol/style/RegularShape';
 import { fromCircle } from 'ol/geom/Polygon';
+import OlGeometryCircle from 'ol/geom/Circle';
 import OlFeature from 'ol/Feature';
 import OlStyleIcon from 'ol/style/Icon';
 import OlStyleCircle from 'ol/style/Circle';
@@ -13,7 +18,8 @@ import OlStyleFill from 'ol/style/Fill';
 import get from 'lodash/get';
 import pickBy from 'lodash/pickBy';
 import parseColor from 'parse-color';
-import parseFont from 'parse-css-font';
+// eslint-disable-next-line no-unused-vars
+import parseFont, { IFont } from 'parse-css-font';
 
 import defaultsDeep from 'lodash/defaultsDeep';
 
@@ -34,13 +40,6 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
   static TYPE_GEOJSON = 'geojson';
 
   /**
-   * The circle geometry type name.
-   *
-   * @type {string}
-   */
-  static CIRCLE_GEOMETRY_TYPE = 'Circle';
-
-  /**
    * The property to get the style dictionary key from.
    *
    * @type {string}
@@ -48,38 +47,40 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
   static FEAT_STYLE_PROPERTY = '_style';
 
   /**
-   * The ol sources this serializer is capable of serializing.
-   *
-   * @type {Array}
-   */
-  static sourceCls = [
-    OlSourceVector
-  ];
-
-  /**
    * The constructor
    */
   constructor() {
-    super(arguments);
+    super();
+  }
+
+  /**
+   * @param {OlSource} source
+   * @return {boolean}
+   */
+  canSerialize(source) {
+    return source instanceof OlSourceVector;
   }
 
   /**
    * Serializes/Encodes the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode.
+   * @abstract
+   * @param {OlLayer} oLayer The layer to serialize/encode.
    * @param {Object} opts Additional properties to pass to the serialized
    *   layer object that can't be obtained by the layer itself. It can also be
-   *   used to override all generated layer values, e.g. the image format.
+   *   used to override all generated layer values, e.g. the image format. Only
+   *   used in V3.
    * @param {number} viewResolution The resolution to calculate the styles for.
    * @return {Object} The serialized/encoded layer.
    */
-  serialize(layer, opts, viewResolution) {
+  serialize(oLayer, opts, viewResolution) {
     defaultsDeep(opts, {
       failOnError: false,
       renderAsSvg: false
     });
 
-    const source = layer.getSource();
+    const layer = /** @type {OlLayerVector} */ (oLayer);
+    const source = /** @type {OlSourceVector} */ (layer.getSource());
 
     if (!this.validateSource(source)) {
       return;
@@ -100,7 +101,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
 
       // as GeoJSON format doesn't support circle geometries, we need to
       // transform circles to polygons.
-      if (geometryType === this.constructor.CIRCLE_GEOMETRY_TYPE) {
+      if (geometry instanceof OlGeometryCircle) {
         const style = feature.getStyle();
         const polyFeature = new OlFeature(fromCircle(geometry));
         polyFeature.setStyle(style);
@@ -142,7 +143,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
           if (!serializedFeature.properties) {
             serializedFeature.properties = {};
           }
-          serializedFeature.properties[this.constructor.FEAT_STYLE_PROPERTY] = styleName;
+          serializedFeature.properties[MapFishPrintV3GeoJsonSerializer.FEAT_STYLE_PROPERTY] = styleName;
         });
       }
     });
@@ -156,7 +157,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
         name: layer.get('name') || 'Vector Layer',
         opacity: layer.getOpacity(),
         style: serializedStyles,
-        type: this.constructor.TYPE_GEOJSON
+        type: MapFishPrintV3GeoJsonSerializer.TYPE_GEOJSON
       },
       ...opts
     };
@@ -167,7 +168,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
   /**
    * Returns a plain object matching the passed `ol.style.Style` instance.
    *
-   * @param {ol.style.Style} olStyle An ol.style.Style instance.
+   * @param {OlStyleStyle} olStyle An ol.style.Style instance.
    * @return {Object} A plain object matching the passed `ol.style.Style`
    *                  instance.
    */
@@ -198,12 +199,12 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
           externalGraphic: imageStyle.src,
           graphicWidth: get(imageStyle, 'size[0]'),
           graphicHeight: get(imageStyle, 'size[1]'),
-          graphicOpacity: imageStyle instanceof OlStyleIcon ? imageStyle.opacity : undefined,
+          graphicOpacity: imageStyle instanceof OlStyleIcon ? imageStyle.getOpacity() : undefined,
           // TODO not available in ol3?
           graphicXOffset: undefined,
           // TODO not available in ol3?
           graphicYOffset: undefined,
-          rotation: imageStyle.rotation,
+          rotation: imageStyle.getRotation(),
           // TODO Support full list of graphics: 'circle', 'square', 'star', 'x',
           // 'cross' and 'triangle'
           graphicName: 'circle'
@@ -240,7 +241,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
     }
 
     if (textStyle && textStyle.text) {
-      const parsedFont = parseFont(textStyle.font);
+      const parsedFont = /** @type {IFont} */ (parseFont(textStyle.font));
       style = {
         ...style,
         ...{
@@ -267,7 +268,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
    * Works with `ol.style.Circle`, `ol.style.Icon` and
    * `ol.style.RegularShape`
    *
-   * @param {ol.style.Image} olImageStyle An ol.style.Image instance.
+   * @param {OlStyleImage} olImageStyle An ol.style.Image instance.
    * @return {Object} A plain object matching the passed `ol.style.Image`
    *                  instance.
    */
@@ -292,7 +293,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
   /**
    * Returns a plain object matching the passed ol.style.Circle instance.
    *
-   * @param {ol.style.Circle} olCircleStyle An ol.style.Circle instance.
+   * @param {OlStyleCircle} olCircleStyle An ol.style.Circle instance.
    * @return {Object} A plain object matching the passed `ol.style.Circle`
    *                  instance.
    */
@@ -303,7 +304,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
 
     return {
       fill: this.writeFillStyle(olCircleStyle.getFill()),
-      image: this.writeImageStyle(olCircleStyle.getImage()),
+      image: olCircleStyle.getImage(1),
       opacity: olCircleStyle.getOpacity(),
       radius: olCircleStyle.getRadius(),
       rotateWithView: olCircleStyle.getRotateWithView(),
@@ -316,7 +317,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
   /**
    * Returns a plain object matching the passed ol.style.Icon instance.
    *
-   * @param {ol.style.Icon} olIconStyle An ol.style.Icon instance.
+   * @param {OlStyleIcon} olIconStyle An ol.style.Icon instance.
    * @return {Object} A plain object matching the passed `ol.style.Icon`
    *                  instance.
    */
@@ -345,7 +346,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
    * Returns a plain object matching the passed ol.style.RegularShape
    * instance.
    *
-   * @param {ol.style.RegularShape} olRegularShape An ol.style.RegularShape
+   * @param {OlStyleRegularShape} olRegularShape An ol.style.RegularShape
    *                                               instance.
    * @return {Object} A plain object matching the passed `ol.style.RegularShape`
    *                  instance.
@@ -372,7 +373,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
   /**
    * Returns a plain object matching the passed ol.style.Fill instance.
    *
-   * @param {ol.style.Fill} olFillStyle An ol.style.Fill instance.
+   * @param {OlStyleFill} olFillStyle An ol.style.Fill instance.
    * @return {Object} A plain object matching the passed `ol.style.Fill`
    *                  instance.
    */
@@ -391,7 +392,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
   /**
    * Returns a plain object matching the passed ol.style.Stroke instance.
    *
-   * @param {ol.style.Stroke} olStrokeStyle An ol.style.Stroke instance.
+   * @param {OlStyleStroke} olStrokeStyle An ol.style.Stroke instance.
    * @return {Object} A plain object matching the passed `ol.style.Stroke`
    *                  instance.
    */
@@ -429,7 +430,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
   /**
    * Returns a plain object matching the passed ol.style.Text instance.
    *
-   * @param {ol.style.Text} olTextStyle An ol.style.Text instance.
+   * @param {OlStyleText} olTextStyle An ol.style.Text instance.
    * @return {Object} A plain object matching the passed `ol.style.Text`
    *                  instance.
    */
