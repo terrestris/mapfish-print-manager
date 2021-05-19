@@ -384,7 +384,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
     return {
       // if no fill is given set it to full transparent. In some elemnts with stroke and no fill, the object cannot
       // be rendered for some reason
-      color: olFillStyle ? olFillStyle.getColor() : 'rgb(0,0,0,0)'
+      color: olFillStyle ? olFillStyle.getColor() : 'rgba(0,0,0,0)'
     };
   }
 
