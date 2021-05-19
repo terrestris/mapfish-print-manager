@@ -419,7 +419,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
       color: olStrokeStyle.getColor(),
       lineCap: olStrokeStyle.getLineCap(),
       lineJoin: olStrokeStyle.getLineJoin(),
-      lineDash: olStrokeStyle.getLineDash() ? olStrokeStyle.getLineDash().toString().replace(/\,/g, ' ') : undefined,
+      lineDash: olStrokeStyle.getLineDash() ? olStrokeStyle.getLineDash().toString().replace(/,/g, ' ') : undefined,
       lineDashOffset: olStrokeStyle.getLineDashOffset(),
       miterLimit: olStrokeStyle.getMiterLimit(),
       width: olStrokeStyle.getWidth()
