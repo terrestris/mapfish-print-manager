@@ -178,7 +178,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
 
     const fillStyle = this.writeFillStyle(olStyle.getFill());
     const imageStyle = this.writeImageStyle(olStyle.getImage());
-    const strokeStyle = this.writeStrokeStyle(olStyle.getStroke())
+    const strokeStyle = this.writeStrokeStyle(olStyle.getStroke());
     const textStyle = this.writeTextStyle(olStyle.getText());
 
     let style = {};
@@ -242,7 +242,8 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
     if (textStyle && textStyle.text) {
       const parsedFont = parseFont(textStyle.font);
       style = {
-        ...style, ...{
+        ...style,
+        ...{
           label: textStyle.text,
           fontFamily: parsedFont.family.join(','),
           fontSize: parsedFont.size,
@@ -353,6 +354,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
     if (!(olRegularShape instanceof OlStyleRegularShape)) {
       return {};
     }
+
     return {
       angle: olRegularShape.getAngle(),
       fill: this.writeFillStyle(olRegularShape.getFill()),
@@ -375,7 +377,6 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
    *                  instance.
    */
   writeFillStyle = olFillStyle => {
-
     if (olFillStyle && !(olFillStyle instanceof OlStyleFill)) {
       return {};
     }

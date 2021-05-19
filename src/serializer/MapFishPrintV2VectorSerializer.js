@@ -231,7 +231,8 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
     if (textStyle && textStyle.text) {
       const parsedFont = parseFont(textStyle.font);
       style = {
-        ...style, ...{
+        ...style,
+        ...{
           label: textStyle.text,
           fontFamily: parsedFont.family.join(','),
           fontSize: parsedFont.size,
