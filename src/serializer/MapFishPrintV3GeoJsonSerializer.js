@@ -241,18 +241,21 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
 
     if (textStyle && textStyle.text) {
       const parsedFont = parseFont(textStyle.font);
-      style = {...style, ...{
-        label: textStyle.text,
-        fontFamily: parsedFont.family.join(','),
-        fontSize: parsedFont.size,
-        fontWeight: parsedFont.weight,
-        fontStyle: parsedFont.style,
-        fontColor: parseColor(get(textStyle, 'fill.color')).hex,
-        fontOpacity: get(parseColor(get(textStyle, 'fill.color')), 'rgba[3]'),
-        strokeOpacity: 0,
-        fillOpacity: 0,
-        graphicOpacity: 0
-      }};
+      style = {
+        ...style,
+        ...{
+          label: textStyle.text,
+          fontFamily: parsedFont.family.join(','),
+          fontSize: parsedFont.size,
+          fontWeight: parsedFont.weight,
+          fontStyle: parsedFont.style,
+          fontColor: parseColor(get(textStyle, 'fill.color')).hex,
+          fontOpacity: get(parseColor(get(textStyle, 'fill.color')), 'rgba[3]'),
+          strokeOpacity: 0,
+          fillOpacity: 0,
+          graphicOpacity: 0
+        }
+      };
     }
 
     return pickBy(style, v => v !== undefined);
@@ -374,12 +377,14 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
    *                  instance.
    */
   writeFillStyle = olFillStyle => {
-    if (!(olFillStyle instanceof OlStyleFill)) {
+    if (olFillStyle && !(olFillStyle instanceof OlStyleFill)) {
       return {};
     }
 
     return {
-      color: olFillStyle.getColor()
+      // If no fill is given, set it fully transparent. In some elements with stroke and no fill, the object cannot
+      // be rendered for some reason
+      color: olFillStyle ? olFillStyle.getColor() : 'rgba(0,0,0,0)'
     };
   }
 
@@ -395,13 +400,27 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
       return {};
     }
 
+    // If not set, getLineDash will return null.
+    // according to http://mapfish.github.io/mapfish-print-doc/styles.html#mapfishJsonParser
+    // strokeDashstyle - (line, point, polygon) A string describing how to draw the line or an array of floats
+    // describing the line lengths and space lengths:
+
+    // dot - translates to dash array: [0.1, 2 * strokeWidth]
+    // dash - translates to dash array: [2 * strokeWidth, 2 * strokeWidth]
+    // dashdot - translates to dash array: [3 * strokeWidth, 2 * strokeWidth, 0.1, 2 * strokeWidth]
+    // longdash - translates to dash array: [4 * strokeWidth, 2 * strokeWidth]
+    // longdashdot - translates to dash array: [5 * strokeWidth, 2 * strokeWidth, 0.1, 2 * strokeWidth]
+    // {string containing spaces to delimit array elements} - Example: [1 2 3 1 2]
+
+    // olStrokeStyle.getLineDash() will return a number array, wich is not valid for mapfish print.
+    // Here we translate the number array in lineDash to a valid value recognized by mapfish print like "5 5" instead
+    // of [5, 5]
     return {
       color: olStrokeStyle.getColor(),
       lineCap: olStrokeStyle.getLineCap(),
       lineJoin: olStrokeStyle.getLineJoin(),
-      // If not set, getLineDash will return null.
-      lineDash: olStrokeStyle.getLineDash() || undefined,
-      lineDashOffeset: olStrokeStyle.getLineDashOffset(),
+      lineDash: olStrokeStyle.getLineDash() ? olStrokeStyle.getLineDash().toString().replace(/\,/g, ' ') : undefined,
+      lineDashOffset: olStrokeStyle.getLineDashOffset(),
       miterLimit: olStrokeStyle.getMiterLimit(),
       width: olStrokeStyle.getWidth()
     };

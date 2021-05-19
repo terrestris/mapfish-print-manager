@@ -230,15 +230,18 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
 
     if (textStyle && textStyle.text) {
       const parsedFont = parseFont(textStyle.font);
-      style = {...style, ...{
-        label: textStyle.text,
-        fontFamily: parsedFont.family.join(','),
-        fontSize: parsedFont.size,
-        fontWeight: parsedFont.weight,
-        fontStyle: parsedFont.style,
-        fontColor: parseColor(get(textStyle, 'fill.color')).hex,
-        fontOpacity: get(parseColor(get(textStyle, 'fill.color')), 'rgba[3]')
-      }};
+      style = {
+        ...style,
+        ...{
+          label: textStyle.text,
+          fontFamily: parsedFont.family.join(','),
+          fontSize: parsedFont.size,
+          fontWeight: parsedFont.weight,
+          fontStyle: parsedFont.style,
+          fontColor: parseColor(get(textStyle, 'fill.color')).hex,
+          fontOpacity: get(parseColor(get(textStyle, 'fill.color')), 'rgba[3]')
+        }
+      };
     }
 
     return pickBy(style, v => v !== undefined);
@@ -387,7 +390,7 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       lineJoin: olStrokeStyle.getLineJoin(),
       // If not set, getLineDash will return null.
       lineDash: olStrokeStyle.getLineDash() || undefined,
-      lineDashOffeset: olStrokeStyle.getLineDashOffset(),
+      lineDashOffset: olStrokeStyle.getLineDashOffset(),
       miterLimit: olStrokeStyle.getMiterLimit(),
       width: olStrokeStyle.getWidth()
     };
