@@ -69,7 +69,7 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
       failOnError: true,
       imageFormat: source.getFormat() || 'image/png',
       layer: source.getLayer(),
-      matrices: source.getTileGrid().getMatrixIds().slice(0, 11).map((matrixId, index) => ({
+      matrices: source.getTileGrid().getMatrixIds().map((matrixId, index) => ({
         identifier: matrixId,
         matrixSize: [Math.pow(2, index), Math.pow(2, index)],
         scaleDenominator: scaleDenominators[index],
