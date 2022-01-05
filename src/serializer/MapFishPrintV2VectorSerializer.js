@@ -193,9 +193,7 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
           // TODO not available in ol3?
           graphicYOffset: undefined,
           rotation: imageStyle.rotation,
-          // TODO Support full list of graphics: 'circle', 'square', 'star', 'x',
-          // 'cross' and 'triangle'
-          graphicName: 'circle'
+          graphicName: get(imageStyle, 'graphicName') || 'circle'
         };
         break;
       case 'LineString':
@@ -341,6 +339,44 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       return {};
     }
 
+    /**
+     * Returns the graphicName of a RegularShape or undefined based on the
+     * number of points, radius and angle.
+     *
+     * @returns {String | undefined} The graphicName of a RegularShape feature
+     *                                (triangle, square, cross, x and star)
+     */
+    const getGraphicName = () => {
+      if (olRegularShape.getPoints() === 3) {
+        return 'triangle';
+      }
+      else if (
+        olRegularShape.getPoints() === 4 &&
+        olRegularShape.getRadius2() === undefined
+      ) {
+        return 'square';
+      }
+      else if (
+        olRegularShape.getPoints() === 4 &&
+        olRegularShape.getRadius2() !== undefined &&
+        olRegularShape.getAngle() === 0
+      ) {
+        return 'cross';
+      }
+      else if (
+        olRegularShape.getPoints() === 4 &&
+        olRegularShape.getAngle() !== 0
+      ) {
+        return 'x';
+      }
+      else if (olRegularShape.getPoints() === 5) {
+        return 'star';
+      }
+      else {
+        return undefined;
+      }
+    };
+
     return {
       angle: olRegularShape.getAngle(),
       fill: this.writeFillStyle(olRegularShape.getFill()),
@@ -351,7 +387,8 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       rotateWithView: olRegularShape.getRotateWithView(),
       rotation: olRegularShape.getRotation(),
       scale: olRegularShape.getScale(),
-      stroke: this.writeStrokeStyle(olRegularShape.getStroke())
+      stroke: this.writeStrokeStyle(olRegularShape.getStroke()),
+      graphicName: getGraphicName()
     };
   }
 
