@@ -11,13 +11,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _imagewms = require('ol/source/imagewms');
+var _ImageWMS = require('ol/source/ImageWMS');
 
-var _imagewms2 = _interopRequireDefault(_imagewms);
+var _ImageWMS2 = _interopRequireDefault(_ImageWMS);
 
-var _tilewms = require('ol/source/tilewms');
+var _TileWMS = require('ol/source/TileWMS');
 
-var _tilewms2 = _interopRequireDefault(_tilewms);
+var _TileWMS2 = _interopRequireDefault(_TileWMS);
 
 var _BaseSerializer2 = require('./BaseSerializer');
 
@@ -99,12 +99,12 @@ var WMSSerializer = exports.WMSSerializer = function (_BaseSerializer) {
           customParams = _objectWithoutProperties(_source$getParams, ['LAYERS', 'STYLES', 'VERSION', 'WIDTH', 'HEIGHT', 'FORMAT', 'BBOX', 'CRS', 'SRS']);
 
       var serialized = _extends({}, _get(WMSSerializer.prototype.__proto__ || Object.getPrototypeOf(WMSSerializer.prototype), 'serialize', this).call(this, layer, source), {
-        baseURL: source instanceof _imagewms2.default ? source.getUrl() : source.getUrls()[0],
+        baseURL: source instanceof _ImageWMS2.default ? source.getUrl() : source.getUrls()[0],
         customParams: customParams,
         format: source.getParams().FORMAT || 'image/png',
         layers: layersArray,
         opacity: layer.getOpacity(),
-        singleTile: source instanceof _imagewms2.default,
+        singleTile: source instanceof _ImageWMS2.default,
         styles: stylesArray,
         type: this.constructor.TYPE_WMS
       });
@@ -117,5 +117,5 @@ var WMSSerializer = exports.WMSSerializer = function (_BaseSerializer) {
 }(_BaseSerializer3.default);
 
 WMSSerializer.TYPE_WMS = 'WMS';
-WMSSerializer.sourceCls = [_imagewms2.default, _tilewms2.default];
+WMSSerializer.sourceCls = [_ImageWMS2.default, _TileWMS2.default];
 exports.default = WMSSerializer;

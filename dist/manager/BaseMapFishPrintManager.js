@@ -7,37 +7,33 @@ exports.BaseMapFishPrintManager = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _map = require('ol/map');
+var _Map = require('ol/Map');
 
-var _map2 = _interopRequireDefault(_map);
+var _Map2 = _interopRequireDefault(_Map);
 
-var _vector = require('ol/layer/vector');
+var _Vector = require('ol/layer/Vector');
 
-var _vector2 = _interopRequireDefault(_vector);
+var _Vector2 = _interopRequireDefault(_Vector);
 
-var _vector3 = require('ol/source/vector');
+var _Vector3 = require('ol/source/Vector');
 
-var _vector4 = _interopRequireDefault(_vector3);
+var _Vector4 = _interopRequireDefault(_Vector3);
 
-var _feature = require('ol/feature');
+var _Feature = require('ol/Feature');
 
-var _feature2 = _interopRequireDefault(_feature);
+var _Feature2 = _interopRequireDefault(_Feature);
 
-var _polygon = require('ol/geom/polygon');
-
-var _polygon2 = _interopRequireDefault(_polygon);
+var _Polygon = require('ol/geom/Polygon');
 
 var _extent = require('ol/extent');
 
-var _extent2 = _interopRequireDefault(_extent);
+var _Style = require('ol/style/Style');
 
-var _style = require('ol/style/style');
+var _Style2 = _interopRequireDefault(_Style);
 
-var _style2 = _interopRequireDefault(_style);
+var _Fill = require('ol/style/Fill');
 
-var _fill = require('ol/style/fill');
-
-var _fill2 = _interopRequireDefault(_fill);
+var _Fill2 = _interopRequireDefault(_Fill);
 
 var _InteractionTransform = require('../interaction/InteractionTransform');
 
@@ -254,12 +250,12 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
     };
 
     _this.initPrintExtentLayer = function () {
-      if (!(_this.extentLayer instanceof _vector2.default)) {
-        var extentLayer = new _vector2.default({
+      if (!(_this.extentLayer instanceof _Vector2.default)) {
+        var extentLayer = new _Vector2.default({
           name: _this.constructor.EXTENT_LAYER_NAME,
-          source: new _vector4.default(),
-          style: new _style2.default({
-            fill: new _fill2.default({
+          source: new _Vector4.default(),
+          style: new _Style2.default({
+            fill: new _Fill2.default({
               color: 'rgba(255, 255, 130, 0)'
             })
           })
@@ -317,7 +313,7 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
 
     _this.initPrintExtentFeature = function () {
       var printExtent = _this.calculatePrintExtent();
-      var extentFeature = new _feature2.default(_polygon2.default.fromExtent(printExtent));
+      var extentFeature = new _Feature2.default((0, _Polygon.fromExtent)(printExtent));
       var extentLayerSource = _this.extentLayer.getSource();
 
       _this._extentFeature = extentFeature;
@@ -356,13 +352,13 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
     _this.getClosestScaleToFitExtentFeature = function () {
       var scales = _this.getScales();
       var printFeatureExtent = _this._extentFeature.getGeometry().getExtent();
-      var printFeatureSize = _extent2.default.getSize(printFeatureExtent);
+      var printFeatureSize = (0, _extent.getSize)(printFeatureExtent);
       var closest = Number.POSITIVE_INFINITY;
       var fitScale = scales[0];
 
       scales.forEach(function (scale) {
         var printScaleExtent = _this.calculatePrintExtent(scale.value);
-        var printScaleSize = _extent2.default.getSize(printScaleExtent);
+        var printScaleSize = (0, _extent.getSize)(printScaleExtent);
         var diff = Math.abs(printScaleSize[0] - printFeatureSize[0]) + Math.abs(printScaleSize[1] - printFeatureSize[1]);
 
         if (diff < closest) {
@@ -382,7 +378,7 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
 
       scales.forEach(function (scale) {
         var printExtent = _this.calculatePrintExtent(scale.value);
-        var contains = _extent2.default.containsExtent(mapExtent, printExtent);
+        var contains = (0, _extent.containsExtent)(mapExtent, printExtent);
 
         if (contains) {
           fitScale = scale;
@@ -407,7 +403,7 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
     };
 
     _this.setRotation = function (rotation) {
-      var center = _extent2.default.getCenter(_this._extentFeature.getGeometry().getExtent());
+      var center = (0, _extent.getCenter)(_this._extentFeature.getGeometry().getExtent());
       _this._extentFeature.getGeometry().rotate(rotation, center);
     };
 
@@ -415,7 +411,7 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
       if (_this.isInitiated()) {
         var printExtent = _this.calculatePrintExtent();
         if (_this._extentFeature) {
-          _this._extentFeature.setGeometry(_polygon2.default.fromExtent(printExtent));
+          _this._extentFeature.setGeometry((0, _Polygon.fromExtent)(printExtent));
         }
       }
     };
@@ -434,7 +430,7 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
 
       var center = void 0;
       if (_this._extentFeature) {
-        center = _extent2.default.getCenter(_this._extentFeature.getGeometry().getExtent());
+        center = (0, _extent.getCenter)(_this._extentFeature.getGeometry().getExtent());
       } else {
         center = _this.map.getView().getCenter();
       }
@@ -554,7 +550,7 @@ var BaseMapFishPrintManager = exports.BaseMapFishPrintManager = function (_Obser
 
     Object.assign.apply(Object, [_this].concat(_toConsumableArray(opts)));
 
-    if (!(_this.map instanceof _map2.default)) {
+    if (!(_this.map instanceof _Map2.default)) {
       _Logger2.default.warn('Invalid value given to config option `map`. You need to ' + 'provide an ol.Map to use the PrintManager.');
     }
 

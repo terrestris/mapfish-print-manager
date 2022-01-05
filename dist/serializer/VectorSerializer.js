@@ -11,53 +11,51 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _vector = require('ol/source/vector');
+var _Vector = require('ol/source/Vector');
 
-var _vector2 = _interopRequireDefault(_vector);
+var _Vector2 = _interopRequireDefault(_Vector);
 
-var _geojson = require('ol/format/geojson');
+var _GeoJSON = require('ol/format/GeoJSON');
 
-var _geojson2 = _interopRequireDefault(_geojson);
+var _GeoJSON2 = _interopRequireDefault(_GeoJSON);
 
-var _style = require('ol/style/style');
+var _Style = require('ol/style/Style');
 
-var _style2 = _interopRequireDefault(_style);
+var _Style2 = _interopRequireDefault(_Style);
 
-var _regularshape = require('ol/style/regularshape');
+var _RegularShape = require('ol/style/RegularShape');
 
-var _regularshape2 = _interopRequireDefault(_regularshape);
+var _RegularShape2 = _interopRequireDefault(_RegularShape);
 
-var _polygon = require('ol/geom/polygon');
+var _Polygon = require('ol/geom/Polygon');
 
-var _polygon2 = _interopRequireDefault(_polygon);
+var _Feature = require('ol/Feature');
 
-var _feature = require('ol/feature');
+var _Feature2 = _interopRequireDefault(_Feature);
 
-var _feature2 = _interopRequireDefault(_feature);
+var _Icon = require('ol/style/Icon');
 
-var _icon = require('ol/style/icon');
+var _Icon2 = _interopRequireDefault(_Icon);
 
-var _icon2 = _interopRequireDefault(_icon);
+var _Circle = require('ol/style/Circle');
 
-var _circle = require('ol/style/circle');
+var _Circle2 = _interopRequireDefault(_Circle);
 
-var _circle2 = _interopRequireDefault(_circle);
+var _Image = require('ol/style/Image');
 
-var _image = require('ol/style/image');
+var _Image2 = _interopRequireDefault(_Image);
 
-var _image2 = _interopRequireDefault(_image);
+var _Text = require('ol/style/Text');
 
-var _text = require('ol/style/text');
+var _Text2 = _interopRequireDefault(_Text);
 
-var _text2 = _interopRequireDefault(_text);
+var _Stroke = require('ol/style/Stroke');
 
-var _stroke = require('ol/style/stroke');
+var _Stroke2 = _interopRequireDefault(_Stroke);
 
-var _stroke2 = _interopRequireDefault(_stroke);
+var _Fill = require('ol/style/Fill');
 
-var _fill = require('ol/style/fill');
-
-var _fill2 = _interopRequireDefault(_fill);
+var _Fill2 = _interopRequireDefault(_Fill);
 
 var _get2 = require('lodash/get');
 
@@ -118,7 +116,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
     var _this = _possibleConstructorReturn(this, (VectorSerializer.__proto__ || Object.getPrototypeOf(VectorSerializer)).call(this, arguments));
 
     _this.writeStyle = function (olStyle, geomType) {
-      if (!(olStyle instanceof _style2.default)) {
+      if (!(olStyle instanceof _Style2.default)) {
         return undefined;
       }
 
@@ -143,15 +141,13 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
             externalGraphic: imageStyle.src,
             graphicWidth: (0, _get3.default)(imageStyle, 'size[0]'),
             graphicHeight: (0, _get3.default)(imageStyle, 'size[1]'),
-            graphicOpacity: imageStyle instanceof _icon2.default ? imageStyle.opacity : undefined,
+            graphicOpacity: imageStyle instanceof _Icon2.default ? imageStyle.opacity : undefined,
             // TODO not available in ol3?
             graphicXOffset: undefined,
             // TODO not available in ol3?
             graphicYOffset: undefined,
             rotation: imageStyle.rotation,
-            // TODO Support full list of graphics: 'circle', 'square', 'star', 'x',
-            // 'cross' and 'triangle'
-            graphicName: 'circle'
+            graphicName: (0, _get3.default)(imageStyle, 'graphicName') || 'circle'
           };
           break;
         case 'LineString':
@@ -201,25 +197,25 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
     };
 
     _this.writeImageStyle = function (olImageStyle) {
-      if (!(olImageStyle instanceof _image2.default)) {
+      if (!(olImageStyle instanceof _Image2.default)) {
         return {};
       }
 
-      if (olImageStyle instanceof _circle2.default) {
+      if (olImageStyle instanceof _Circle2.default) {
         return _this.writeCircleStyle(olImageStyle);
       }
 
-      if (olImageStyle instanceof _icon2.default) {
+      if (olImageStyle instanceof _Icon2.default) {
         return _this.writeIconStyle(olImageStyle);
       }
 
-      if (olImageStyle instanceof _regularshape2.default) {
+      if (olImageStyle instanceof _RegularShape2.default) {
         return _this.writeRegularShapeStyle(olImageStyle);
       }
     };
 
     _this.writeCircleStyle = function (olCircleStyle) {
-      if (!(olCircleStyle instanceof _circle2.default)) {
+      if (!(olCircleStyle instanceof _Circle2.default)) {
         return {};
       }
 
@@ -237,7 +233,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
     };
 
     _this.writeIconStyle = function (olIconStyle) {
-      if (!(olIconStyle instanceof _icon2.default)) {
+      if (!(olIconStyle instanceof _Icon2.default)) {
         return {};
       }
 
@@ -259,9 +255,32 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
     };
 
     _this.writeRegularShapeStyle = function (olRegularShape) {
-      if (!(olRegularShape instanceof _regularshape2.default)) {
+      if (!(olRegularShape instanceof _RegularShape2.default)) {
         return {};
       }
+
+      /**
+       * Returns the graphicName of a RegularShape or undefined based on the
+       * number of points, radius and angle.
+       *
+       * @returns {String | undefined} The graphicName of a RegularShape feature
+       *                                (triangle, square, cross, x and star)
+       */
+      var getGraphicName = function getGraphicName() {
+        if (olRegularShape.getPoints() === 3) {
+          return 'triangle';
+        } else if (olRegularShape.getPoints() === 4 && olRegularShape.getRadius2() === undefined) {
+          return 'square';
+        } else if (olRegularShape.getPoints() === 4 && olRegularShape.getRadius2() !== undefined && olRegularShape.getAngle() === 0) {
+          return 'cross';
+        } else if (olRegularShape.getPoints() === 4 && olRegularShape.getAngle() !== 0) {
+          return 'x';
+        } else if (olRegularShape.getPoints() === 5) {
+          return 'star';
+        } else {
+          return undefined;
+        }
+      };
 
       return {
         angle: olRegularShape.getAngle(),
@@ -274,12 +293,13 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
         rotation: olRegularShape.getRotation(),
         scale: olRegularShape.getScale(),
         snapToPixel: olRegularShape.getSnapToPixel(),
-        stroke: _this.writeStrokeStyle(olRegularShape.getStroke())
+        stroke: _this.writeStrokeStyle(olRegularShape.getStroke()),
+        graphicName: getGraphicName()
       };
     };
 
     _this.writeFillStyle = function (olFillStyle) {
-      if (!(olFillStyle instanceof _fill2.default)) {
+      if (!(olFillStyle instanceof _Fill2.default)) {
         return {};
       }
 
@@ -289,7 +309,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
     };
 
     _this.writeStrokeStyle = function (olStrokeStyle) {
-      if (!(olStrokeStyle instanceof _stroke2.default)) {
+      if (!(olStrokeStyle instanceof _Stroke2.default)) {
         return {};
       }
 
@@ -306,7 +326,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
     };
 
     _this.writeTextStyle = function (olTextStyle) {
-      if (!(olTextStyle instanceof _text2.default)) {
+      if (!(olTextStyle instanceof _Text2.default)) {
         return {};
       }
 
@@ -362,7 +382,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
       }
 
       var features = source.getFeatures();
-      var format = new _geojson2.default();
+      var format = new _GeoJSON2.default();
       var serializedFeatures = [];
       var serializedStyles = {};
       var serializedStylesDict = {};
@@ -378,7 +398,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
         // transform circles to polygons.
         if (geometryType === _this2.constructor.CIRCLE_GEOMETRY_TYPE) {
           var style = feature.getStyle();
-          var polyFeature = new _feature2.default(_polygon2.default.fromCircle(geometry));
+          var polyFeature = new _Feature2.default((0, _Polygon.fromCircle)(geometry));
           polyFeature.setStyle(style);
           feature = polyFeature;
         }
@@ -397,7 +417,7 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
         }
 
         // assumption below: styles is an array of OlStyleStyle
-        if (styles instanceof _style2.default) {
+        if (styles instanceof _Style2.default) {
           styles = [styles];
         }
 
@@ -522,5 +542,5 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
 VectorSerializer.TYPE_VECTOR = 'Vector';
 VectorSerializer.CIRCLE_GEOMETRY_TYPE = 'Circle';
 VectorSerializer.FEAT_STYLE_PROPERTY = '_style';
-VectorSerializer.sourceCls = [_vector2.default];
+VectorSerializer.sourceCls = [_Vector2.default];
 exports.default = VectorSerializer;
