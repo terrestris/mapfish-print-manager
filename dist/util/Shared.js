@@ -7,21 +7,19 @@ exports.Shared = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _group = require('ol/layer/group');
+var _Group = require('ol/layer/Group');
 
-var _group2 = _interopRequireDefault(_group);
+var _Group2 = _interopRequireDefault(_Group);
 
-var _tilewms = require('ol/source/tilewms');
+var _TileWMS = require('ol/source/TileWMS');
 
-var _tilewms2 = _interopRequireDefault(_tilewms);
+var _TileWMS2 = _interopRequireDefault(_TileWMS);
 
-var _imagewms = require('ol/source/imagewms');
+var _ImageWMS = require('ol/source/ImageWMS');
 
-var _imagewms2 = _interopRequireDefault(_imagewms);
+var _ImageWMS2 = _interopRequireDefault(_ImageWMS);
 
-var _proj = require('ol/proj');
-
-var _proj2 = _interopRequireDefault(_proj);
+var _Units = require('ol/proj/Units');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57,7 +55,7 @@ Shared.getMapLayers = function (collection) {
   var mapLayers = [];
 
   layers.forEach(function (layer) {
-    if (layer instanceof _group2.default) {
+    if (layer instanceof _Group2.default) {
       Shared.getMapLayers(layer).forEach(function (l) {
         mapLayers.push(l);
       });
@@ -69,7 +67,7 @@ Shared.getMapLayers = function (collection) {
 };
 
 Shared.getLegendGraphicUrl = function (layer) {
-  if (layer.getSource() instanceof _tilewms2.default || layer.getSource() instanceof _imagewms2.default) {
+  if (layer.getSource() instanceof _TileWMS2.default || layer.getSource() instanceof _ImageWMS2.default) {
     var customParams = layer.get('customPrintLegendParams');
     var source = layer.getSource();
 
@@ -79,7 +77,7 @@ Shared.getLegendGraphicUrl = function (layer) {
         FORMAT = _source$getParams.FORMAT,
         passThroughParams = _objectWithoutProperties(_source$getParams, ['LAYERS', 'VERSION', 'FORMAT']);
 
-    var url = source instanceof _imagewms2.default ? source.getUrl() : source.getUrls()[0];
+    var url = source instanceof _ImageWMS2.default ? source.getUrl() : source.getUrls()[0];
     var params = _extends({
       LAYER: LAYERS.split(',')[0],
       VERSION: VERSION || '1.3.0',
@@ -97,7 +95,7 @@ Shared.getLegendGraphicUrl = function (layer) {
 
 Shared.getScaleForResolution = function (resolution, units) {
   var dpi = 25.4 / 0.28;
-  var mpu = _proj2.default.METERS_PER_UNIT[units];
+  var mpu = _Units.METERS_PER_UNIT[units];
   var inchesPerMeter = 39.37;
 
   return parseFloat(resolution) * mpu * inchesPerMeter * dpi;

@@ -9,15 +9,13 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _extent = require('ol/extent');
 
-var _extent2 = _interopRequireDefault(_extent);
+var _TileWMS = require('ol/source/TileWMS');
 
-var _tilewms = require('ol/source/tilewms');
+var _TileWMS2 = _interopRequireDefault(_TileWMS);
 
-var _tilewms2 = _interopRequireDefault(_tilewms);
+var _ImageWMS = require('ol/source/ImageWMS');
 
-var _imagewms = require('ol/source/imagewms');
-
-var _imagewms2 = _interopRequireDefault(_imagewms);
+var _ImageWMS2 = _interopRequireDefault(_ImageWMS);
 
 var _BaseMapFishPrintManager = require('./BaseMapFishPrintManager');
 
@@ -172,7 +170,7 @@ var MapFishPrintV2Manager = exports.MapFishPrintV2Manager = function (_BaseMapFi
         dpi: _this.getDpi().value,
         layers: serializedLayers,
         pages: [{
-          center: _extent2.default.getCenter(extentFeatureGeometry.getExtent()),
+          center: (0, _extent.getCenter)(extentFeatureGeometry.getExtent()),
           scale: _this.getScale().value,
           rotation: _this.calculateRotation() || 0
         }],
@@ -209,7 +207,7 @@ var MapFishPrintV2Manager = exports.MapFishPrintV2Manager = function (_BaseMapFi
     };
 
     _this.serializeLegend = function (layer) {
-      if (layer.getSource() instanceof _tilewms2.default || layer.getSource() instanceof _imagewms2.default) {
+      if (layer.getSource() instanceof _TileWMS2.default || layer.getSource() instanceof _ImageWMS2.default) {
         return {
           name: layer.get('name') || '',
           classes: [{

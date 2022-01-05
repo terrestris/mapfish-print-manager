@@ -5,53 +5,49 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.OlInteractionTransform = undefined;
 
-var _collection = require('ol/collection');
+var _Collection = require('ol/Collection');
 
-var _collection2 = _interopRequireDefault(_collection);
+var _Collection2 = _interopRequireDefault(_Collection);
 
-var _vector = require('ol/layer/vector');
+var _Vector = require('ol/layer/Vector');
 
-var _vector2 = _interopRequireDefault(_vector);
+var _Vector2 = _interopRequireDefault(_Vector);
 
-var _vector3 = require('ol/source/vector');
+var _Vector3 = require('ol/source/Vector');
 
-var _vector4 = _interopRequireDefault(_vector3);
+var _Vector4 = _interopRequireDefault(_Vector3);
 
-var _pointer = require('ol/interaction/pointer');
+var _Pointer = require('ol/interaction/Pointer');
 
-var _pointer2 = _interopRequireDefault(_pointer);
+var _Pointer2 = _interopRequireDefault(_Pointer);
 
-var _style = require('ol/style/style');
+var _Style = require('ol/style/Style');
 
-var _style2 = _interopRequireDefault(_style);
+var _Style2 = _interopRequireDefault(_Style);
 
-var _stroke = require('ol/style/stroke');
+var _Stroke = require('ol/style/Stroke');
 
-var _stroke2 = _interopRequireDefault(_stroke);
+var _Stroke2 = _interopRequireDefault(_Stroke);
 
-var _fill = require('ol/style/fill');
+var _Fill = require('ol/style/Fill');
 
-var _fill2 = _interopRequireDefault(_fill);
+var _Fill2 = _interopRequireDefault(_Fill);
 
-var _regularshape = require('ol/style/regularshape');
+var _RegularShape = require('ol/style/RegularShape');
 
-var _regularshape2 = _interopRequireDefault(_regularshape);
+var _RegularShape2 = _interopRequireDefault(_RegularShape);
 
-var _feature = require('ol/feature');
+var _Feature = require('ol/Feature');
 
-var _feature2 = _interopRequireDefault(_feature);
+var _Feature2 = _interopRequireDefault(_Feature);
 
-var _point = require('ol/geom/point');
+var _Point = require('ol/geom/Point');
 
-var _point2 = _interopRequireDefault(_point);
+var _Point2 = _interopRequireDefault(_Point);
 
-var _polygon = require('ol/geom/polygon');
-
-var _polygon2 = _interopRequireDefault(_polygon);
+var _Polygon = require('ol/geom/Polygon');
 
 var _extent = require('ol/extent');
-
-var _extent2 = _interopRequireDefault(_extent);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -120,7 +116,7 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
         this.getMap().removeLayer(this.overlayLayer_);
       }
 
-      _pointer2.default.prototype.setMap.call(this, map);
+      _Pointer2.default.prototype.setMap.call(this, map);
       this.overlayLayer_.setMap(map);
 
       if (map !== null) {
@@ -132,27 +128,27 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
     _this.setActive = function (b) {
       this.select(null);
       this.overlayLayer_.setVisible(b);
-      _pointer2.default.prototype.setActive.call(this, b);
+      _Pointer2.default.prototype.setActive.call(this, b);
     };
 
     _this.setDefaultStyle = function () {
       // Style
-      var stroke = new _stroke2.default({
+      var stroke = new _Stroke2.default({
         color: 'rgba(255, 0, 0, 1)',
         width: 1
       });
-      var strokedash = new _stroke2.default({
+      var strokedash = new _Stroke2.default({
         color: 'rgba(255, 0, 0, 1)',
         width: 1,
         lineDash: [4, 4]
       });
-      var fill0 = new _fill2.default({
+      var fill0 = new _Fill2.default({
         color: 'rgba(255, 0, 0, 0.01)'
       });
-      var fill = new _fill2.default({
+      var fill = new _Fill2.default({
         color: 'rgba(255, 255, 255, 0.8)'
       });
-      var circle = new _regularshape2.default({
+      var circle = new _RegularShape2.default({
         fill: fill,
         stroke: stroke,
         radius: this.isTouch ? 12 : 6,
@@ -161,7 +157,7 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
 
       circle.getAnchor()[0] = this.isTouch ? -10 : -5;
 
-      var bigpt = new _regularshape2.default({
+      var bigpt = new _RegularShape2.default({
         fill: fill,
         stroke: stroke,
         radius: this.isTouch ? 16 : 8,
@@ -169,7 +165,7 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
         angle: Math.PI / 4
       });
 
-      var smallpt = new _regularshape2.default({
+      var smallpt = new _RegularShape2.default({
         fill: fill,
         stroke: stroke,
         radius: this.isTouch ? 12 : 6,
@@ -186,7 +182,7 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
        * @return {[type]}           [description]
        */
       function createStyle(img, stroke, fill) {
-        return [new _style2.default({
+        return [new _Style2.default({
           image: img,
           stroke: stroke,
           fill: fill
@@ -311,23 +307,23 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
 
       if (center === true) {
         if (!this.ispt_) {
-          this.overlayLayer_.getSource().addFeature(new _feature2.default({
-            geometry: new _point2.default(this.center_),
+          this.overlayLayer_.getSource().addFeature(new _Feature2.default({
+            geometry: new _Point2.default(this.center_),
             handle: 'rotate0'
           }));
           ext = this.feature_.getGeometry().getExtent();
-          geom = _polygon2.default.fromExtent(ext);
-          f = this.bbox_ = new _feature2.default(geom);
+          geom = (0, _Polygon.fromExtent)(ext);
+          f = this.bbox_ = new _Feature2.default(geom);
           this.overlayLayer_.getSource().addFeature(f);
         }
       } else {
         ext = this.feature_.getGeometry().getExtent();
         if (this.ispt_) {
           var p = this.getMap().getPixelFromCoordinate([ext[0], ext[1]]);
-          ext = _extent2.default.boundingExtent([this.getMap().getCoordinateFromPixel([p[0] - 10, p[1] - 10]), this.getMap().getCoordinateFromPixel([p[0] + 10, p[1] + 10])]);
+          ext = (0, _extent.boundingExtent)([this.getMap().getCoordinateFromPixel([p[0] - 10, p[1] - 10]), this.getMap().getCoordinateFromPixel([p[0] + 10, p[1] + 10])]);
         }
-        geom = _polygon2.default.fromExtent(ext);
-        f = this.bbox_ = new _feature2.default(geom);
+        geom = (0, _Polygon.fromExtent)(ext);
+        f = this.bbox_ = new _Feature2.default(geom);
         var features = [];
         var g = geom.getCoordinates()[0];
 
@@ -336,8 +332,8 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
 
           // Middle
           if (this.get('stretch') && this.get('scale')) for (var i = 0; i < g.length - 1; i++) {
-            f = new _feature2.default({
-              geometry: new _point2.default([(g[i][0] + g[i + 1][0]) / 2, (g[i][1] + g[i + 1][1]) / 2]),
+            f = new _Feature2.default({
+              geometry: new _Point2.default([(g[i][0] + g[i + 1][0]) / 2, (g[i][1] + g[i + 1][1]) / 2]),
               handle: 'scale',
               constraint: i % 2 ? 'h' : 'v',
               option: i
@@ -347,8 +343,8 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
 
           // Handles
           if (this.get('scale')) for (var j = 0; j < g.length - 1; j++) {
-            f = new _feature2.default({
-              geometry: new _point2.default(g[j]),
+            f = new _Feature2.default({
+              geometry: new _Point2.default(g[j]),
               handle: 'scale',
               option: j
             });
@@ -357,8 +353,8 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
 
           // Center
           if (this.get('translate') && !this.get('translateFeature')) {
-            f = new _feature2.default({
-              geometry: new _point2.default([(g[0][0] + g[2][0]) / 2, (g[0][1] + g[2][1]) / 2]),
+            f = new _Feature2.default({
+              geometry: new _Point2.default([(g[0][0] + g[2][0]) / 2, (g[0][1] + g[2][1]) / 2]),
               handle: 'translate'
             });
             features.push(f);
@@ -367,8 +363,8 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
 
         // Rotate
         if (this.get('rotate')) {
-          f = new _feature2.default({
-            geometry: new _point2.default(g[3]),
+          f = new _Feature2.default({
+            geometry: new _Point2.default(g[3]),
             handle: 'rotate'
           });
           features.push(f);
@@ -405,8 +401,8 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
         this.coordinate_ = evt.coordinate;
         this.pixel_ = evt.pixel;
         this.geom_ = this.feature_.getGeometry().clone();
-        this.extent_ = _polygon2.default.fromExtent(this.geom_.getExtent()).getCoordinates()[0];
-        this.center_ = _extent2.default.getCenter(this.geom_.getExtent());
+        this.extent_ = (0, _Polygon.fromExtent)(this.geom_.getExtent()).getCoordinates()[0];
+        this.center_ = (0, _extent.getCenter)(this.geom_.getExtent());
         this.angle_ = Math.atan2(this.center_[1] - evt.coordinate[1], this.center_[0] - evt.coordinate[0]);
 
         this.dispatchEvent({
@@ -561,9 +557,9 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
       return false;
     };
 
-    _this.handles_ = new _collection2.default();
-    _this.overlayLayer_ = new _vector2.default({
-      source: new _vector4.default({
+    _this.handles_ = new _Collection2.default();
+    _this.overlayLayer_ = new _Vector2.default({
+      source: new _Vector4.default({
         features: _this.handles_,
         useSpatialIndex: false
       }),
@@ -697,6 +693,6 @@ var OlInteractionTransform = exports.OlInteractionTransform = function (_OlInter
 
 
   return OlInteractionTransform;
-}(_pointer2.default);
+}(_Pointer2.default);
 
 exports.default = OlInteractionTransform;
