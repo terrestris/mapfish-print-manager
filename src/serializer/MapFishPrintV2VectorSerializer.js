@@ -343,7 +343,7 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
      * Returns the graphicName of a RegularShape or undefined based on the
      * number of points, radius and angle.
      *
-     * @returns {String | undefined} The graphicName of a RegularShape feature
+     * @returns {string | undefined} The graphicName of a RegularShape feature
      *                                (triangle, square, cross, x and star)
      */
     const getGraphicName = () => {
