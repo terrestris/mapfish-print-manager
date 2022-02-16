@@ -377,6 +377,13 @@ export class VectorSerializer extends BaseSerializer {
       }
     };
 
+    const graphicName = getGraphicName();
+    let rotation = olRegularShape.getRotation();
+
+    if (graphicName === 'triangle') {
+      rotation = (rotation + 180) % 360;
+    }
+
     return {
       angle: olRegularShape.getAngle(),
       fill: this.writeFillStyle(olRegularShape.getFill()),
@@ -385,11 +392,11 @@ export class VectorSerializer extends BaseSerializer {
       radius: olRegularShape.getRadius(),
       radius2: olRegularShape.getRadius2(),
       rotateWithView: olRegularShape.getRotateWithView(),
-      rotation: olRegularShape.getRotation(),
+      rotation,
       scale: olRegularShape.getScale(),
       snapToPixel: olRegularShape.getSnapToPixel(),
       stroke: this.writeStrokeStyle(olRegularShape.getStroke()),
-      graphicName: getGraphicName()
+      graphicName
     };
   }
 
