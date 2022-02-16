@@ -282,6 +282,13 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
         }
       };
 
+      var graphicName = getGraphicName();
+      var rotation = olRegularShape.getRotation();
+
+      if (graphicName === 'triangle') {
+        rotation = (rotation + 180) % 360;
+      }
+
       return {
         angle: olRegularShape.getAngle(),
         fill: _this.writeFillStyle(olRegularShape.getFill()),
@@ -290,11 +297,11 @@ var VectorSerializer = exports.VectorSerializer = function (_BaseSerializer) {
         radius: olRegularShape.getRadius(),
         radius2: olRegularShape.getRadius2(),
         rotateWithView: olRegularShape.getRotateWithView(),
-        rotation: olRegularShape.getRotation(),
+        rotation: rotation,
         scale: olRegularShape.getScale(),
         snapToPixel: olRegularShape.getSnapToPixel(),
         stroke: _this.writeStrokeStyle(olRegularShape.getStroke()),
-        graphicName: getGraphicName()
+        graphicName: graphicName
       };
     };
 
