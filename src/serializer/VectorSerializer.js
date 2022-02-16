@@ -392,7 +392,7 @@ export class VectorSerializer extends BaseSerializer {
       radius: olRegularShape.getRadius(),
       radius2: olRegularShape.getRadius2(),
       rotateWithView: olRegularShape.getRotateWithView(),
-      rotation: rotation,
+      rotation,
       scale: olRegularShape.getScale(),
       snapToPixel: olRegularShape.getSnapToPixel(),
       stroke: this.writeStrokeStyle(olRegularShape.getStroke()),
