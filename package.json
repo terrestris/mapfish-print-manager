@@ -52,6 +52,7 @@
     "canvas": "2.9.0",
     "eslint": "5.0.0",
     "jest": "23.0.0",
+    "jest-canvas-mock": "^2.3.1",
     "jest-fetch-mock": "1.6.5",
     "np": "3.0.4",
     "ol": "5.2.0",

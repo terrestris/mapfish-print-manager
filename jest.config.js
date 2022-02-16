@@ -13,6 +13,7 @@ module.exports = {
     'node_modules/(?!ol)'
   ],
   setupFiles: [
+    'jest-canvas-mock',
     '<rootDir>/spec/jest/setup.js'
   ],
   collectCoverage: false,
