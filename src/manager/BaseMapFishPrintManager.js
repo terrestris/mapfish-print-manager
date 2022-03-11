@@ -209,7 +209,7 @@ export class BaseMapFishPrintManager extends Observable {
   _scale = {};
 
   /**
-   * Whether this manger has been initiated or not.
+   * Whether this manager has been initiated or not.
    *
    * @type {Boolean}
    * @private
