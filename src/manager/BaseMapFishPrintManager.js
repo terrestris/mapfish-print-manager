@@ -137,6 +137,14 @@ export class BaseMapFishPrintManager extends Observable {
   legendFilter = () => true;
 
   /**
+   * An array determining custom print scales. If provided, these will override
+   * the scales retrieved from print capabilities.
+   *
+   * @type {Array}
+   */
+  customPrintScales = [];
+
+  /**
    * The supported layouts by the print service.
    *
    * @type {Array}
@@ -254,7 +262,7 @@ export class BaseMapFishPrintManager extends Observable {
     this._layouts = this.capabilities.layouts;
     this._outputFormats = this.capabilities.outputFormats;
     this._dpis = this.capabilities.dpis;
-    this._scales = this.capabilities.scales;
+    this._scales = this.customPrintScales.length > 0 ? this.customPrintScales : this.capabilities.scales;
 
     this.setLayout(this.getLayouts()[0].name);
     this.setOutputFormat(this.getOutputFormats()[0].name);
