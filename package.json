@@ -1,6 +1,6 @@
 {
   "name": "@terrestris/mapfish-print-manager",
-  "version": "2.0.0-2",
+  "version": "2.0.0-3",
   "description": "An interface to easily communicate with the MapFish Print module",
   "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
   "contributors": [
