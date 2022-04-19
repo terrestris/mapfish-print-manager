@@ -1,8 +1,10 @@
-import { getCenter } from 'ol/extent';
+import {Extent as OlExtent, getCenter} from 'ol/extent';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceWMTS from 'ol/source/WMTS';
+import OlLayer from 'ol/layer/Layer';
 
+import BaseSerializer from '../serializer/BaseSerializer';
 import BaseMapFishPrintManager from './BaseMapFishPrintManager';
 import MapFishPrintV2WMSSerializer from '../serializer/MapFishPrintV2WMSSerializer';
 import MapFishPrintV2VectorSerializer from '../serializer/MapFishPrintV2VectorSerializer';
@@ -27,9 +29,12 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * The layer serializers to use. May be overridden or extented to obtain
    * custom functionality.
    *
-   * @type {Array}
+   * @type {BaseSerializer[]}
    */
-  serializers = [MapFishPrintV2WMSSerializer, MapFishPrintV2VectorSerializer];
+  serializers = [
+    new MapFishPrintV2WMSSerializer(),
+    new MapFishPrintV2VectorSerializer()
+  ];
 
   /**
    * The constructor
@@ -45,7 +50,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    */
   init() {
     if (!this.url && this.capabilities) {
-      return this.initManager(this.capabilities);
+      return Promise.resolve(this.initManager(this.capabilities));
     } else if (this.url && !this.capabilities) {
       return this.loadCapabilities()
         .then(json => Promise.resolve(this.initManager(json)))
@@ -92,7 +97,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * @return {Promise}
    */
   loadCapabilities() {
-    return fetch(this.url + this.constructor.INFO_JSON_ENDPOINT, {
+    return fetch(this.url + MapFishPrintV2Manager.INFO_JSON_ENDPOINT, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -133,7 +138,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       if (forceDownload) {
         this.download(url);
       } else {
-        return url;
+        return Promise.resolve(url);
       }
     } else {
       return fetch(this.capabilities.createURL, {
@@ -213,16 +218,17 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   /**
    * Serializes/encodes the legend payload for the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode the legend for.
+   * @param {OlLayer} layer The layer to serialize/encode the legend for.
    *
    * @return {Object} The serialized/encoded legend.
    */
   serializeLegend(layer) {
-    if (layer.getSource() instanceof OlSourceTileWMS ||
-      layer.getSource() instanceof OlSourceImageWMS ||
-      layer.getSource() instanceof OlSourceWMTS) {
+    const source = layer.getSource();
+    if (source instanceof OlSourceTileWMS ||
+      source instanceof OlSourceImageWMS ||
+      source instanceof OlSourceWMTS) {
       return {
-        name: layer.get('name') || layer.getSource().getParams().LAYERS || '',
+        name: layer.get('name') || (!(source instanceof OlSourceWMTS) && source.getParams().LAYERS) || '',
         classes: [{
           name: '',
           icons: [Shared.getLegendGraphicUrl(layer)]
@@ -245,7 +251,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * @param {number} scale The scale to calculate the extent for. If not given,
    *                       the current scale of the provider will be used.
-   * @return {ol.Extent} The extent.
+   * @return {OlExtent} The extent.
    */
   calculatePrintExtent(scale) {
     const printMapSize = this.getLayout().map;
@@ -262,14 +268,12 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       center = this.map.getView().getCenter();
     }
 
-    const printExtent = [
+    return [
       center[0] - (width / 2),
       center[1] - (height / 2),
       center[0] + (width / 2),
       center[1] + (height / 2)
     ];
-
-    return printExtent;
   }
 
   /**

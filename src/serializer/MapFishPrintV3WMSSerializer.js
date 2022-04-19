@@ -1,4 +1,6 @@
+import OlSource from 'ol/source/Source';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlLayer from 'ol/layer/Layer';
 
 import defaultsDeep from 'lodash/defaultsDeep';
 
@@ -19,31 +21,33 @@ export class MapFishPrintV3WMSSerializer extends BaseSerializer {
   static TYPE_WMS = 'wms';
 
   /**
-   * The ol sources this serializer is capable of serializing.
-   *
-   * @type {Array}
-   */
-  static sourceCls = [
-    OlSourceImageWMS
-  ];
-
-  /**
    * The constructor
    */
   constructor() {
-    super(arguments);
+    super();
+  }
+
+  /**
+   * @param {OlSource} source
+   * @return {boolean}
+   */
+  canSerialize(source) {
+    return source instanceof OlSourceImageWMS;
   }
 
   /**
    * Serializes/Encodes the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode.
+   * @abstract
+   * @param {OlLayer} layer The layer to serialize/encode.
    * @param {Object} opts Additional properties to pass to the serialized
    *   layer object that can't be obtained by the layer itself. It can also be
-   *   used to override all generated layer values, e.g. the image format.
+   *   used to override all generated layer values, e.g. the image format. Only
+   *   used in V3.
+   * @param {number} viewResolution The resolution to calculate the styles for.
    * @return {Object} The serialized/encoded layer.
    */
-  serialize(layer, opts = {}) {
+  serialize(layer, opts = {}, viewResolution) { // eslint-disable-line no-unused-vars
     defaultsDeep(opts, {
       failOnError: false,
       mergeableParams: [],
@@ -54,7 +58,7 @@ export class MapFishPrintV3WMSSerializer extends BaseSerializer {
       useNativeAngle: false
     });
 
-    const source = layer.getSource();
+    const source = /** @type {OlSourceImageWMS} */ (layer.getSource());
 
     if (!this.validateSource(source)) {
       return;
@@ -78,9 +82,9 @@ export class MapFishPrintV3WMSSerializer extends BaseSerializer {
       ...customParams
     } = source.getParams();
 
-    const serialized = {
+    return {
       ...{
-        baseURL: source instanceof OlSourceImageWMS ? source.getUrl() : source.getUrls()[0],
+        baseURL: source.getUrl(),
         customParams,
         imageFormat: source.getParams().FORMAT || 'image/png',
         layers: layersArray,
@@ -88,12 +92,10 @@ export class MapFishPrintV3WMSSerializer extends BaseSerializer {
         opacity: layer.getOpacity(),
         styles: stylesArray,
         version: source.getParams().VERSION || '1.1.0',
-        type: this.constructor.TYPE_WMS
+        type: MapFishPrintV3WMSSerializer.TYPE_WMS
       },
       ...opts
     };
-
-    return serialized;
   }
 }
 

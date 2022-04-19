@@ -1,4 +1,6 @@
+import OlMap from 'ol/Map';
 import OlLayerGroup from 'ol/layer/Group';
+import OlLayer from 'ol/layer/Layer';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import { METERS_PER_UNIT } from 'ol/proj/Units';
@@ -13,7 +15,7 @@ export class Shared {
   /**
    * Returns all map interactions with the given name.
    *
-   * @param {ol.Map} map The map to get the interactions from.
+   * @param {OlMap} map The map to get the interactions from.
    * @param {string} name The name to filter with.
    * @return {Array} The matching candidates.
    */
@@ -25,7 +27,7 @@ export class Shared {
   /**
    * Returns all map layers with the given name.
    *
-   * @param {ol.Map} map The map to get the layers from.
+   * @param {OlMap} map The map to get the layers from.
    * @param {string} name The name to filter with.
    * @return {Array} The matching candidates.
    */
@@ -37,7 +39,7 @@ export class Shared {
   /**
    * Returns all layers from the given map.
    *
-   * @param {ol.Map|ol.layer.Group} collection The map or layergroup to get the
+   * @param {OlMap|OlLayerGroup} collection The map or layergroup to get the
    *                                           layers from.
    * @return {Array} The layers.
    */
@@ -63,7 +65,7 @@ export class Shared {
   /**
    * Generates the GetLegendGraphic url for the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to generate the GetLegendGraphic for.
+   * @param {OlLayer} layer The layer to generate the GetLegendGraphic for.
    * @return {string} The GetLegendGraphic url.
    */
   static getLegendGraphicUrl = layer => {
@@ -71,11 +73,12 @@ export class Shared {
       return layer.get('legendUrl');
     }
 
-    if (layer.getSource() instanceof OlSourceTileWMS ||
-      layer.getSource() instanceof OlSourceImageWMS) {
+    const source = layer.getSource();
 
+    if (source instanceof OlSourceTileWMS ||
+      source instanceof OlSourceImageWMS) {
       const customParams = layer.get('customPrintLegendParams');
-      const source = layer.getSource();
+
       const {
         LAYERS,
         VERSION,
@@ -109,7 +112,7 @@ export class Shared {
   /**
    * Returns the appropriate scale for the given resolution and units.
    *
-   * @param {number} resolution The resolution to calculate the scale for.
+   * @param {number|string} resolution The resolution to calculate the scale for.
    * @param {string} units The units the resolution is based on, typically
    *                       either 'm' or 'degrees'.
    * @return {number} The appropriate scale.
@@ -119,7 +122,11 @@ export class Shared {
     const mpu = METERS_PER_UNIT[units];
     const inchesPerMeter = 39.37;
 
-    return parseFloat(resolution) * mpu * inchesPerMeter * dpi;
+    if (typeof resolution === 'string') {
+      resolution = parseFloat(resolution);
+    }
+
+    return resolution * mpu * inchesPerMeter * dpi;
   }
 
   /**
