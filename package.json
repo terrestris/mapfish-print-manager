@@ -29,7 +29,7 @@
     "lint": "npm run lint:src && npm run lint:docs",
     "lint:fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
-    "test": "jest",
+    "test": "jest --maxWorkers=4",
     "test:watch": "jest --watchAll",
     "start": "webpack-dev-server --config ./webpack.development.config.js",
     "start:docs": "documentation serve -g -w ./src/index.js",
