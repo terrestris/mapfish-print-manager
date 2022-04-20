@@ -1,3 +1,5 @@
+import OlLayer from 'ol/layer/Layer';
+import OlSource from 'ol/source/Source';
 import OlSourceStamen from 'ol/source/Stamen';
 import MapFishPrintV3OSMSerializer from './MapFishPrintV3OSMSerializer';
 
@@ -9,15 +11,6 @@ import MapFishPrintV3OSMSerializer from './MapFishPrintV3OSMSerializer';
 export class MapFishPrintV3StamenSerializer extends MapFishPrintV3OSMSerializer {
 
   /**
-   * The ol sources this serializer is capable of serializing.
-   *
-   * @type {Array}
-   */
-  static sourceCls = [
-    OlSourceStamen
-  ];
-
-  /**
    * The constructor
    */
   constructor() {
@@ -25,25 +18,37 @@ export class MapFishPrintV3StamenSerializer extends MapFishPrintV3OSMSerializer 
   }
 
   /**
+   * @param {OlSource} source
+   * @return {boolean}
+   */
+  canSerialize(source) {
+    return source instanceof OlSourceStamen;
+  }
+
+  /**
    * Serializes/Encodes the given layer.
    *
-   * @param {ol.layer.Layer} layer The layer to serialize/encode.
+   * @abstract
+   * @param {OlLayer} layer The layer to serialize/encode.
    * @param {Object} opts Additional properties to pass to the serialized
    *   layer object that can't be obtained by the layer itself. It can also be
    *   used to override all generated layer values, e.g. the image format.
+   * @param {number} viewResolution The resolution to calculate the styles for.
    * @return {Object} The serialized/encoded layer.
    */
-  serialize(layer, opts = {}) {
-    const source = layer.getSource();
+  serialize(layer, opts = {}, viewResolution) {
+    const source = /** @type {OlSourceStamen} */ (layer.getSource());
 
     if (!this.validateSource(source)) {
       return;
     }
-    const serialized = super.serialize(layer, opts);
 
-    serialized.baseURL = source.getUrls()[0];
-
-    return serialized;
+    return {
+      ...super.serialize(layer, opts, viewResolution),
+      ...{
+        baseURL: source.getUrls()[0]
+      }
+    };
   }
 }
 
