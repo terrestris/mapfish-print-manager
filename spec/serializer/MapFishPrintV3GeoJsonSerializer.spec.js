@@ -79,6 +79,7 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
             coordinates: [0, 0]
           },
           properties: {
+            _style: 0
           }
         }, {
           type: 'Feature',
@@ -87,6 +88,7 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
             coordinates: [[0, 0], [1, 1]]
           },
           properties: {
+            _style: 1
           }
         }, {
           type: 'Feature',
@@ -95,12 +97,37 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
             coordinates: [[[0, 0], [1, 1], [0, 0]]]
           },
           properties: {
+            _style: 2
           }
         }]
       },
       name: layer.get('name') || 'Vector Layer',
       opacity: layer.getOpacity(),
-      style: {},
+      style: {
+        0: {
+          fillColor: '#ffffff',
+          fillOpacity: 0.4,
+          graphicName: 'circle',
+          pointRadius: 5,
+          rotation: 0,
+          strokeColor: '#3399cc',
+          strokeOpacity: 1,
+          strokeWidth: 1.25,
+          version: 2,
+        },
+        1: {
+          strokeColor: '#3399cc',
+          strokeOpacity: 1,
+          strokeWidth: 1.25,
+        },
+        2: {
+          fillColor: '#ffffff',
+          fillOpacity: 0.4,
+          strokeColor: '#3399cc',
+          strokeOpacity: 1,
+          strokeWidth: 1.25,
+        }
+      },
       type: 'geojson'
     });
   });
