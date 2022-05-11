@@ -3,6 +3,7 @@ import OlFormatGeoJSON from 'ol/format/GeoJSON';
 import OlStyleStyle from 'ol/style/Style';
 import OlStyleRegularShape from 'ol/style/RegularShape';
 import { fromCircle } from 'ol/geom/Polygon';
+import OlGeometryCircle from 'ol/geom/Circle';
 import OlFeature from 'ol/Feature';
 import OlStyleIcon from 'ol/style/Icon';
 import OlStyleCircle from 'ol/style/Circle';
@@ -32,13 +33,6 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
    * @type {string}
    */
   static TYPE_GEOJSON = 'geojson';
-
-  /**
-   * The circle geometry type name.
-   *
-   * @type {string}
-   */
-  static CIRCLE_GEOMETRY_TYPE = 'Circle';
 
   /**
    * The property to get the style dictionary key from.
@@ -100,7 +94,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
 
       // as GeoJSON format doesn't support circle geometries, we need to
       // transform circles to polygons.
-      if (geometryType === this.constructor.CIRCLE_GEOMETRY_TYPE) {
+      if (geometry instanceof OlGeometryCircle) {
         const style = feature.getStyle();
         const polyFeature = new OlFeature(fromCircle(geometry));
         polyFeature.setStyle(style);
@@ -142,13 +136,12 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
           if (!serializedFeature.properties) {
             serializedFeature.properties = {};
           }
-          // serializedFeature.properties[this.constructor.FEAT_STYLE_PROPERTY] = styleName;
+          serializedFeature.properties[MapFishPrintV3GeoJsonSerializer.FEAT_STYLE_PROPERTY] = styleName;
         });
       }
     });
 
     const serialized = {
-      ...super.serialize(layer, opts, viewResolution),
       ...{
         geoJson: {
           type: 'FeatureCollection',
@@ -156,10 +149,8 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
         },
         name: layer.get('name') || 'Vector Layer',
         opacity: layer.getOpacity(),
-        // TODO Currently not supported, GeoStyler MapFish JSON StyleParser should
-        // be used here!
-        style: {},
-        type: this.constructor.TYPE_GEOJSON
+        style: serializedStyles,
+        type: MapFishPrintV3GeoJsonSerializer.TYPE_GEOJSON
       },
       ...opts
     };
