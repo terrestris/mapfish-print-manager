@@ -74,7 +74,7 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
       customParams: undefined,
       dimensionParams: undefined,
       dimensions: source.getDimensions(),
-      failOnError: true,
+      failOnError: opts?.failOnError || true,
       imageFormat: source.getFormat() || 'image/png',
       layer: source.getLayer(),
       matrices: tileGrid.getMatrixIds().map((matrixId, index) => ({
