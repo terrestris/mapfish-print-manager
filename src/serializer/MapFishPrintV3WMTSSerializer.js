@@ -64,6 +64,8 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
     }
 
     const tileGrid = /** @type {OlWMTSTileGrid} */ (source.getTileGrid());
+    const matrixSizes = source.get('matrixSizes');
+
     // 28mm is the pixel size
     const scaleDenominators = tileGrid.getResolutions().map(resolution => resolution / 0.00028);
     const serialized = {
@@ -77,7 +79,9 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
       layer: source.getLayer(),
       matrices: tileGrid.getMatrixIds().map((matrixId, index) => ({
         identifier: matrixId,
-        matrixSize: [Math.pow(2, index), Math.pow(2, index)],
+        matrixSize: matrixSizes
+          ? [matrixSizes[index][0], matrixSizes[index][1]]
+          : [Math.pow(2, index), Math.pow(2, index)],
         scaleDenominator: scaleDenominators[index],
         tileSize: [tileGrid.getTileSize(index), tileGrid.getTileSize(index)],
         topLeftCorner: tileGrid.getOrigin(index) || tileGrid.getOrigin(0)
