@@ -88,7 +88,8 @@ describe('MapFishPrintV3Manager', () => {
     ]);
     const manager = new MapFishPrintV3Manager({
       map: testMap,
-      url: 'https://mock:8080/print/pdf/'
+      url: 'https://mock:8080/print/pdf/',
+      printApps: []
     });
     manager.init();
 

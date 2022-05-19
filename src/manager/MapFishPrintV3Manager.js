@@ -1,9 +1,12 @@
-import get from 'lodash/get';
+import _get from 'lodash/get';
+import _isArray from 'lodash/isArray';
 import URL from 'url-parse';
 import QueryString from 'query-string';
 import {
   getCenter
 } from 'ol/extent';
+// eslint-disable-next-line no-unused-vars
+import OlLayer from 'ol/layer';
 
 import BaseSerializer from '../serializer/BaseSerializer';
 import BaseMapFishPrintManager from './BaseMapFishPrintManager';
@@ -53,21 +56,21 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
   /**
    * @typedef {Object} V3CustomMapParams
-   * @property [center] (default)
-   * @property [dpi] (default)
-   * @property [layers] (default)
-   * @property [projection] (default)
-   * @property [rotation] (default)
-   * @property [scale] (default)
-   * @property [areaOfInterest]
-   * @property [bbox]
-   * @property [useNearestScale]
-   * @property [dpiSensitiveStyle]
-   * @property [useAdjustBounds]
-   * @property [width]
-   * @property [longitudeFirst]
-   * @property [zoomToFeatures]
-   * @property [height]
+   * @property {number} [center] (default)
+   * @property {number} [dpi] (default)
+   * @property {[OlLayer]} [layers] (default)
+   * @property {string} [projection] (default)
+   * @property {number} [rotation] (default)
+   * @property {number} [scale] (default)
+   * @property {any} [areaOfInterest]
+   * @property {[number]} [bbox]
+   * @property {boolean} [useNearestScale]
+   * @property {boolean} [dpiSensitiveStyle]
+   * @property {boolean} [useAdjustBounds]
+   * @property {number} [width]
+   * @property {boolean} [longitudeFirst]
+   * @property {boolean} [zoomToFeatures]
+   * @property {number} [height]
    */
 
   /**
@@ -490,7 +493,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
     const mapAttribute = this.getAttributeByName('map');
 
-    this._dpis = get(mapAttribute, 'clientInfo.dpiSuggestions');
+    this._dpis = _get(mapAttribute, 'clientInfo.dpiSuggestions');
     // set some defaults if not provided via capabilities
     if (!this._dpis) {
       this._dpis = [72, 150];
@@ -498,8 +501,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this.setDpi(this.getDpis()[0]);
 
     this.setPrintMapSize({
-      width: get(mapAttribute, 'clientInfo.width'),
-      height: get(mapAttribute, 'clientInfo.height')
+      width: _get(mapAttribute, 'clientInfo.width'),
+      height: _get(mapAttribute, 'clientInfo.height')
     });
 
     this.updatePrintExtent();
@@ -515,7 +518,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * @param {string} printAppName The name of the application to use.
    */
   setPrintApp = printAppName => {
-    const printApp = this.getPrintApps().find(pa => pa === printAppName);
+    const printApps = this.getPrintApps();
+    const printApp = _isArray(printApps) ? this.getPrintApps().find(pa => pa === printAppName) : undefined;
 
     if (!printApp) {
       Logger.warn(`No print application named '${printAppName}' found.`);
