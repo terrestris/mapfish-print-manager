@@ -210,6 +210,9 @@ export class OlInteractionTransform extends OlInteractionPointer {
    * @param {boolean} b
    */
   setActive (b) {
+    if (!this.overlayLayer_) {
+      return;
+    }
     this.select(null);
     this.overlayLayer_.setVisible(b);
     OlInteractionPointer.prototype.setActive.call(this, b);
