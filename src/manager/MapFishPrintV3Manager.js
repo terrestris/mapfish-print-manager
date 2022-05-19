@@ -132,8 +132,10 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
           return this.setPrintApp(defaultPrintApp);
         })
-        .catch(error => Promise.reject(new Error(`Could not initialize ` +
-          `the manager: ${error.message}`)));
+        .catch(error => {
+          Logger.error(error);
+          Promise.reject(new Error(`Could not initialize the manager: ${error.message}`));
+        });
     } else if (!this.url && this.capabilities) {
       return Promise.resolve(this.initManager(this.capabilities));
     }
@@ -220,9 +222,10 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
       .then(response => this.validateResponse(response))
       .then(response => response.json())
       .then(json => Promise.resolve(json))
-      .catch(error => Promise.reject(new Error(`Error while fetching the ` +
-        `print apps: ${error.message}`))
-      );
+      .catch(error =>{
+        Logger.error(error);
+        Promise.reject(new Error(`Error while fetching the print apps: ${error.message}`));
+      });
   }
 
   /**
@@ -244,9 +247,10 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
       .then(response => this.validateResponse(response))
       .then(response => response.json())
       .then(json => Promise.resolve(json))
-      .catch(error => Promise.reject(new Error(`Error while fetching the ` +
-        `print capabilities: ${error.message}`))
-      );
+      .catch(error => {
+        Logger.error(error);
+        Promise.reject(new Error(`Error while fetching the print capabilities: ${error.message}`));
+      });
   }
 
   /**
@@ -528,7 +532,10 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
         this.initManager(printCapabilities);
         return Promise.resolve(true);
       })
-      .catch(error => Promise.reject(new Error(`${error.message}`)));
+      .catch(error => {
+        Logger.error(error);
+        Promise.reject(new Error(`${error.message}`));
+      });
   }
 
   /**

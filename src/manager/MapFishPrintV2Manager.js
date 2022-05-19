@@ -54,8 +54,10 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     } else if (this.url && !this.capabilities) {
       return this.loadCapabilities()
         .then(json => Promise.resolve(this.initManager(json)))
-        .catch(error => Promise.reject(new Error(`Could not initialize `+
-          `the manager: ${error.message}`)));
+        .catch(error => {
+          Log.error(error);
+          Promise.reject(new Error(`Could not initialize the manager: ${error.message}`));
+        });
     }
   }
 
@@ -108,9 +110,10 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       .then(response => this.validateResponse(response))
       .then(response => response.json())
       .then(json => Promise.resolve(json))
-      .catch(error => Promise.reject(new Error(`Error while fetching the ` +
-        `print capabilities: ${error.message}`))
-      );
+      .catch(error => {
+        Log.error(error);
+        Promise.reject(new Error(`Error while fetching the print capabilities: ${error.message}`));
+      });
   }
 
   /**
@@ -160,7 +163,10 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
             return Promise.resolve(url);
           }
         })
-        .catch(error => Promise.reject(`Error while creating the print document: ${error.message}`));
+        .catch(error => {
+          Log.error(error);
+          Promise.reject(`Error while creating the print document: ${error.message}`);
+        });
     }
   }
 
