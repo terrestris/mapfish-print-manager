@@ -1,5 +1,6 @@
 import OlSource from 'ol/source/Source';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlLayer from 'ol/layer/Layer';
 
 import defaultsDeep from 'lodash/defaultsDeep';
@@ -32,7 +33,7 @@ export class MapFishPrintV3WMSSerializer extends BaseSerializer {
    * @return {boolean}
    */
   canSerialize(source) {
-    return source instanceof OlSourceImageWMS;
+    return source instanceof OlSourceImageWMS || source instanceof OlSourceTileWMS;
   }
 
   /**
@@ -58,7 +59,7 @@ export class MapFishPrintV3WMSSerializer extends BaseSerializer {
       useNativeAngle: false
     });
 
-    const source = /** @type {OlSourceImageWMS} */ (layer.getSource());
+    const source = /** @type {OlSourceImageWMS | OlSourceTileWMS} */ (layer.getSource());
 
     if (!this.validateSource(source)) {
       return;
@@ -82,9 +83,11 @@ export class MapFishPrintV3WMSSerializer extends BaseSerializer {
       ...customParams
     } = source.getParams();
 
+    const baseUrl = source instanceof OlSourceImageWMS ? source.getUrl() : source.getUrls()[0];
+
     return {
       ...{
-        baseURL: source.getUrl(),
+        baseURL: baseUrl,
         customParams,
         imageFormat: source.getParams().FORMAT || 'image/png',
         layers: layersArray,

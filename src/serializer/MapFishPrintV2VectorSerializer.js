@@ -196,7 +196,7 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
           graphicXOffset: undefined,
           // TODO not available in ol3?
           graphicYOffset: undefined,
-          rotation: imageStyle.getRotation(),
+          rotation: get(imageStyle, 'rotation'),
           graphicName: get(imageStyle, 'graphicName') || 'circle'
         };
         break;

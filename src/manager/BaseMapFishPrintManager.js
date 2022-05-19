@@ -423,6 +423,8 @@ export class BaseMapFishPrintManager extends Observable {
         ...this.transformOpts
       });
 
+      transform.setActive(true);
+
       transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
 
       transform.on('scaling', this.onTransformScaling.bind(this));

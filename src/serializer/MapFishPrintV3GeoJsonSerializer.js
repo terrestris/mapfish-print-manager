@@ -204,7 +204,7 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
           graphicXOffset: undefined,
           // TODO not available in ol3?
           graphicYOffset: undefined,
-          rotation: imageStyle.getRotation(),
+          rotation: get(imageStyle, 'rotation'),
           // TODO Support full list of graphics: 'circle', 'square', 'star', 'x',
           // 'cross' and 'triangle'
           graphicName: 'circle'
