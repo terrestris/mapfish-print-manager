@@ -58,7 +58,9 @@ describe('MapFishPrintV3WMSSerializer', () => {
       styles: [''],
       useNativeAngle: false,
       version: '1.1.0',
-      type: 'wms'
+      type: 'wms',
+      // minScaleDenominator: undefined,
+      // maxScaleDenominator: undefined
     });
 
     const customParams = {
@@ -84,7 +86,9 @@ describe('MapFishPrintV3WMSSerializer', () => {
       styles: [''],
       useNativeAngle: false,
       version: '1.1.0',
-      type: 'wms'
+      type: 'wms',
+      minScaleDenominator: undefined,
+      maxScaleDenominator: undefined
     });
 
     const customFormat = {
@@ -109,7 +113,9 @@ describe('MapFishPrintV3WMSSerializer', () => {
       styles: [''],
       useNativeAngle: false,
       version: '1.1.0',
-      type: 'wms'
+      type: 'wms',
+      minScaleDenominator: undefined,
+      maxScaleDenominator: undefined
     });
 
     const customStyles = {
@@ -134,7 +140,9 @@ describe('MapFishPrintV3WMSSerializer', () => {
       styles: [customStyles.STYLES],
       useNativeAngle: false,
       version: '1.1.0',
-      type: 'wms'
+      type: 'wms',
+      minScaleDenominator: undefined,
+      maxScaleDenominator: undefined
     });
   });
 
@@ -172,7 +180,9 @@ describe('MapFishPrintV3WMSSerializer', () => {
       styles: [''],
       useNativeAngle: false,
       version: '1.1.0',
-      type: 'wms'
+      type: 'wms',
+      minScaleDenominator: undefined,
+      maxScaleDenominator: undefined
     });
   });
 });

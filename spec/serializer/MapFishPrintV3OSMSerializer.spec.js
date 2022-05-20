@@ -47,7 +47,9 @@ describe('MapFishPrintV3OSMSerializer', () => {
       resolutionTolerance: 0,
       resolutions: [],
       tileSize: [256, 256],
-      type: 'osm'
+      type: 'osm',
+      minScaleDenominator: undefined,
+      maxScaleDenominator: undefined
     });
   });
 
@@ -74,7 +76,9 @@ describe('MapFishPrintV3OSMSerializer', () => {
       resolutionTolerance: 0,
       resolutions: [],
       tileSize: [512, 512],
-      type: 'osm'
+      type: 'osm',
+      minScaleDenominator: undefined,
+      maxScaleDenominator: undefined
     });
   });
 });

@@ -58,7 +58,9 @@ describe('MapFishPrintV3TiledWMSSerializer', () => {
       useNativeAngle: false,
       version: '1.1.0',
       tileSize: [512, 512],
-      type: 'tiledwms'
+      type: 'tiledwms',
+      minScaleDenominator: undefined,
+      maxScaleDenominator: undefined
     });
   });
 
@@ -97,7 +99,9 @@ describe('MapFishPrintV3TiledWMSSerializer', () => {
       useNativeAngle: false,
       version: '1.1.0',
       tileSize: [256, 256],
-      type: 'tiledwms'
+      type: 'tiledwms',
+      minScaleDenominator: undefined,
+      maxScaleDenominator: undefined
     });
   });
 });
