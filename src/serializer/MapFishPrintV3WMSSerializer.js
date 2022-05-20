@@ -51,7 +51,7 @@ export class MapFishPrintV3WMSSerializer extends BaseSerializer {
       rasterStyle: undefined,
       // One of MAPSERVER, GEOSERVER, QGISSERVER
       serverType: undefined,
-      useNativeAngle: false,
+      useNativeAngle: false
     });
 
     const source = layer.getSource();
