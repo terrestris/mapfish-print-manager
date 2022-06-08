@@ -482,7 +482,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this._dpis = get(mapAttribute, 'clientInfo.dpiSuggestions');
     
     // if customDpis are given, use these instead
-    if(this.customDpis.length > 0) {
+    if (this.customDpis.length > 0) {
       this._dpis = this.customDpis;
     } 
     
