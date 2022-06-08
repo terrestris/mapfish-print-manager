@@ -68,7 +68,11 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
 
     this._layouts = this.capabilities.layouts;
     this._outputFormats = this.capabilities.outputFormats;
-    this._dpis = this.capabilities.dpis;
+    if(this.customDpis.length > 0) {
+      this._dpis = this.customDpis;
+    } else {
+      this._dpis = this.capabilities.dpis;
+    }
     if (this.customPrintScales.length > 0) {
       this._scales = this.customPrintScales;
     } else {
