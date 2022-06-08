@@ -479,12 +479,18 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this._layout = layout;
 
     const mapAttribute = this.getAttributeByName('map');
-
     this._dpis = get(mapAttribute, 'clientInfo.dpiSuggestions');
+    
+    // if customDpis are given, use these instead
+    if (this.customDpis.length > 0) {
+      this._dpis = this.customDpis;
+    } 
+    
     // set some defaults if not provided via capabilities
     if (!this._dpis) {
       this._dpis = [72, 150];
     }
+
     this.setDpi(this.getDpis()[0]);
 
     this.setPrintMapSize({
