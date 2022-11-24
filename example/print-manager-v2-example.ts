@@ -24,11 +24,13 @@ const map = new OlMap({
   })
 });
 
+// @ts-ignore
 const printProvider = new MapFishPrintV2Manager({
   url: 'http://localhost:9000/print-v2/pdf',
   map: map
 });
 
+// @ts-ignore
 printProvider.init()
   .then(() => {
     fillCombos();
@@ -40,7 +42,7 @@ printProvider.init()
  *
  */
 const onChangePrintExtent = scale => {
-  const scaleSelect = document.querySelector('select#scale-select');
+  const scaleSelect: any = document.querySelector('select#scale-select');
   scaleSelect.value = scale.name;
 };
 
@@ -80,7 +82,7 @@ const onScaleChange = event => {
  *
  */
 const registerPrintHandler = () => {
-  const printBtn = document.querySelector('button#print');
+  const printBtn: any = document.querySelector('button#print');
   printBtn.onclick = onPrintClick;
 };
 
@@ -88,36 +90,35 @@ const registerPrintHandler = () => {
  *
  */
 const onPrintClick = () => {
-  printProvider.print(true)
-    .catch(error => {
-      console.log('Error while printing: ' + error);
-    });
+  printProvider?.print(true)?.catch(error => {
+    console.log('Error while printing: ' + error);
+  });
 };
 
 /**
  *
  */
 const fillCombos = () => {
-  const layoutSelect = document.querySelector('select#layout-select');
-  printProvider.getLayouts().forEach(layout => {
+  const layoutSelect: any = document.querySelector('select#layout-select');
+  printProvider.getLayouts().forEach((layout: any) => {
     const option = document.createElement('option');
     option.text = layout.name;
-    layoutSelect.add(option);
+    layoutSelect?.add(option);
   });
   layoutSelect.value = printProvider.getLayout().name;
   layoutSelect.onchange = onLayoutChange;
 
-  const dpiSelect = document.querySelector('select#dpi-select');
-  printProvider.getDpis().forEach(dpi => {
+  const dpiSelect: any = document.querySelector('select#dpi-select');
+  printProvider.getDpis().forEach((dpi: any) => {
     const option = document.createElement('option');
     option.text = dpi.name;
-    dpiSelect.add(option);
+    dpiSelect?.add(option);
   });
   dpiSelect.value = printProvider.getDpi().name;
   dpiSelect.onchange = onDpiChange;
 
-  const formatSelect = document.querySelector('select#format-select');
-  printProvider.getOutputFormats().forEach(format => {
+  const formatSelect: any = document.querySelector('select#format-select');
+  printProvider.getOutputFormats().forEach((format: any) => {
     const option = document.createElement('option');
     option.text = format.name;
     formatSelect.add(option);
@@ -125,8 +126,8 @@ const fillCombos = () => {
   formatSelect.value = printProvider.getOutputFormat().name;
   formatSelect.onchange = onFormatChange;
 
-  const scaleSelect = document.querySelector('select#scale-select');
-  printProvider.getScales().forEach(scale => {
+  const scaleSelect: any = document.querySelector('select#scale-select');
+  printProvider.getScales().forEach((scale: any) => {
     const option = document.createElement('option');
     option.text = scale.name;
     scaleSelect.add(option);

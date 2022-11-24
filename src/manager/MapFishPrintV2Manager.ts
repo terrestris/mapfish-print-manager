@@ -259,7 +259,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *                       the current scale of the provider will be used.
    * @return {OlExtent} The extent.
    */
-  calculatePrintExtent(scale) {
+  calculatePrintExtent(scale?: any | undefined): OlExtent {
     const printMapSize = this.getLayout().map;
     const printScale = scale || this.getScale().value;
     const {

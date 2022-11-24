@@ -9,6 +9,7 @@ import OlGeomLineString from 'ol/geom/LineString';
 import OlGeomPolygon from 'ol/geom/Polygon';
 
 import { MapFishPrintV3GeoJsonSerializer } from '../../src/serializer/MapFishPrintV3GeoJsonSerializer';
+import { Geometry } from 'ol/geom';
 
 describe('MapFishPrintV3GeoJsonSerializer', () => {
   let serializer;
@@ -51,19 +52,31 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
   });
 
   it('serializes a layer with a Vector source (including features)', () => {
+
+    const features: OlFeature<Geometry>[] = [
+      new OlFeature({
+        geometry: new OlGeomPoint([0, 0])
+      }),
+      new OlFeature({
+        geometry: new OlGeomLineString([
+          [0, 0],
+          [1, 1]
+        ])
+      }),
+      new OlFeature({
+        geometry: new OlGeomPolygon([
+          [
+            [0, 0],
+            [1, 1],
+            [0, 0]
+          ]
+        ])
+      })
+    ];
+
     const layer = new OlLayerVector({
       source: new OlSourceVector({
-        features: [
-          new OlFeature({
-            geometry: new OlGeomPoint([0, 0])
-          }),
-          new OlFeature({
-            geometry: new OlGeomLineString([[0, 0], [1, 1]])
-          }),
-          new OlFeature({
-            geometry: new OlGeomPolygon([[[0, 0], [1, 1], [0, 0]]])
-          })
-        ]
+        features
       })
     });
 

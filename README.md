@@ -7,11 +7,18 @@ servlet via an [OpenLayers](https://openlayers.org/) based webapplication.
 
 # Installation
 
-If you're using OpenLayers in version 6 just run:
+If you're using OpenLayers in version 7 just run:
 
 ```
 npm i --save @terrestris/mapfish-print-manager
 ```
+
+For version 6 one might use the manager in version 6:
+
+```
+npm i --save @terrestris/mapfish-print-manager@6
+```
+
 
 For version 4 one might use the manager in version 1:
 

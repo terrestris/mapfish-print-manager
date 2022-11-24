@@ -7,7 +7,7 @@ import OlSourceVector from 'ol/source/Vector';
 import OlFeature from 'ol/Feature';
 import OlRenderEvent from 'ol/render/Event';
 import OlLayer from 'ol/layer/Layer';
-import {containsExtent, Extent as OlExtent, getCenter, getSize} from 'ol/extent';
+import {containsExtent, getCenter, getSize} from 'ol/extent';
 import OlPolygon, {fromExtent} from 'ol/geom/Polygon';
 
 import OlStyleStyle from 'ol/style/Style';
@@ -20,6 +20,8 @@ import Logger from '../util/Logger';
 
 import Observable from '../observable/Observable';
 
+import type { Extent } from 'ol/extent';
+
 /**
  * The BaseMapFishPrintManager.
  *
@@ -27,7 +29,6 @@ import Observable from '../observable/Observable';
  * @class
  */
 export class BaseMapFishPrintManager extends Observable {
-
   /**
    * The name of the vector layer configured and created by the print manager.
    *
@@ -92,7 +93,7 @@ export class BaseMapFishPrintManager extends Observable {
    *
    * @type {RequestCredentials}
    */
-  credentialsMode = 'same-origin';
+  credentialsMode: RequestCredentials = 'same-origin';
 
   /**
    * Key-value pairs of custom data to be sent to the print service. This is
@@ -135,7 +136,7 @@ export class BaseMapFishPrintManager extends Observable {
    *
    * @type {(layer: OlLayer) => boolean}
    */
-  layerFilter = () => true;
+  layerFilter = layer => true;
 
   /**
    * A filter function that will be called before the print call. Should
@@ -143,7 +144,7 @@ export class BaseMapFishPrintManager extends Observable {
    *
    * @type {(layer: OlLayer) => boolean}
    */
-  legendFilter = () => true;
+  legendFilter = layer => true;
 
   /**
    * An array determining custom print scales. If provided, these will override
@@ -204,7 +205,7 @@ export class BaseMapFishPrintManager extends Observable {
    * @type {Object}
    * @protected
    */
-  _layout = {};
+  _layout: any = {};
 
   /**
    * The currently selected output format.
@@ -212,7 +213,7 @@ export class BaseMapFishPrintManager extends Observable {
    * @type {Object}
    * @protected
    */
-  _outputFormat = {};
+  _outputFormat: any = {};
 
   /**
    * The currently selected dpi.
@@ -220,7 +221,7 @@ export class BaseMapFishPrintManager extends Observable {
    * @type {Object}
    * @protected
    */
-  _dpi = {};
+  _dpi: any = {};
 
   /**
    * The currently selected scale.
@@ -228,7 +229,7 @@ export class BaseMapFishPrintManager extends Observable {
    * @type {Object}
    * @protected
    */
-  _scale = {};
+  _scale: any = {};
 
   /**
    * The currently set map size defined with its width and height.
@@ -258,19 +259,22 @@ export class BaseMapFishPrintManager extends Observable {
    * The constructor
    */
   constructor(opts) {
-
     super();
 
     Object.assign(this, ...opts);
 
     if (!(this.map instanceof OlMap)) {
-      Logger.warn('Invalid value given to config option `map`. You need to ' +
-        'provide an ol.Map to use the PrintManager.');
+      Logger.warn(
+        'Invalid value given to config option `map`. You need to ' +
+          'provide an ol.Map to use the PrintManager.'
+      );
     }
 
     if (!this.url && !this.capabilities) {
-      Logger.warn('Invalid init options given. Please provide either an `url` ' +
-        'or `capabilities`.');
+      Logger.warn(
+        'Invalid init options given. Please provide either an `url` ' +
+          'or `capabilities`.'
+      );
     }
 
     if (this.url && this.url.split('/').pop()) {
@@ -283,16 +287,22 @@ export class BaseMapFishPrintManager extends Observable {
    */
   shutdownManager() {
     // Remove print layer from map. But only if not given by user.
-    const layerCandidates = Shared.getLayersByName(this.map,
-      BaseMapFishPrintManager.EXTENT_LAYER_NAME);
+    const layerCandidates = Shared.getLayersByName(
+      this.map,
+      BaseMapFishPrintManager.EXTENT_LAYER_NAME
+    );
 
     layerCandidates.forEach(layer => this.map.removeLayer(layer));
 
     // Remove transform interaction from map.
-    const interactionCandidates = Shared.getInteractionsByName(this.map,
-      BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
+    const interactionCandidates = Shared.getInteractionsByName(
+      this.map,
+      BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME
+    );
 
-    interactionCandidates.forEach(interaction => this.map.removeInteraction(interaction));
+    interactionCandidates.forEach(interaction =>
+      this.map.removeInteraction(interaction)
+    );
   }
 
   /**
@@ -306,8 +316,12 @@ export class BaseMapFishPrintManager extends Observable {
     if (response.status >= 200 && response.status < 300) {
       return Promise.resolve(response);
     } else {
-      return Promise.reject(new Error(`Error while trying to request ` +
-        `${response.url} (${response.status}: ${response.statusText})`));
+      return Promise.reject(
+        new Error(
+          'Error while trying to request ' +
+            `${response.url} (${response.status}: ${response.statusText})`
+        )
+      );
     }
   }
 
@@ -317,7 +331,6 @@ export class BaseMapFishPrintManager extends Observable {
   initPrintExtentLayer() {
     if (!(this.extentLayer instanceof OlLayerVector)) {
       const extentLayer = new OlLayerVector({
-        name: BaseMapFishPrintManager.EXTENT_LAYER_NAME,
         source: new OlSourceVector(),
         style: new OlStyleStyle({
           fill: new OlStyleFill({
@@ -326,13 +339,19 @@ export class BaseMapFishPrintManager extends Observable {
         })
       });
 
+      extentLayer.set('name', BaseMapFishPrintManager.EXTENT_LAYER_NAME);
+
       extentLayer.on('prerender', this.onExtentLayerPreRender.bind(this));
       extentLayer.on('postrender', this.onExtentLayerPostRender.bind(this));
 
       this.extentLayer = extentLayer;
 
-      if (Shared.getLayersByName(this.map,
-        BaseMapFishPrintManager.EXTENT_LAYER_NAME).length === 0) {
+      if (
+        Shared.getLayersByName(
+          this.map,
+          BaseMapFishPrintManager.EXTENT_LAYER_NAME
+        ).length === 0
+      ) {
         this.map.addLayer(this.extentLayer);
       }
     }
@@ -358,7 +377,11 @@ export class BaseMapFishPrintManager extends Observable {
     const canvas = ctx.canvas;
     const width = canvas.width;
     const height = canvas.height;
-    const coords = olEvt.target.getSource().getFeatures()[0].getGeometry().getCoordinates()[0];
+    const coords = olEvt.target
+      .getSource()
+      .getFeatures()[0]
+      .getGeometry()
+      .getCoordinates()[0];
 
     const A = this.map.getPixelFromCoordinate(coords[1]);
     const B = this.map.getPixelFromCoordinate(coords[4]);
@@ -394,7 +417,7 @@ export class BaseMapFishPrintManager extends Observable {
    * @return {OlFeature} The extent feature.
    */
   initPrintExtentFeature() {
-    const printExtent = this.calculatePrintExtent();
+    const printExtent: Extent = this.calculatePrintExtent();
     const extentFeature = new OlFeature(fromExtent(printExtent));
     const extentLayerSource = this.extentLayer.getSource();
 
@@ -410,8 +433,12 @@ export class BaseMapFishPrintManager extends Observable {
    * Initializes the transform interaction.
    */
   initTransformInteraction() {
-    if (Shared.getInteractionsByName(this.map,
-      BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME).length === 0) {
+    if (
+      Shared.getInteractionsByName(
+        this.map,
+        BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME
+      ).length === 0
+    ) {
       const transform = new InteractionTransform({
         features: [this._extentFeature],
         translateFeature: true,
@@ -427,6 +454,7 @@ export class BaseMapFishPrintManager extends Observable {
 
       transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
 
+      // @ts-ignore
       transform.on('scaling', this.onTransformScaling.bind(this));
 
       this.map.addInteraction(transform);
@@ -455,7 +483,8 @@ export class BaseMapFishPrintManager extends Observable {
       const scaleVal = scale.value ? scale.value : scale;
       const printScaleExtent = this.calculatePrintExtent(scaleVal);
       const printScaleSize = getSize(printScaleExtent);
-      const diff = Math.abs(printScaleSize[0] - printFeatureSize[0]) +
+      const diff =
+        Math.abs(printScaleSize[0] - printFeatureSize[0]) +
         Math.abs(printScaleSize[1] - printFeatureSize[1]);
 
       if (diff < closest) {
@@ -498,7 +527,7 @@ export class BaseMapFishPrintManager extends Observable {
     const coords = extentFeature.getGeometry().getCoordinates()[0];
     const p1 = coords[0];
     const p2 = coords[3];
-    const rotation = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180 / Math.PI;
+    const rotation = (Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180) / Math.PI;
 
     return -rotation;
   }
@@ -538,15 +567,12 @@ export class BaseMapFishPrintManager extends Observable {
    * @param {number} [scale] The scale to calculate the extent for. If not given,
    *                       the current scale of the provider will be used.
    *
-   * @return {OlExtent} The extent.
+   * @return {Extent} The extent.
    */
-  calculatePrintExtent(scale) {
+  calculatePrintExtent(scale?: any | undefined): Extent {
     const printMapSize = this.getPrintMapSize();
     const printScale = scale || this.getScale();
-    const {
-      width,
-      height
-    } = this.getPrintExtentSize(printMapSize, printScale);
+    const { width, height } = this.getPrintExtentSize(printMapSize, printScale);
 
     let center;
     if (this._extentFeature) {
@@ -556,10 +582,10 @@ export class BaseMapFishPrintManager extends Observable {
     }
 
     return [
-      center[0] - (width / 2),
-      center[1] - (height / 2),
-      center[0] + (width / 2),
-      center[1] + (height / 2)
+      center[0] - width / 2,
+      center[1] - height / 2,
+      center[0] + width / 2,
+      center[1] + height / 2
     ];
   }
 
@@ -574,13 +600,14 @@ export class BaseMapFishPrintManager extends Observable {
   getPrintExtentSize(printMapSize, printScale) {
     const mapUnits = this.map.getView().getProjection().getUnits();
     const inchesPerUnit = {
-      'degrees': 4374754,
-      'ft': 12,
-      'm': 39.37
+      degrees: 4374754,
+      ft: 12,
+      m: 39.37
     };
     return {
       width: (printMapSize.width * printScale) / (72 * inchesPerUnit[mapUnits]),
-      height: (printMapSize.height * printScale) / (72 * inchesPerUnit[mapUnits])
+      height:
+        (printMapSize.height * printScale) / (72 * inchesPerUnit[mapUnits])
     };
   }
 
@@ -606,7 +633,11 @@ export class BaseMapFishPrintManager extends Observable {
    * @return {boolean} Whether the layer should be printed or not.
    */
   filterPrintableLayer(layer) {
-    return layer !== this.extentLayer && layer.getVisible() && this.layerFilter(layer);
+    return (
+      layer !== this.extentLayer &&
+      layer.getVisible() &&
+      this.layerFilter(layer)
+    );
   }
 
   /**
@@ -617,7 +648,11 @@ export class BaseMapFishPrintManager extends Observable {
    * @return {boolean} Whether the legend of the layer should be printed or not.
    */
   filterPrintableLegend(layer) {
-    return layer !== this.extentLayer && layer.getVisible() && this.legendFilter(layer);
+    return (
+      layer !== this.extentLayer &&
+      layer.getVisible() &&
+      this.legendFilter(layer)
+    );
   }
 
   /**
@@ -636,13 +671,19 @@ export class BaseMapFishPrintManager extends Observable {
     });
 
     if (serializer) {
-      return serializer.serialize(layer, layer.get(
-        BaseMapFishPrintManager.CUSTOM_PRINT_SERIALIZER_OPTS_KEY), viewResolution);
+      return serializer.serialize(
+        layer,
+        layer.get(BaseMapFishPrintManager.CUSTOM_PRINT_SERIALIZER_OPTS_KEY),
+        viewResolution
+      );
     } else {
-      Logger.info('No suitable serializer for this layer/source found. ' +
-        'Please check the input layer or provide an own serializer capabale ' +
-        'of serializing the given layer/source to the manager. Layer ' +
-        'candidate is: ', layer);
+      Logger.info(
+        'No suitable serializer for this layer/source found. ' +
+          'Please check the input layer or provide an own serializer capabale ' +
+          'of serializing the given layer/source to the manager. Layer ' +
+          'candidate is: ',
+        layer
+      );
     }
   }
 
@@ -653,13 +694,18 @@ export class BaseMapFishPrintManager extends Observable {
    *
    * @return {Object} The serialized/encoded legend.
    */
-  serializeLegend(layer) {
+  serializeLegend(layer: any): any {
     const source = layer.getSource();
-    if (source instanceof OlSourceTileWMS ||
+    if (
+      source instanceof OlSourceTileWMS ||
       source instanceof OlSourceImageWMS ||
-      source instanceof OlSourceWMTS) {
+      source instanceof OlSourceWMTS
+    ) {
       return {
-        name: layer.get('name') || (!(source instanceof OlSourceWMTS) && source.getParams().LAYERS) || '',
+        name:
+          layer.get('name') ||
+          (!(source instanceof OlSourceWMTS) && source.getParams().LAYERS) ||
+          '',
         icons: [Shared.getLegendGraphicUrl(layer)]
       };
     }
@@ -748,7 +794,7 @@ export class BaseMapFishPrintManager extends Observable {
     this._dpi = dpi;
 
     this.dispatch('change:dpi', dpi);
-  }
+  };
 
   /**
    * Returns the currently selected scale.

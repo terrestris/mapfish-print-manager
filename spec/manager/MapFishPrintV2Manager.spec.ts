@@ -1,4 +1,4 @@
-/*eslint-env jest*/
+/* eslint-env jest */
 import OlMap from 'ol/Map';
 import OlLayerImage from 'ol/layer/Image';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
@@ -23,21 +23,26 @@ describe('MapFishPrintV2Manager', () => {
   });
 
   it('loads the print capabilities from a remote source', () => {
+    // @ts-ignore
     fetch.mockResponse(JSON.stringify(mockResponse));
 
+    // @ts-ignore
     const manager = new MapFishPrintV2Manager({
       map: testMap,
       url: 'https://mock:8080/print/pdf/'
     });
 
+    // @ts-ignore
     return manager.init()
       .then(resp => {
         expect(resp).toBeTruthy();
+        // @ts-ignore
         fetch.resetMocks();
       });
   });
 
   it('loads the print capabilities from a local source', () => {
+    // @ts-ignore
     const manager = new MapFishPrintV2Manager({
       map: testMap,
       capabilities: mockResponse
@@ -47,6 +52,7 @@ describe('MapFishPrintV2Manager', () => {
   });
 
   it('renders the print extent', () => {
+    // @ts-ignore
     const manager = new MapFishPrintV2Manager({
       map: testMap,
       capabilities: mockResponse
@@ -54,7 +60,10 @@ describe('MapFishPrintV2Manager', () => {
     manager.init();
 
     expect(testMap.getLayers().getArray().length).toEqual(1);
-    expect(testMap.getLayers().getArray()[0].getSource().getFeatures().length).toEqual(1);
+    expect(
+      // @ts-ignore
+      testMap.getLayers().getArray()[0].getSource().getFeatures().length
+    ).toEqual(1);
   });
 
   it('returns the print download url', () => {
@@ -76,23 +85,29 @@ describe('MapFishPrintV2Manager', () => {
         zoom: 2
       })
     });
+    // @ts-ignore
     const manager = new MapFishPrintV2Manager({
       method: 'POST',
       map: map,
       capabilities: mockResponse
     });
-    const getURLMock = 'http://localhost:4321/print/pdf/919288886008494300.png.printout';
+    const getURLMock =
+      'http://localhost:4321/print/pdf/919288886008494300.png.printout';
     manager.init();
 
-    fetch.mockResponse(JSON.stringify({
-      getURL: getURLMock
-    }));
+    // @ts-ignore
+    fetch.mockResponse(
+      JSON.stringify({
+        getURL: getURLMock
+      })
+    );
 
-    return manager.print()
-      .then(payload => {
-        expect(payload).toEqual(getURLMock);
-        fetch.resetMocks();
-      });
+    // @ts-ignore
+    return manager.print().then(payload => {
+      expect(payload).toEqual(getURLMock);
+      // @ts-ignore
+      fetch.resetMocks();
+    });
   });
 
 });

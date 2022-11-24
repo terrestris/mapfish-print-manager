@@ -1,4 +1,4 @@
-/*eslint-env jest*/
+/* eslint-env jest*/
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OlInteractionDragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
