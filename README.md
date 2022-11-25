@@ -19,7 +19,6 @@ For version 6 one might use the manager in version 6:
 npm i --save @terrestris/mapfish-print-manager@6
 ```
 
-
 For version 4 one might use the manager in version 1:
 
 ```
