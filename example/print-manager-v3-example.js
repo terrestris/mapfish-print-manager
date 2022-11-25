@@ -1,3 +1,4 @@
+// @ts-nocheck
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OlLayerTile from 'ol/layer/Tile';
@@ -24,19 +25,19 @@ const map = new OlMap({
   })
 });
 
+// @ts-ignore
 const printProvider = new MapFishPrintV3Manager({
   url: 'http://localhost:9000/print-v3',
   map: map
 });
 
-printProvider.init()
-  .then(() => {
-    fillPrintAppCombo();
-    fillCombos();
-    registerPrintHandler();
-    registerCancelPrintHandler();
-    printProvider.on('change:scale', onChangePrintExtent);
-  });
+printProvider?.init()?.then(() => {
+  fillPrintAppCombo();
+  fillCombos();
+  registerPrintHandler();
+  registerCancelPrintHandler();
+  printProvider.on('change:scale', onChangePrintExtent);
+});
 
 /**
  *
@@ -106,10 +107,9 @@ function registerCancelPrintHandler() {
  *
  */
 function onPrintClick() {
-  printProvider.print(true)
-    .catch(error => {
-      console.log('Error while printing: ' + error);
-    });
+  printProvider?.print(true)?.catch(error => {
+    console.log('Error while printing: ' + error);
+  });
 }
 
 /**

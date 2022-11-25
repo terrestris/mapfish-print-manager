@@ -22,7 +22,7 @@ export class Shared {
   static getInteractionsByName = (map, name) => {
     const interactions = map.getInteractions().getArray();
     return interactions.filter(interaction => interaction.get('name') === name);
-  }
+  };
 
   /**
    * Returns all map layers with the given name.
@@ -34,7 +34,7 @@ export class Shared {
   static getLayersByName = (map, name) => {
     const layers = Shared.getMapLayers(map);
     return layers.filter(layer => layer.get('name') === name);
-  }
+  };
 
   /**
    * Returns all layers from the given map.
@@ -60,7 +60,7 @@ export class Shared {
     });
 
     return mapLayers;
-  }
+  };
 
   /**
    * Generates the GetLegendGraphic url for the given layer.
@@ -107,7 +107,7 @@ export class Shared {
         return `${url}?${queryParams}`;
       }
     }
-  }
+  };
 
   /**
    * Returns the appropriate scale for the given resolution and units.
@@ -127,7 +127,7 @@ export class Shared {
     }
 
     return resolution * mpu * inchesPerMeter * dpi;
-  }
+  };
 
   /**
    * Removes duplicated forward slashes as well as trailing slash
@@ -136,7 +136,7 @@ export class Shared {
    */
   static sanitizeUrl = (url) => {
     return url.replace(/([^:]\/)\/+/g, '$1').replace(/\/+$/, '');
-  }
+  };
 }
 
 export default Shared;

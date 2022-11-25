@@ -1,4 +1,4 @@
-/*eslint-env jest*/
+/* eslint-env jest */
 import OlLayerVector from 'ol/layer/Vector';
 import OlLayerTile from 'ol/layer/Tile';
 import OlSourceVector from 'ol/source/Vector';
@@ -14,6 +14,8 @@ import OlGeomLineString from 'ol/geom/LineString';
 import OlGeomPolygon from 'ol/geom/Polygon';
 
 import { MapFishPrintV2VectorSerializer } from '../../src/serializer/MapFishPrintV2VectorSerializer';
+import { Geometry } from 'ol/geom';
+import Feature from 'ol/Feature';
 
 describe('MapFishPrintV2VectorSerializer', () => {
   let serializer;
@@ -194,20 +196,23 @@ describe('MapFishPrintV2VectorSerializer', () => {
         [829437.9003438022, 6708897.081846992]
       ]])
     });
+
+    const features: Feature<Geometry>[] = [
+      pointFeature1,
+      pointFeature2,
+      lineFeature,
+      polygonFeature
+    ];
+
     const source = new OlSourceVector({
-      features: [
-        pointFeature1,
-        pointFeature2,
-        lineFeature,
-        polygonFeature
-      ]
+      features
     });
     const layerName = 'Vector Layer';
     const layer = new OlLayerVector({
       source: source,
       style: style,
       name: layerName
-    });
+    } as any);
 
     const serialized = serializer.serialize(layer, 1909);
 
@@ -249,7 +254,7 @@ describe('MapFishPrintV2VectorSerializer', () => {
           },
           geometry: {
             type: 'Point',
-            coordinates: pointFeature1.getGeometry().getCoordinates()
+            coordinates: pointFeature1?.getGeometry()?.getCoordinates()
           }
         }, {
           type: 'Feature',
@@ -258,7 +263,7 @@ describe('MapFishPrintV2VectorSerializer', () => {
           },
           geometry: {
             type: 'Point',
-            coordinates: pointFeature2.getGeometry().getCoordinates()
+            coordinates: pointFeature2?.getGeometry()?.getCoordinates()
           }
         }, {
           type: 'Feature',
@@ -267,7 +272,7 @@ describe('MapFishPrintV2VectorSerializer', () => {
           },
           geometry: {
             type: 'LineString',
-            coordinates: lineFeature.getGeometry().getCoordinates()
+            coordinates: lineFeature?.getGeometry()?.getCoordinates()
           }
         }, {
           type: 'Feature',
@@ -276,7 +281,7 @@ describe('MapFishPrintV2VectorSerializer', () => {
           },
           geometry: {
             type: 'Polygon',
-            coordinates: polygonFeature.getGeometry().getCoordinates()
+            coordinates: polygonFeature?.getGeometry()?.getCoordinates()
           }
         }]
       },

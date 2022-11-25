@@ -1,4 +1,4 @@
-/*eslint-env jest*/
+/* eslint-env jest*/
 import { BaseMapFishPrintManager } from '../../src/manager/BaseMapFishPrintManager';
 
 describe('BaseMapFishPrintManager', () => {
