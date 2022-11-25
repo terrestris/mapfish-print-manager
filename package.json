@@ -32,7 +32,7 @@
     "typecheck": "tsc --pretty --noEmit true --emitDeclarationOnly false",
     "start": "webpack-dev-server --config ./webpack.development.config.js",
     "build:examples": "npm run clean:examples && webpack --config ./webpack.production.config.js",
-    "build:dist": "npm run clean:dist && babel src --out-dir dist && tsc --pretty",
+    "build:dist": "npm run clean:dist && babel src --out-dir dist && tsc --pretty -p .",
     "build:docs": "npm run clean:docs && typedoc",
     "prepublishOnly": "npm run build:dist && npm run build:docs",
     "release": "np --no-yarn",
