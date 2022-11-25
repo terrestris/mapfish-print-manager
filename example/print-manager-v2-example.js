@@ -1,3 +1,4 @@
+// @ts-nocheck
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OlLayerTile from 'ol/layer/Tile';
@@ -42,7 +43,7 @@ printProvider.init()
  *
  */
 const onChangePrintExtent = scale => {
-  const scaleSelect: any = document.querySelector('select#scale-select');
+  const scaleSelect = document.querySelector('select#scale-select');
   scaleSelect.value = scale.name;
 };
 
@@ -82,8 +83,8 @@ const onScaleChange = event => {
  *
  */
 const registerPrintHandler = () => {
-  const printBtn: any = document.querySelector('button#print');
-  printBtn.onclick = onPrintClick;
+  const printBtn = document.querySelector('button#print');
+  printBtn.addEventListener('click', onPrintClick);
 };
 
 /**
@@ -99,8 +100,8 @@ const onPrintClick = () => {
  *
  */
 const fillCombos = () => {
-  const layoutSelect: any = document.querySelector('select#layout-select');
-  printProvider.getLayouts().forEach((layout: any) => {
+  const layoutSelect = document.querySelector('select#layout-select');
+  printProvider.getLayouts().forEach((layout) => {
     const option = document.createElement('option');
     option.text = layout.name;
     layoutSelect?.add(option);
@@ -108,8 +109,8 @@ const fillCombos = () => {
   layoutSelect.value = printProvider.getLayout().name;
   layoutSelect.onchange = onLayoutChange;
 
-  const dpiSelect: any = document.querySelector('select#dpi-select');
-  printProvider.getDpis().forEach((dpi: any) => {
+  const dpiSelect = document.querySelector('select#dpi-select');
+  printProvider.getDpis().forEach((dpi) => {
     const option = document.createElement('option');
     option.text = dpi.name;
     dpiSelect?.add(option);
@@ -117,8 +118,8 @@ const fillCombos = () => {
   dpiSelect.value = printProvider.getDpi().name;
   dpiSelect.onchange = onDpiChange;
 
-  const formatSelect: any = document.querySelector('select#format-select');
-  printProvider.getOutputFormats().forEach((format: any) => {
+  const formatSelect = document.querySelector('select#format-select');
+  printProvider.getOutputFormats().forEach((format) => {
     const option = document.createElement('option');
     option.text = format.name;
     formatSelect.add(option);
@@ -126,8 +127,8 @@ const fillCombos = () => {
   formatSelect.value = printProvider.getOutputFormat().name;
   formatSelect.onchange = onFormatChange;
 
-  const scaleSelect: any = document.querySelector('select#scale-select');
-  printProvider.getScales().forEach((scale: any) => {
+  const scaleSelect = document.querySelector('select#scale-select');
+  printProvider.getScales().forEach((scale) => {
     const option = document.createElement('option');
     option.text = scale.name;
     scaleSelect.add(option);

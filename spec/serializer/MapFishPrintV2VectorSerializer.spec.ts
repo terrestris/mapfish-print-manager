@@ -1,4 +1,4 @@
-/*eslint-env jest*/
+/* eslint-env jest */
 import OlLayerVector from 'ol/layer/Vector';
 import OlLayerTile from 'ol/layer/Tile';
 import OlSourceVector from 'ol/source/Vector';

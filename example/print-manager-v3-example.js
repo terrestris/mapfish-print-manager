@@ -1,3 +1,4 @@
+// @ts-nocheck
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OlLayerTile from 'ol/layer/Tile';
@@ -25,7 +26,7 @@ const map = new OlMap({
 });
 
 // @ts-ignore
-const printProvider: any = new MapFishPrintV3Manager({
+const printProvider = new MapFishPrintV3Manager({
   url: 'http://localhost:9000/print-v3',
   map: map
 });
@@ -42,7 +43,7 @@ printProvider?.init()?.then(() => {
  *
  */
 const onChangePrintExtent = scale => {
-  const scaleSelect: any = document.querySelector('select#scale-select');
+  const scaleSelect = document.querySelector('select#scale-select');
   scaleSelect.value = scale;
 };
 
@@ -90,7 +91,7 @@ function onScaleChange(event) {
  *
  */
 function registerPrintHandler() {
-  const printBtn: any = document.querySelector('button#print');
+  const printBtn = document.querySelector('button#print');
   printBtn.onclick = onPrintClick;
 }
 
@@ -98,7 +99,7 @@ function registerPrintHandler() {
  *
  */
 function registerCancelPrintHandler() {
-  const cancelPrintBtn: any = document.querySelector('button#cancel-print');
+  const cancelPrintBtn = document.querySelector('button#cancel-print');
   cancelPrintBtn.onclick = onCancelPrintClick;
 }
 
@@ -122,7 +123,7 @@ function onCancelPrintClick() {
  *
  */
 function fillPrintAppCombo() {
-  const appSelect: any = document.querySelector('select#app-select');
+  const appSelect = document.querySelector('select#app-select');
   printProvider.getPrintApps().forEach(printApp => {
     const option = document.createElement('option');
     option.text = printApp;
@@ -136,7 +137,7 @@ function fillPrintAppCombo() {
  *
  */
 function fillCombos() {
-  const layoutSelect: any = document.querySelector('select#layout-select');
+  const layoutSelect = document.querySelector('select#layout-select');
   printProvider.getLayouts().forEach(layout => {
     const option = document.createElement('option');
     option.text = layout.name;
@@ -145,7 +146,7 @@ function fillCombos() {
   layoutSelect.value = printProvider.getLayout().name;
   layoutSelect.onchange = onLayoutChange;
 
-  const dpiSelect: any = document.querySelector('select#dpi-select');
+  const dpiSelect = document.querySelector('select#dpi-select');
   printProvider.getDpis().forEach(dpi => {
     const option = document.createElement('option');
     option.text = dpi;
@@ -154,7 +155,7 @@ function fillCombos() {
   dpiSelect.value = printProvider.getDpi();
   dpiSelect.onchange = onDpiChange;
 
-  const formatSelect: any = document.querySelector('select#format-select');
+  const formatSelect = document.querySelector('select#format-select');
   printProvider.getOutputFormats().forEach(format => {
     const option = document.createElement('option');
     option.text = format;
@@ -163,7 +164,7 @@ function fillCombos() {
   formatSelect.value = printProvider.getOutputFormat();
   formatSelect.onchange = onFormatChange;
 
-  const scaleSelect: any = document.querySelector('select#scale-select');
+  const scaleSelect = document.querySelector('select#scale-select');
   printProvider.getScales().forEach(scale => {
     const option = document.createElement('option');
     option.text = scale;

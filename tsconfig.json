@@ -61,7 +61,6 @@
     }
   },
   "include": [
-    "src",
-    "example"
+    "src"
   ]
 }
