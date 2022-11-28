@@ -131,22 +131,6 @@ export class BaseMapFishPrintManager extends Observable {
   transformOpts = {};
 
   /**
-   * A filter function that will be called before the print call. Should
-   * return a Boolean whether to serialize a layer for print or not.
-   *
-   * @type {(layer: OlLayer) => boolean}
-   */
-  layerFilter = layer => true;
-
-  /**
-   * A filter function that will be called before the print call. Should
-   * return a Boolean whether to serialize a legend of a layer for print or not.
-   *
-   * @type {(layer: OlLayer) => boolean}
-   */
-  legendFilter = layer => true;
-
-  /**
    * An array determining custom print scales. If provided, these will override
    * the scales retrieved from print capabilities.
    *
@@ -281,6 +265,22 @@ export class BaseMapFishPrintManager extends Observable {
       this.url += '/';
     }
   }
+
+  /**
+   * A filter function that will be called before the print call. Should
+   * return a Boolean whether to serialize a layer for print or not.
+   *
+   * @type {(layer: OlLayer) => boolean}
+   */
+  layerFilter = layer => true;
+
+  /**
+      * A filter function that will be called before the print call. Should
+      * return a Boolean whether to serialize a legend of a layer for print or not.
+      *
+      * @type {(layer: OlLayer) => boolean}
+      */
+  legendFilter = layer => true;
 
   /**
    * Shuts down the manager.
@@ -666,8 +666,8 @@ export class BaseMapFishPrintManager extends Observable {
     const viewResolution = this.map.getView().getResolution();
     const layerSource = layer.getSource();
 
-    const serializer = this.serializers.find(serializer => {
-      return serializer.canSerialize(layerSource);
+    const serializer = this.serializers.find(s => {
+      return s.canSerialize(layerSource);
     });
 
     if (serializer) {
@@ -726,7 +726,7 @@ export class BaseMapFishPrintManager extends Observable {
    * @param {string} name The name of the layout to use.
    */
   setLayout(name) {
-    const layout = this.getLayouts().find(layout => layout.name === name);
+    const layout = this.getLayouts().find(l => l.name === name);
 
     if (!layout) {
       Logger.warn(`No layout named '${name}' found.`);
@@ -755,7 +755,7 @@ export class BaseMapFishPrintManager extends Observable {
    * @param {string} name The name of the output format to use.
    */
   setOutputFormat(name) {
-    const format = this.getOutputFormats().find(format => format === name);
+    const format = this.getOutputFormats().find(f => f === name);
 
     if (!format) {
       Logger.warn(`No output format named '${name}' found.`);
@@ -782,8 +782,8 @@ export class BaseMapFishPrintManager extends Observable {
    * @param {string} name The name of the dpi to use.
    */
   setDpi = name => {
-    const dpi = this.getDpis().find(dpi => {
-      return dpi.name === name;
+    const dpi = this.getDpis().find(d => {
+      return d.name === name;
     });
 
     if (!dpi) {
@@ -815,7 +815,7 @@ export class BaseMapFishPrintManager extends Observable {
       value = parseFloat(value);
     }
 
-    const scale = this.getScales().find(scale => scale === value);
+    const scale = this.getScales().find(s => s === value);
 
     if (!scale) {
       Logger.warn(`No scale '${value}' found.`);
