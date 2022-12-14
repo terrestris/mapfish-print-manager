@@ -86,8 +86,8 @@ describe('Shared', () => {
         const source = new OlSourceTileWMS({
           url: 'https://ows.terrestris.de/osm/service',
           params: {
-            'LAYERS': 'OSM-WMS',
-            'TILED': true
+            LAYERS: 'OSM-WMS',
+            TILED: true
           },
           serverType: 'geoserver'
         });
@@ -123,8 +123,8 @@ describe('Shared', () => {
         const source = new OlSourceTileWMS({
           url: 'https://ows.terrestris.de/osm/service',
           params: {
-            'LAYERS': 'OSM-WMS',
-            'TILED': true
+            LAYERS: 'OSM-WMS',
+            TILED: true
           },
           serverType: 'geoserver'
         });
