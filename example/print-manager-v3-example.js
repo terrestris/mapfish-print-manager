@@ -6,6 +6,8 @@ import { fromLonLat } from 'ol/proj';
 
 import { MapFishPrintV3Manager } from '../src/index';
 
+import 'ol/ol.css';
+
 const map = new OlMap({
   target: 'map',
   layers: [
