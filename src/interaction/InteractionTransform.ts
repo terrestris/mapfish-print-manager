@@ -110,7 +110,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
 
   feature_?: OlFeature<OlGeometry>;
 
-  layers_: OlLayerVector<OlSourceVector>[];
+  layers_?: OlLayerVector<OlSourceVector>[];
 
   isTouch?: boolean;
 
@@ -195,9 +195,11 @@ export class OlInteractionTransform extends OlInteractionPointer {
     }
 
     /** List of layers to transform */
-    this.layers_ = options.layers instanceof Array
-      ? options.layers
-      : [options.layers];
+    this.layers_ = options.layers ?
+      options.layers instanceof Array
+        ? options.layers
+        : [options.layers]
+      : undefined;
 
     if (Array.isArray(this.layers_)) {
       this.layers_.forEach(layer => {
