@@ -34,7 +34,7 @@
     "release": "np --no-yarn",
     "start": "webpack-dev-server --config ./webpack.development.config.js",
     "pretest": "npm run typecheck && npm run lint",
-    "test": "jest --maxWorkers=4",
+    "test": "jest --maxWorkers=4 --coverage",
     "test:watch": "jest --watchAll",
     "typecheck": "tsc --pretty --noEmit"
   },

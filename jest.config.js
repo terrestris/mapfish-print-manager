@@ -1,14 +1,7 @@
 module.exports = {
-  automock: false,
   moduleFileExtensions: [
     'js',
     'ts'
-  ],
-  moduleDirectories: [
-    'node_modules'
-  ],
-  modulePathIgnorePatterns: [
-    '<rootDir>/build/'
   ],
   transformIgnorePatterns: [
     'node_modules/(?!ol)'
@@ -16,7 +9,14 @@ module.exports = {
   setupFiles: [
     '<rootDir>/spec/jest/setup.js'
   ],
-  collectCoverage: false,
+  modulePathIgnorePatterns: [
+    '<rootDir>/build/',
+    '<rootDir>/dist/'
+  ],
+  collectCoverageFrom: [
+    'src/**/*.{ts,js}'
+  ],
   coverageDirectory: '<rootDir>/coverage',
-  testEnvironment: 'jsdom'
+  testEnvironment: 'jsdom',
+  testRegex: '/spec/.*\\.spec.(ts|js)$'
 };
