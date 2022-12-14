@@ -1,4 +1,3 @@
-/* eslint-env jest*/
 import OlLayerImage from 'ol/layer/Image';
 import OlLayerTile from 'ol/layer/Tile';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
@@ -8,7 +7,7 @@ import OlSourceOSM from 'ol/source/OSM';
 import { MapFishPrintV2WMSSerializer } from '../../src/serializer/MapFishPrintV2WMSSerializer';
 
 describe('MapFishPrintV2WMSSerializer', () => {
-  let serializer;
+  let serializer: MapFishPrintV2WMSSerializer;
 
   beforeEach(() => {
     serializer = new MapFishPrintV2WMSSerializer();
@@ -58,7 +57,7 @@ describe('MapFishPrintV2WMSSerializer', () => {
       CUSTOM_PARAM_1: 'BVB',
       CUSTOM_PARAM_2: '09'
     };
-    layer.getSource().updateParams(customParams);
+    layer.getSource()?.updateParams(customParams);
 
     const serializedCustomParams = serializer.serialize(layer);
 
@@ -76,7 +75,7 @@ describe('MapFishPrintV2WMSSerializer', () => {
     const customFormat = {
       FORMAT: 'image/png8'
     };
-    layer.getSource().updateParams(customFormat);
+    layer.getSource()?.updateParams(customFormat);
 
     const serializedFormat = serializer.serialize(layer);
 
@@ -94,7 +93,7 @@ describe('MapFishPrintV2WMSSerializer', () => {
     const customStyles = {
       STYLES: 'SUEDKURVE'
     };
-    layer.getSource().updateParams(customStyles);
+    layer.getSource()?.updateParams(customStyles);
 
     const serializedCustomStyles = serializer.serialize(layer);
 

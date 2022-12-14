@@ -1,4 +1,3 @@
-/*eslint-env jest*/
 import OlLayerImage from 'ol/layer/Image';
 import OlLayerVector from 'ol/layer/Vector';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
@@ -12,7 +11,7 @@ import { MapFishPrintV3GeoJsonSerializer } from '../../src/serializer/MapFishPri
 import { Geometry } from 'ol/geom';
 
 describe('MapFishPrintV3GeoJsonSerializer', () => {
-  let serializer;
+  let serializer: MapFishPrintV3GeoJsonSerializer;
 
   beforeEach(() => {
     serializer = new MapFishPrintV3GeoJsonSerializer();
@@ -27,7 +26,7 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
       source: new OlSourceImageWMS()
     });
 
-    const serialized = serializer.serialize(layer);
+    const serialized = serializer.serialize(layer, {}, 1909);
 
     expect(serialized).toBeUndefined();
   });
@@ -37,7 +36,7 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
       source: new OlSourceVector()
     });
 
-    const serializedSimple = serializer.serialize(layer);
+    const serializedSimple = serializer.serialize(layer, null, 1909);
 
     expect(serializedSimple).toEqual({
       geoJson: {
@@ -47,7 +46,9 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
       name: layer.get('name') || 'Vector Layer',
       opacity: layer.getOpacity(),
       style: {},
-      type: 'geojson'
+      type: 'geojson',
+      failOnError: false,
+      renderAsSvg: false
     });
   });
 
@@ -80,7 +81,7 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
       })
     });
 
-    const serializedSimple = serializer.serialize(layer);
+    const serializedSimple = serializer.serialize(layer, null, 1909);
 
     expect(serializedSimple).toEqual({
       geoJson: {
@@ -141,7 +142,9 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
           strokeWidth: 1.25,
         }
       },
-      type: 'geojson'
+      type: 'geojson',
+      failOnError: false,
+      renderAsSvg: false
     });
   });
 

@@ -3,13 +3,15 @@ import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceWMTS from 'ol/source/WMTS';
 import OlLayer from 'ol/layer/Layer';
+import {Coordinate as OlCoordinate} from 'ol/coordinate';
 
-import BaseSerializer from '../serializer/BaseSerializer';
-import BaseMapFishPrintManager from './BaseMapFishPrintManager';
+import BaseMapFishPrintManager, { BaseMapFishPrintManagerOpts } from './BaseMapFishPrintManager';
 import MapFishPrintV2WMSSerializer from '../serializer/MapFishPrintV2WMSSerializer';
 import MapFishPrintV2VectorSerializer from '../serializer/MapFishPrintV2VectorSerializer';
 import Shared from '../util/Shared';
 import Log from '../util/Logger';
+
+export type MapFishPrintV2ManagerOpts = BaseMapFishPrintManagerOpts & {};
 
 /**
  * The MapFishPrintV2Manager.
@@ -20,58 +22,41 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
 
   /**
    * The capabilities endpoint of the print service.
-   *
-   * @type {string}
    */
-  static INFO_JSON_ENDPOINT = 'info.json';
-
-  /**
-   * The layer serializers to use. May be overridden or extented to obtain
-   * custom functionality.
-   *
-   * @type {BaseSerializer[]}
-   */
-  serializers = [
-    new MapFishPrintV2WMSSerializer(),
-    new MapFishPrintV2VectorSerializer()
-  ];
+  static INFO_JSON_ENDPOINT: string = 'info.json';
 
   /**
    * The constructor
    */
-  constructor() {
-    super(arguments);
+  constructor(opts: MapFishPrintV2ManagerOpts) {
+    super(opts);
+
+    if (!this.serializers || this.serializers.length === 0) {
+      this.serializers = [
+        new MapFishPrintV2WMSSerializer(),
+        new MapFishPrintV2VectorSerializer()
+      ];
+    }
   }
 
   /**
    * Initializes the manager.
-   *
-   * @return {Promise}
    */
-  init() {
+  async init(): Promise<void> {
     if (!this.url && this.capabilities) {
-      return Promise.resolve(this.initManager(this.capabilities));
+      this.initManager(this.capabilities);
     } else if (this.url && !this.capabilities) {
-      return this.loadCapabilities()
-        .then(json => Promise.resolve(this.initManager(json)))
-        .catch(error => {
-          Log.error(error);
-          Promise.reject(new Error(`Could not initialize the manager: ${error.message}`));
-        });
+      const json = await this.loadCapabilities();
+      this.initManager(json);
     }
   }
 
   /**
    * Initializes the manager instance. Typically called by subclasses via init().
    *
-   * TODO Implement as interface (-> TS) and move to MapFishPrintV2Manager
-   * TODO Check return type Boolean?
-   *
-   * @param {Object} capabilities The capabilities to set.
-   *
-   * @return {boolean}
+   * @param capabilities The capabilities to set.
    */
-  initManager(capabilities) {
+  initManager(capabilities: any) {
     this.capabilities = capabilities;
 
     this._layouts = this.capabilities.layouts;
@@ -89,31 +74,26 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     this.initTransformInteraction();
 
     this._initiated = true;
-
-    return this.isInitiated();
   }
 
   /**
    * Loads the print capabilities from the provided remote source.
-   *
-   * @return {Promise}
    */
-  loadCapabilities() {
-    return fetch(this.url + MapFishPrintV2Manager.INFO_JSON_ENDPOINT, {
+  async loadCapabilities(): Promise<any> {
+    const response = await fetch(this.url + MapFishPrintV2Manager.INFO_JSON_ENDPOINT, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         ...this.headers
       },
       credentials: this.credentialsMode
-    })
-      .then(response => this.validateResponse(response))
-      .then(response => response.json())
-      .then(json => Promise.resolve(json))
-      .catch(error => {
-        Log.error(error);
-        Promise.reject(new Error(`Error while fetching the print capabilities: ${error.message}`));
-      });
+    });
+
+    this.validateResponse(response);
+
+    const responseJson = await response.json();
+
+    return responseJson;
   }
 
   /**
@@ -122,13 +102,13 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * Note: The manager has to been initialized prior this method's usage.
    *
-   * @param {boolean} forceDownload Whether to force a direct download of the
-   *                                print result or to return the download url.
-   * @return {Promise|undefined} If forceDownload is set to false, the download
-   *                             url of the print result will be returned in a
-   *                             Promise.
+   * @param forceDownload Whether to force a direct download of the
+   *                      print result or to return the download url.
+   * @return If forceDownload is set to false, the download
+   *         url of the print result will be returned in a
+   *         Promise.
    */
-  print(forceDownload) {
+  async print(forceDownload?: boolean) {
     if (!(this.isInitiated())) {
       Log.warn('The manager hasn\'t been initiated yet. Please call init() first.');
       return;
@@ -141,10 +121,10 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       if (forceDownload) {
         this.download(url);
       } else {
-        return Promise.resolve(url);
+        return url;
       }
     } else {
-      return fetch(this.capabilities.createURL, {
+      const response = await fetch(this.capabilities.createURL, {
         method: this.method,
         headers: {
           'Content-Type': 'application/json',
@@ -152,21 +132,19 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
         },
         credentials: this.credentialsMode,
         body: JSON.stringify(payload)
-      })
-        .then(response => this.validateResponse(response))
-        .then(response => response.json())
-        .then(json => {
-          const url = json.getURL;
-          if (forceDownload) {
-            this.download(url);
-          } else {
-            return Promise.resolve(url);
-          }
-        })
-        .catch(error => {
-          Log.error(error);
-          Promise.reject(`Error while creating the print document: ${error.message}`);
-        });
+      });
+
+      this.validateResponse(response);
+
+      const responseJson = await response.json();
+
+      const url: string = responseJson.getURL;
+
+      if (!forceDownload) {
+        return url;
+      }
+
+      this.download(url);
     }
   }
 
@@ -174,17 +152,17 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * Collects the payload that is required for the print call to the print
    * servlet.
    *
-   * @return {Object} The print payload.
+   * @return The print payload.
    */
-  getPrintPayload() {
+  getPrintPayload(): any {
     const mapView = this.map.getView();
     const mapProjection = mapView.getProjection();
     const mapLayers = Shared.getMapLayers(this.map);
-    const extentFeatureGeometry = this._extentFeature.getGeometry();
+    const extentFeatureGeometry = this._extentFeature?.getGeometry();
 
     const serializedLayers = mapLayers
       .filter(this.filterPrintableLayer.bind(this))
-      .reduce((acc, layer) => {
+      .reduce((acc: any[], layer) => {
         const serializedLayer = this.serializeLayer(layer);
         if (serializedLayer) {
           acc.push(serializedLayer);
@@ -194,7 +172,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
 
     const serializedLegends = mapLayers
       .filter(this.filterPrintableLegend.bind(this))
-      .reduce((acc, layer) => {
+      .reduce((acc: any[], layer) => {
         const serializedLegend = this.serializeLegend(layer);
         if (serializedLegend) {
           acc.push(serializedLegend);
@@ -210,7 +188,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       dpi: this.getDpi().value,
       layers: serializedLayers,
       pages: [{
-        center: getCenter(extentFeatureGeometry.getExtent()),
+        center: getCenter(extentFeatureGeometry?.getExtent() || [0, 0, 0, 0]),
         scale: this.getScale().value,
         rotation: this.calculateRotation() || 0
       }],
@@ -224,11 +202,11 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   /**
    * Serializes/encodes the legend payload for the given layer.
    *
-   * @param {OlLayer} layer The layer to serialize/encode the legend for.
+   * @param layer The layer to serialize/encode the legend for.
    *
-   * @return {Object} The serialized/encoded legend.
+   * @return The serialized/encoded legend.
    */
-  serializeLegend(layer) {
+  serializeLegend(layer: OlLayer): any {
     const source = layer.getSource();
     if (source instanceof OlSourceTileWMS ||
       source instanceof OlSourceImageWMS ||
@@ -255,11 +233,11 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * Calculates the extent based on a scale.
    * Overrides the method from base class.
    *
-   * @param {number} scale The scale to calculate the extent for. If not given,
-   *                       the current scale of the provider will be used.
-   * @return {OlExtent} The extent.
+   * @param scale The scale to calculate the extent for. If not given,
+   *              the current scale of the provider will be used.
+   * @return The extent.
    */
-  calculatePrintExtent(scale?: any | undefined): OlExtent {
+  calculatePrintExtent(scale?: number): OlExtent {
     const printMapSize = this.getLayout().map;
     const printScale = scale || this.getScale().value;
     const {
@@ -267,11 +245,12 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       height
     } = this.getPrintExtentSize(printMapSize, printScale);
 
-    let center;
-    if (this._extentFeature) {
-      center = getCenter(this._extentFeature.getGeometry().getExtent());
+    let center: OlCoordinate;
+    const geom = this._extentFeature?.getGeometry();
+    if (geom) {
+      center = getCenter(geom.getExtent());
     } else {
-      center = this.map.getView().getCenter();
+      center = this.map.getView().getCenter() || [0, 0];
     }
 
     return [
@@ -286,12 +265,10 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    * Sets the output format to use.
    * Overrides the method from base class.
    *
-   * @param {string} name The name of the output format to use.
+   * @param name The name of the output format to use.
    */
-  setOutputFormat(name) {
-    const format = this.getOutputFormats().find(format => {
-      return format.name === name;
-    });
+  setOutputFormat(name: string) {
+    const format = this.getOutputFormats().find(f => f.name === name);
 
     if (!format) {
       Log.warn(`No output format named '${name}' found.`);
@@ -309,10 +286,8 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * @param {string} name The name of the scale to use.
    */
-  setScale = name => {
-    const scale = this.getScales().find(scale => {
-      return scale.name === name;
-    });
+  setScale = (name: string) => {
+    const scale = this.getScales().find(s => s.name === name);
 
     if (!scale) {
       Log.warn(`No scale named '${name}' found.`);
@@ -324,7 +299,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     this.updatePrintExtent();
 
     this.dispatch('change:scale', scale);
-  }
+  };
 }
 
 export default MapFishPrintV2Manager;

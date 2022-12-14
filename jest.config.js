@@ -1,7 +1,8 @@
 module.exports = {
   automock: false,
   moduleFileExtensions: [
-    'js'
+    'js',
+    'ts'
   ],
   moduleDirectories: [
     'node_modules'

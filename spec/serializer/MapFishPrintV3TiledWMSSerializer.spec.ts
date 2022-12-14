@@ -1,4 +1,3 @@
-/* eslint-env jest*/
 import OlLayerTile from 'ol/layer/Tile';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceOSM from 'ol/source/OSM';
@@ -6,7 +5,7 @@ import OlSourceOSM from 'ol/source/OSM';
 import { MapFishPrintV3TiledWMSSerializer } from '../../src/serializer/MapFishPrintV3TiledWMSSerializer';
 
 describe('MapFishPrintV3TiledWMSSerializer', () => {
-  let serializer;
+  let serializer: MapFishPrintV3TiledWMSSerializer;
 
   beforeEach(() => {
     serializer = new MapFishPrintV3TiledWMSSerializer();
@@ -37,7 +36,9 @@ describe('MapFishPrintV3TiledWMSSerializer', () => {
           LAYERS: layerName
         }
       }),
-      name: 'Shinji'
+      properties: {
+        name: 'Shinji'
+      }
     });
 
     const serialized = serializer.serialize(layer);
@@ -73,7 +74,9 @@ describe('MapFishPrintV3TiledWMSSerializer', () => {
           LAYERS: layerName
         }
       }),
-      name: 'Shinji'
+      properties: {
+        name: 'Shinji'
+      }
     });
 
     const serialized = serializer.serialize(layer, {

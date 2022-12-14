@@ -1,5 +1,7 @@
 {
-  "entryPoints": ["./src/index.ts"],
+  "entryPoints": [
+    "./src"
+  ],
   "out": "build/docs",
-  "readme": "none"
+  "readme": "./README.md"
 }

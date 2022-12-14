@@ -1,4 +1,3 @@
-/* eslint-env jest*/
 import OlLayerImage from 'ol/layer/Image';
 import OlLayerTile from 'ol/layer/Tile';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
@@ -7,7 +6,7 @@ import OlSourceOSM from 'ol/source/OSM';
 import { MapFishPrintV3OSMSerializer } from '../../src/serializer/MapFishPrintV3OSMSerializer';
 
 describe('MapFishPrintV3OSMSerializer', () => {
-  let serializer;
+  let serializer: MapFishPrintV3OSMSerializer;
 
   beforeEach(() => {
     serializer = new MapFishPrintV3OSMSerializer();

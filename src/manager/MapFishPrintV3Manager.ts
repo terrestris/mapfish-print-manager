@@ -1,15 +1,16 @@
 import _get from 'lodash/get';
 import _isArray from 'lodash/isArray';
+
 import URL from 'url-parse';
+
 import QueryString from 'query-string';
+
+import OlLayer from 'ol/layer/Layer';
 import {
   getCenter
 } from 'ol/extent';
-// eslint-disable-next-line no-unused-vars
-import OlLayer from 'ol/layer';
 
-import BaseSerializer from '../serializer/BaseSerializer';
-import BaseMapFishPrintManager from './BaseMapFishPrintManager';
+import BaseMapFishPrintManager, { BaseMapFishPrintManagerOpts } from './BaseMapFishPrintManager';
 import MapFishPrintV3GeoJsonSerializer from '../serializer/MapFishPrintV3GeoJsonSerializer';
 import MapFishPrintV3OSMSerializer from '../serializer/MapFishPrintV3OSMSerializer';
 import MapFishPrintV3TiledWMSSerializer from '../serializer/MapFishPrintV3TiledWMSSerializer';
@@ -18,6 +19,39 @@ import MapFishPrintV3WMTSSerializer from '../serializer/MapFishPrintV3WMTSSerial
 import Shared from '../util/Shared';
 import Logger from '../util/Logger';
 import scales from '../config/scales';
+
+export type V3CustomMapParams = {
+  center?: number;
+  dpi?: number;
+  layers?: [OlLayer];
+  projection?: string;
+  rotation?: number;
+  scale?: number;
+  areaOfInterest?: any;
+  bbox?: [number];
+  useNearestScale?: boolean;
+  dpiSensitiveStyle?: boolean;
+  useAdjustBounds?: boolean;
+  width?: number;
+  longitudeFirst?: boolean;
+  zoomToFeatures?: boolean;
+  height?: number;
+};
+
+export type MapFishPrintV3ManagerOpts = BaseMapFishPrintManagerOpts & {
+  /**
+   * Custom parameters which can be additionally set on map to determine its
+   * special handling while printing.
+   *
+   * Note: Properties of \{V3CustomMapParams\} marked as default will be handled by the manager itself
+   * and don't need to be explicitly provided as customized params (s.
+   * https://github.com/terrestris/mapfish-print-manager/blob/master/src/manager/MapFishPrintV3Manager.js#L416)
+   *
+   * Please refer to http://mapfish.github.io/mapfish-print-doc/attributes.html#!map
+   * for further details.
+   */
+  customMapParams?: V3CustomMapParams;
+};
 
 /**
  * The MapFishPrintV3Manager.
@@ -28,127 +62,76 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
   /**
    * The capabilities endpoint of the print service.
-   *
-   * @type {string}
    */
-  static APPS_JSON_ENDPOINT = 'apps.json';
+  static APPS_JSON_ENDPOINT: string = 'apps.json';
 
   /**
    * The capabilities endpoint of the print service.
-   *
-   * @type {string}
    */
-  static CAPABILITIES_JSON_ENDPOINT = 'capabilities.json';
+  static CAPABILITIES_JSON_ENDPOINT: string = 'capabilities.json';
 
-  /**
-   * The layer serializers to use. May be overridden or extented to obtain
-   * custom functionality.
-   *
-   * @type {BaseSerializer[]}
-   */
-  serializers = [
-    new MapFishPrintV3GeoJsonSerializer(),
-    new MapFishPrintV3OSMSerializer(),
-    new MapFishPrintV3TiledWMSSerializer(),
-    new MapFishPrintV3WMSSerializer(),
-    new MapFishPrintV3WMTSSerializer()
-  ];
-
-  /**
-   * @typedef {Object} V3CustomMapParams
-   * @property {number} [center] (default)
-   * @property {number} [dpi] (default)
-   * @property {[OlLayer]} [layers] (default)
-   * @property {string} [projection] (default)
-   * @property {number} [rotation] (default)
-   * @property {number} [scale] (default)
-   * @property {any} [areaOfInterest]
-   * @property {[number]} [bbox]
-   * @property {boolean} [useNearestScale]
-   * @property {boolean} [dpiSensitiveStyle]
-   * @property {boolean} [useAdjustBounds]
-   * @property {number} [width]
-   * @property {boolean} [longitudeFirst]
-   * @property {boolean} [zoomToFeatures]
-   * @property {number} [height]
-   */
-
-  /**
-   * Custom parameters which can be additionally set on map to determine its
-   * special handling while printing.
-   *
-   * Note: Properties of {V3CustomMapParams} marked as default will be handled by the manager itself
-   * and don't need to be explicitly provided as customized params (s.
-   * https://github.com/terrestris/mapfish-print-manager/blob/master/src/manager/MapFishPrintV3Manager.js#L416)
-   *
-   * Please refer to http://mapfish.github.io/mapfish-print-doc/attributes.html#!map
-   * for further details.
-   *
-   * @type {V3CustomMapParams}
-   */
-  customMapParams = {};
+  customMapParams: V3CustomMapParams = {};
 
   /**
    * The supported print applications by the print service.
    *
-   * @type {Array}
    * @private
    */
-  _printApps = [];
+  _printApps: any[] = [];
 
   /**
    * The currently selected print application.
    *
-   * @type {Object}
    * @private
    */
-  _printApp = {};
+  _printApp: any = {};
 
   /**
    * ID of currently started print job. Will be used while polling will be
    * performed.
    *
-   * @type {string}
    * @private
    */
-  _printJobReference = null;
+  _printJobReference: string | null = null;
 
   /**
    * The constructor
    */
-  constructor() {
-    super(arguments);
-  }
+  constructor(opts: MapFishPrintV3ManagerOpts) {
+    super(opts);
 
-  /**
-   * Initializes the manager.
-   *
-   * @return {Promise}
-   */
-  init() {
-    if (this.url && !this.capabilities) {
-      return this.loadPrintApps()
-        .then(printApps => {
-          this.setPrintApps(printApps);
-
-          const defaultPrintApp = this.getPrintApps()[0];
-
-          return this.setPrintApp(defaultPrintApp);
-        })
-        .catch(error => {
-          Logger.error(error);
-          Promise.reject(new Error(`Could not initialize the manager: ${error.message}`));
-        });
-    } else if (!this.url && this.capabilities) {
-      return Promise.resolve(this.initManager(this.capabilities));
+    if (!this.serializers || this.serializers.length === 0) {
+      this.serializers = [
+        new MapFishPrintV3GeoJsonSerializer(),
+        new MapFishPrintV3OSMSerializer(),
+        new MapFishPrintV3TiledWMSSerializer(),
+        new MapFishPrintV3WMSSerializer(),
+        new MapFishPrintV3WMTSSerializer()
+      ];
     }
   }
 
   /**
-   *
+   * Initializes the manager.
+   */
+  async init(): Promise<void> {
+    if (this.url && !this.capabilities) {
+      const printApps = await this.loadPrintApps();
+
+      this.setPrintApps(printApps);
+
+      const defaultPrintApp = this.getPrintApps()[0];
+
+      this.setPrintApp(defaultPrintApp);
+    } else if (!this.url && this.capabilities) {
+      this.initManager(this.capabilities);
+    }
+  }
+
+  /**
    * @param {*} capabilities
    */
-  initManager(capabilities) {
+  initManager(capabilities: any) {
     this.capabilities = capabilities;
 
     this._layouts = capabilities.layouts;
@@ -160,7 +143,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     // mapfish3 doesn't provide scales via capabilities, so we get them from
     // initialized manager if set or set some most common used values here
     // manually as fallback
-    if (this.customPrintScales.length > 0) {
+    if (this.customPrintScales && this.customPrintScales.length > 0) {
       this._scales = this.customPrintScales;
     } else {
       this._scales = scales;
@@ -179,16 +162,16 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Returns attribute value contained in currently chosen layout by its name.
    *
-   * @param {string} attributeName The attribute name (key) to be searched.
-   * @param {string} layoutName Name of currently chosen layout.
+   * @param attributeName The attribute name (key) to be searched.
+   * @param layoutName Name of currently chosen layout.
    *
    * @return {*} Obtained attribute value.
    */
-  getAttributeByName(attributeName, layoutName = this.getLayout().name) {
+  getAttributeByName(attributeName: string, layoutName: string = this.getLayout().name): any {
     const layout = this.getLayoutByName(layoutName);
     const layoutAttributes = layout.attributes;
 
-    const attribute = layoutAttributes.find(layoutAttribute => {
+    const attribute = layoutAttributes.find((layoutAttribute: any) => {
       return layoutAttribute.name === attributeName;
     });
 
@@ -198,11 +181,11 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Returns an object containing configuration for layout based on its name
    *
-   * @param {string} layoutName Layout name.
+   * @param layoutName Layout name.
    *
-   * @return {Object} Layout configuration object.
+   * @return Layout configuration object.
    */
-  getLayoutByName(layoutName) {
+  getLayoutByName(layoutName: string): any {
     const layouts = this.getLayouts();
 
     return layouts.find(layout => layout.name === layoutName);
@@ -213,66 +196,63 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @return {Promise} Promise containing available print apps.
    */
-  loadPrintApps() {
-    return fetch(`${this.url}${MapFishPrintV3Manager.APPS_JSON_ENDPOINT}`, {
+  async loadPrintApps(): Promise<any> {
+    const printAppResponse = await fetch(`${this.url}${MapFishPrintV3Manager.APPS_JSON_ENDPOINT}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         ...this.headers
       },
       credentials: this.credentialsMode
-    })
-      .then(response => this.validateResponse(response))
-      .then(response => response.json())
-      .then(json => Promise.resolve(json))
-      .catch(error =>{
-        Logger.error(error);
-        Promise.reject(new Error(`Error while fetching the print apps: ${error.message}`));
-      });
+    });
+
+    this.validateResponse(printAppResponse);
+
+    const printAppResponseJson = await printAppResponse.json();
+
+    return printAppResponseJson;
   }
 
   /**
    * Loads the print capabilities from the provided remote source.
-   *
-   * @return {Promise}
    */
-  loadAppCapabilities(printApp) {
+  async loadAppCapabilities(printApp: any) {
     const capEndpoint = MapFishPrintV3Manager.CAPABILITIES_JSON_ENDPOINT;
     const url = `${this.url}${printApp}/${capEndpoint}`;
-    return fetch(url, {
+
+    const appCapabilitiesResponse = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         ...this.headers
       },
       credentials: this.credentialsMode
-    })
-      .then(response => this.validateResponse(response))
-      .then(response => response.json())
-      .then(json => Promise.resolve(json))
-      .catch(error => {
-        Logger.error(error);
-        Promise.reject(new Error(`Error while fetching the print capabilities: ${error.message}`));
-      });
+    });
+
+    this.validateResponse(appCapabilitiesResponse);
+
+    const appCapabilitiesResponseJson = await appCapabilitiesResponse.json();
+
+    return appCapabilitiesResponseJson;
   }
 
   /**
    * Determine the base path the application is running
-   * @return {string} The base host path
+   * @return The base host path
    */
   getBasePath() {
-    const baseUrlObj = new URL(this.url, null, QueryString.parse);
+    if (!this.url) {
+      return;
+    }
+    const baseUrlObj = new URL(this.url, undefined, QueryString.parse);
     const baseHost = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
     return baseHost;
   }
 
   /**
-   *
-   *
-   * @param {boolean} forceDownload
-   * @return {Promise}
+   * @param forceDownload
    */
-  print(forceDownload) {
+  async print(forceDownload: boolean) {
     if (!(this.isInitiated())) {
       Logger.warn('The manager hasn\'t been initiated yet. Please call init() first.');
       return;
@@ -282,7 +262,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
     const createPrintJobUrl = `${this.url}${this.getPrintApp()}/report.${this.getOutputFormat()}`;
 
-    return fetch(createPrintJobUrl, {
+    const printResponse = await fetch(createPrintJobUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -290,127 +270,171 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
       },
       credentials: this.credentialsMode,
       body: JSON.stringify(payload)
-    })
-      .then(response => this.validateResponse(response))
-      .then(response => response.json())
-      .then(json => {
-        const {
-          ref,
-          statusURL
-        } = json;
+    });
 
-        const basePath = this.getBasePath();
-        const fullStatusUrl = Shared.sanitizeUrl(basePath + statusURL);
-        this._printJobReference = ref;
+    this.validateResponse(printResponse);
 
-        return this.pollUntilDone.call(this, fullStatusUrl, 1000, this.timeout)
-          .then(downloadUrl => {
-            this._printJobReference = null;
-            const fullDownloadUrl = Shared.sanitizeUrl(basePath + downloadUrl);
+    const printResponseJson = await printResponse.json();
 
-            if (forceDownload) {
-              this.download(fullDownloadUrl);
-            } else {
-              return Promise.resolve(fullDownloadUrl);
-            }
-          })
-          .catch(error => {
-            this._printJobReference = null;
-            Logger.error(error);
-          });
-      })
-      .catch(error => Promise.reject(`Error while creating the print job: ${error.message}`));
+    const {
+      ref,
+      statusURL
+    } = printResponseJson;
+
+    const basePath = this.getBasePath();
+    const fullStatusUrl = Shared.sanitizeUrl(basePath + statusURL);
+    this._printJobReference = ref;
+
+    try {
+      const downloadUrl = await this.pollUntilDone.call(this, fullStatusUrl, 1000, this.timeout);
+
+      const fullDownloadUrl = Shared.sanitizeUrl(basePath + downloadUrl);
+
+      if (forceDownload) {
+        this.download(fullDownloadUrl);
+      } else {
+        return fullDownloadUrl;
+      }
+    } finally {
+      this._printJobReference = null;
+    }
   }
 
-  /**
-   *
-   *
-   * @param {*} url
-   * @param {*} interval
-   * @param {*} timeout
-   * @return {Promise}
-   */
-  pollUntilDone(url, interval, timeout) {
+  async pollUntilDone(url: string, interval: number, timeout: number): Promise<any> {
+    // let start = Date.now();
+
+    this.poll(
+      () => this.getStatus(url),
+      responseJson => {
+        return false;
+        // const status = responseJson.status;
+        // if (status === 'finished') {
+        //   return responseJson.downloadURL;
+        // } else if (status === 'error') {
+        //   throw new Error(`There was an error executing the job: ${responseJson.error}`);
+        // } else if (status === 'cancelled') {
+        //   throw new Error('The job was cancelled.');
+        // } else if (['waiting', 'running'].includes(status)) {
+        //   if (timeout !== 0 && Date.now() - start > timeout) {
+        //     throw new Error('timeout error on pollUntilDone');
+        //   }
+        // }
+      },
+      interval,
+      this.timeout
+    );
+
+    // const run = async () => {
+    //   const response = await fetch(url, {
+    //     method: 'GET',
+    //     headers: {
+    //       ...this.headers
+    //     },
+    //     credentials: this.credentialsMode
+    //   });
+
+    //   this.validateResponse(response);
+
+    //   const responseJson = await response.json();
+
+    //   const status = responseJson.status;
+    //   if (status === 'finished') {
+    //     return responseJson.downloadURL;
+    //   } else if (status === 'error') {
+    //     throw new Error(`There was an error executing the job: ${responseJson.error}`);
+    //   } else if (status === 'cancelled') {
+    //     throw new Error('The job was cancelled.');
+    //   } else if (['waiting', 'running'].includes(status)) {
+    //     if (timeout !== 0 && Date.now() - start > timeout) {
+    //       throw new Error('timeout error on pollUntilDone');
+    //     } else {
+    //       return new Promise(resolve => {
+    //         setTimeout(resolve, interval);
+    //       }).then(run.bind(this));
+    //     }
+    //   }
+    // };
+
+    // return run.call(this);
+  }
+
+  async getStatus(url: string) {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...this.headers
+      },
+      credentials: this.credentialsMode
+    });
+
+    this.validateResponse(response);
+
+    const responseJson = await response.json();
+
+    return responseJson;
+  }
+
+  async poll<T = any, >(fn: () => Promise<T>, fnCondition: (res?: T) => boolean,
+    interval: number = 1000, timeout: number = 30000) {
     let start = Date.now();
+    let result = await fn();
 
-    /**
-     * @ignore
-     */
-    function run() {
-      return fetch(url, {
-        method: 'GET',
-        headers: {
-          ...this.headers
-        },
-        credentials: this.credentialsMode
-      })
-        .then(response => this.validateResponse(response))
-        .then(response => response.json())
-        .then(json => {
-          const status = json.status;
+    while (fnCondition(result)) {
+      if (timeout > 0 && Date.now() - start > timeout) {
+        break;
+      }
 
-          if (status === 'finished') {
-            return Promise.resolve(json.downloadURL);
-          } else if (status === 'error') {
-            return Promise.reject(new Error(`There was an error executing the job: ${json.error}`));
-          } else if (status === 'cancelled') {
-            return Promise.reject(new Error('The job was cancelled.'));
-          } else if (['waiting', 'running'].includes(status)) {
-            if (timeout !== 0 && Date.now() - start > timeout) {
-              return Promise.reject(new Error('timeout error on pollUntilDone'));
-            } else {
-              return new Promise(resolve => {
-                setTimeout(resolve, interval);
-              }).then(run.bind(this));
-            }
-          }
-        });
+      await this.wait(interval);
+      result = await fn();
     }
 
-    return run.call(this);
-  }
+    return result;
+  };
+
+  async wait(interval: number) {
+    return new Promise(resolve => {
+      setTimeout(resolve, interval);
+    });
+  };
 
   /**
    * Cancels current print job by id.
    *
-   * @param {string} id Print id to cancel.
-   *
-   * @return {Promise}
-   *
+   * @param id Print id to cancel.
    */
-  cancelPrint(id) {
+  async cancelPrint(id: string): Promise<void> {
     if (!id) {
       return;
     }
+
     const cancelPrintJobUrl = `${this.url}cancel/${id}`;
 
-    return fetch(cancelPrintJobUrl, {
+    const cancelPrintResponse = await fetch(cancelPrintJobUrl, {
       method: 'DELETE',
       headers: {
         ...this.headers
       },
       credentials: this.credentialsMode
-    })
-      .then(response => this.validateResponse(response))
-      .then(() => Promise.resolve())
-      .catch(() => Promise.reject());
+    });
+
+    this.validateResponse(cancelPrintResponse);
   }
 
   /**
    * Collects the payload that is required for the print call to the print
    * servlet.
    *
-   * @return {Object} The print payload.
+   * @return The print payload.
    */
-  getPrintPayload() {
+  getPrintPayload(): any {
     const mapView = this.map.getView();
     const mapProjection = mapView.getProjection();
     const mapLayers = Shared.getMapLayers(this.map);
-    const extentFeatureGeometry = this._extentFeature.getGeometry();
+    const extentFeatureGeometry = this._extentFeature?.getGeometry();
 
     const serializedLayers = mapLayers
       .filter(this.filterPrintableLayer.bind(this))
-      .reduce((acc, layer) => {
+      .reduce((acc: any[], layer) => {
         const serializedLayer = this.serializeLayer(layer);
         if (serializedLayer) {
           acc.push(serializedLayer);
@@ -420,7 +444,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
     const serializedLegends = mapLayers
       .filter(this.filterPrintableLegend.bind(this))
-      .reduce((acc, layer) => {
+      .reduce((acc: any[], layer) => {
         const serializedLegend = this.serializeLegend(layer);
         if (serializedLegend) {
           acc.push(serializedLegend);
@@ -432,7 +456,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
       layout: this.getLayout().name,
       attributes: {
         map: {
-          center: getCenter(extentFeatureGeometry.getExtent()),
+          center: getCenter(extentFeatureGeometry?.getExtent() || [0, 0, 0, 0]),
           dpi: this.getDpi(),
           layers: serializedLayers,
           projection: mapProjection.getCode(),
@@ -454,7 +478,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @return {Array} The supported print applications.
    */
-  getPrintApps() {
+  getPrintApps(): Array<any> {
     return this._printApps;
   }
 
@@ -463,7 +487,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @param {Array} printApps The supported print applications to set.
    */
-  setPrintApps(printApps) {
+  setPrintApps(printApps: Array<any>) {
     this._printApps = printApps;
   }
 
@@ -472,7 +496,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @return {string} The currently selected print application.
    */
-  getPrintApp() {
+  getPrintApp(): string {
     return this._printApp;
   }
 
@@ -481,8 +505,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @param {string} name The name of the layout to use.
    */
-  setLayout(name) {
-    const layout = this.getLayouts().find(layout => layout.name === name);
+  setLayout(name: string) {
+    const layout = this.getLayouts().find(l => l.name === name);
 
     if (!layout) {
       Logger.warn(`No layout named '${name}' found.`);
@@ -517,7 +541,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @param {string} printAppName The name of the application to use.
    */
-  setPrintApp = printAppName => {
+  setPrintApp = async (printAppName: string) => {
     const printApps = this.getPrintApps();
     const printApp = _isArray(printApps) ? this.getPrintApps().find(pa => pa === printAppName) : undefined;
 
@@ -531,28 +555,26 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this.dispatch('change:app', printApp);
 
     // reinit print manager with capabilities from set app
-    return this.loadAppCapabilities(printApp)
-      .then(printCapabilities => {
-        this.initManager(printCapabilities);
-        return Promise.resolve(true);
-      })
-      .catch(error => {
-        Logger.error(error);
-        Promise.reject(new Error(`${error.message}`));
-      });
-  }
+    const appCapabilities = await this.loadAppCapabilities(printApp);
+    this.initManager(appCapabilities);
+
+    // return Promise.resolve(true);
+
+    // Logger.error(error);
+    // Promise.reject(new Error(`${error.message}`));
+  };
 
   /**
    * Sets the dpi to use.
    *
-   * @param {number|string} value The value of the dpi to use.
+   * @param value The value of the dpi to use.
    */
-  setDpi = value => {
+  setDpi = (value: number | string) => {
     if (typeof value === 'string') {
       value = parseFloat(value);
     }
 
-    const dpi = this.getDpis().find(dpi => dpi === value);
+    const dpi = this.getDpis().find(d => d === value);
 
     if (!dpi) {
       Logger.warn(`No dpi '${value}' found.`);
@@ -562,7 +584,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this._dpi = dpi;
 
     this.dispatch('change:dpi', dpi);
-  }
+  };
 }
 
 export default MapFishPrintV3Manager;

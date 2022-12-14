@@ -1,4 +1,3 @@
-// @ts-nocheck
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OlLayerTile from 'ol/layer/Tile';
@@ -25,7 +24,6 @@ const map = new OlMap({
   })
 });
 
-// @ts-ignore
 const printProvider = new MapFishPrintV3Manager({
   url: 'http://localhost:9000/print-v3',
   map: map
@@ -39,89 +37,56 @@ printProvider?.init()?.then(() => {
   printProvider.on('change:scale', onChangePrintExtent);
 });
 
-/**
- *
- */
 const onChangePrintExtent = scale => {
   const scaleSelect = document.querySelector('select#scale-select');
   scaleSelect.value = scale;
 };
 
-/**
- *
- */
 function onAppChange(event) {
   const value = event.target.value;
   printProvider.setPrintApp(value);
 }
 
-/**
- *
- */
 function onLayoutChange(event) {
   const value = event.target.value;
   printProvider.setLayout(value);
 }
 
-/**
- *
- */
 function onDpiChange(event) {
   const value = event.target.value;
   printProvider.setDpi(value);
 }
 
-/**
- *
- */
 function onFormatChange(event) {
   const value = event.target.value;
   printProvider.setOutputFormat(value);
 }
 
-/**
- *
- */
 function onScaleChange(event) {
   const value = event.target.value;
   printProvider.setScale(value);
 }
 
-/**
- *
- */
 function registerPrintHandler() {
   const printBtn = document.querySelector('button#print');
   printBtn.onclick = onPrintClick;
 }
 
-/**
- *
- */
 function registerCancelPrintHandler() {
   const cancelPrintBtn = document.querySelector('button#cancel-print');
   cancelPrintBtn.onclick = onCancelPrintClick;
 }
 
-/**
- *
- */
 function onPrintClick() {
   printProvider?.print(true)?.catch(error => {
     console.log('Error while printing: ' + error);
   });
 }
 
-/**
- *
- */
 function onCancelPrintClick() {
   printProvider.cancelPrint(printProvider.printJobReference);
 }
 
-/**
- *
- */
 function fillPrintAppCombo() {
   const appSelect = document.querySelector('select#app-select');
   printProvider.getPrintApps().forEach(printApp => {
@@ -133,9 +98,6 @@ function fillPrintAppCombo() {
   appSelect.onchange = onAppChange;
 }
 
-/**
- *
- */
 function fillCombos() {
   const layoutSelect = document.querySelector('select#layout-select');
   printProvider.getLayouts().forEach(layout => {

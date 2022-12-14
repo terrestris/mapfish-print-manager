@@ -1,4 +1,3 @@
-/* eslint-env jest*/
 import OlLayerImage from 'ol/layer/Image';
 import OlLayerTile from 'ol/layer/Tile';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
@@ -7,7 +6,7 @@ import OlSourceOSM from 'ol/source/OSM';
 import { MapFishPrintV3WMSSerializer } from '../../src/serializer/MapFishPrintV3WMSSerializer';
 
 describe('MapFishPrintV3WMSSerializer', () => {
-  let serializer;
+  let serializer: MapFishPrintV3WMSSerializer;
 
   beforeEach(() => {
     serializer = new MapFishPrintV3WMSSerializer();
@@ -38,7 +37,9 @@ describe('MapFishPrintV3WMSSerializer', () => {
           LAYERS: layerName
         }
       }),
-      name: 'Shinji',
+      properties: {
+        name: 'Shinji'
+      }
     });
 
     const serializedSimple = serializer.serialize(layer);
@@ -65,7 +66,7 @@ describe('MapFishPrintV3WMSSerializer', () => {
       CUSTOM_PARAM_1: 'BVB',
       CUSTOM_PARAM_2: '09'
     };
-    layer.getSource().updateParams(customParams);
+    layer.getSource()?.updateParams(customParams);
 
     const serializedCustomParams = serializer.serialize(layer);
 
@@ -90,7 +91,7 @@ describe('MapFishPrintV3WMSSerializer', () => {
     const customFormat = {
       FORMAT: 'image/png8'
     };
-    layer.getSource().updateParams(customFormat);
+    layer.getSource()?.updateParams(customFormat);
 
     const serializedFormat = serializer.serialize(layer);
 
@@ -115,7 +116,7 @@ describe('MapFishPrintV3WMSSerializer', () => {
     const customStyles = {
       STYLES: 'SUEDKURVE'
     };
-    layer.getSource().updateParams(customStyles);
+    layer.getSource()?.updateParams(customStyles);
 
     const serializedCustomStyles = serializer.serialize(layer);
 
@@ -149,7 +150,9 @@ describe('MapFishPrintV3WMSSerializer', () => {
           LAYERS: layerName
         }
       }),
-      name: 'Shinji',
+      properties: {
+        name: 'Shinji'
+      }
     });
 
     const serialized = serializer.serialize(layer, {

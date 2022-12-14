@@ -1,24 +1,19 @@
 import ObservableEvent from './ObservableEvent';
 
-/**
- * The Observable.
- */
 export class Observable {
 
   /**
    * The registered events.
-   *
-   * @type {Object}
    */
-  events = {};
+  events: any = {};
 
   /**
-  * Registers an event.
-  *
-  * @param {string} name The name of the event to register.
-  * @param {Function} callback The callback function to register.
-  */
-  on(name, callback) {
+   * Registers an event.
+   *
+   * @param name The name of the event to register.
+   * @param callback The callback function to register.
+   */
+  on(name: string, callback: Function) {
     let event = this.events[name];
     if (!event) {
       event = new ObservableEvent(name);
@@ -30,10 +25,10 @@ export class Observable {
   /**
   * Unregisters an event.
   *
-  * @param {string} name The name of the event to unregister.
-  * @param {Function} callback The callback function to unregister.
+  * @param name The name of the event to unregister.
+  * @param callback The callback function to unregister.
   */
-  un(name, callback) {
+  un(name: string, callback: Function) {
     const event = this.events[name];
     if (event && event.callbacks.indexOf(callback) > -1) {
       event.unregisterCallback(callback);
@@ -46,16 +41,15 @@ export class Observable {
   /**
    * Dispatches the given event with the provided data.
    *
-   * @param {string} name The name of the event to dispatch.
-   * @param {Object} data The data to apply to the event callback.
+   * @param name The name of the event to dispatch.
+   * @param data The data to apply to the event callback.
    */
-  dispatch(name, data) {
+  dispatch(name: string, data: any) {
     const event = this.events[name];
     if (event) {
       event.fire(data);
     }
   }
-
 }
 
 export default Observable;

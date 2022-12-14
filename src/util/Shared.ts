@@ -15,11 +15,12 @@ export class Shared {
   /**
    * Returns all map interactions with the given name.
    *
-   * @param {OlMap} map The map to get the interactions from.
-   * @param {string} name The name to filter with.
-   * @return {Array} The matching candidates.
+   * @param map The map to get the interactions from.
+   * @param name The name to filter with.
+   *
+   * @return The matching candidates.
    */
-  static getInteractionsByName = (map, name) => {
+  static getInteractionsByName = (map: OlMap, name: string) => {
     const interactions = map.getInteractions().getArray();
     return interactions.filter(interaction => interaction.get('name') === name);
   };
@@ -27,11 +28,11 @@ export class Shared {
   /**
    * Returns all map layers with the given name.
    *
-   * @param {OlMap} map The map to get the layers from.
-   * @param {string} name The name to filter with.
-   * @return {Array} The matching candidates.
+   * @param map The map to get the layers from.
+   * @param name The name to filter with.
+   * @return The matching candidates.
    */
-  static getLayersByName = (map, name) => {
+  static getLayersByName = (map: OlMap, name: string) => {
     const layers = Shared.getMapLayers(map);
     return layers.filter(layer => layer.get('name') === name);
   };
@@ -39,13 +40,12 @@ export class Shared {
   /**
    * Returns all layers from the given map.
    *
-   * @param {OlMap|OlLayerGroup} collection The map or layergroup to get the
-   *                                           layers from.
-   * @return {Array} The layers.
+   * @param collection The map or layergroup to get the layers from.
+   * @return The layers.
    */
-  static getMapLayers = collection => {
+  static getMapLayers = (collection: OlMap | OlLayerGroup) => {
     const layers = collection.getLayers().getArray();
-    const mapLayers = [];
+    const mapLayers: OlLayer[] = [];
 
     layers.forEach(layer => {
       if (layer instanceof OlLayerGroup) {
@@ -54,7 +54,9 @@ export class Shared {
             mapLayers.push(l);
           });
         }
-      } else {
+      }
+
+      if (layer instanceof OlLayer) {
         mapLayers.push(layer);
       }
     });
@@ -65,10 +67,10 @@ export class Shared {
   /**
    * Generates the GetLegendGraphic url for the given layer.
    *
-   * @param {OlLayer} layer The layer to generate the GetLegendGraphic for.
-   * @return {string} The GetLegendGraphic url.
+   * @param layer The layer to generate the GetLegendGraphic for.
+   * @return The GetLegendGraphic url.
    */
-  static getLegendGraphicUrl = layer => {
+  static getLegendGraphicUrl = (layer: OlLayer) => {
     if (layer.get('legendUrl')) {
       return layer.get('legendUrl');
     }
@@ -79,15 +81,22 @@ export class Shared {
       source instanceof OlSourceImageWMS) {
       const customParams = layer.get('customPrintLegendParams');
 
+      let url;
+      if (source instanceof OlSourceImageWMS) {
+        url = source.getUrl();
+      }
+
+      if (source instanceof OlSourceTileWMS) {
+        const urls = source.getUrls();
+        url = urls ? urls[0] : undefined;
+      }
+
       const {
         LAYERS,
         VERSION,
         FORMAT,
         ...passThroughParams
       } = source.getParams();
-      const url = source instanceof OlSourceImageWMS ?
-        source.getUrl() :
-        source.getUrls()[0];
       const params = {
         LAYER: LAYERS.split(',')[0],
         VERSION: VERSION || '1.3.0',
@@ -101,7 +110,7 @@ export class Shared {
         return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
       }).join('&');
 
-      if (url.endsWith('?')) {
+      if (url?.endsWith('?')) {
         return `${url}${queryParams}`;
       } else {
         return `${url}?${queryParams}`;
@@ -112,12 +121,12 @@ export class Shared {
   /**
    * Returns the appropriate scale for the given resolution and units.
    *
-   * @param {number|string} resolution The resolution to calculate the scale for.
-   * @param {string} units The units the resolution is based on, typically
+   * @param resolution The resolution to calculate the scale for.
+   * @param units The units the resolution is based on, typically
    *                       either 'm' or 'degrees'.
-   * @return {number} The appropriate scale.
+   * @return The appropriate scale.
    */
-  static getScaleForResolution = (resolution, units) => {
+  static getScaleForResolution = (resolution: number | string, units: keyof typeof METERS_PER_UNIT) => {
     const dpi = 25.4 / 0.28;
     const mpu = METERS_PER_UNIT[units];
     const inchesPerMeter = 39.37;
@@ -132,9 +141,8 @@ export class Shared {
   /**
    * Removes duplicated forward slashes as well as trailing slash
    * and returns normalized URL string
-   * @param {*} url
    */
-  static sanitizeUrl = (url) => {
+  static sanitizeUrl = (url: string) => {
     return url.replace(/([^:]\/)\/+/g, '$1').replace(/\/+$/, '');
   };
 }

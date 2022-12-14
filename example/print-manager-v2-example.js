@@ -1,4 +1,3 @@
-// @ts-nocheck
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OlLayerTile from 'ol/layer/Tile';
@@ -25,13 +24,11 @@ const map = new OlMap({
   })
 });
 
-// @ts-ignore
 const printProvider = new MapFishPrintV2Manager({
   url: 'http://localhost:9000/print-v2/pdf',
   map: map
 });
 
-// @ts-ignore
 printProvider.init()
   .then(() => {
     fillCombos();
@@ -39,66 +36,42 @@ printProvider.init()
     printProvider.on('change:scale', onChangePrintExtent);
   });
 
-/**
- *
- */
 const onChangePrintExtent = scale => {
   const scaleSelect = document.querySelector('select#scale-select');
   scaleSelect.value = scale.name;
 };
 
-/**
- *
- */
 const onLayoutChange = event => {
   const value = event.target.value;
   printProvider.setLayout(value);
 };
 
-/**
- *
- */
 const onDpiChange = event => {
   const value = event.target.value;
   printProvider.setDpi(value);
 };
 
-/**
- *
- */
 const onFormatChange = event => {
   const value = event.target.value;
   printProvider.setOutputFormat(value);
 };
 
-/**
- *
- */
 const onScaleChange = event => {
   const value = event.target.value;
   printProvider.setScale(value);
 };
 
-/**
- *
- */
 const registerPrintHandler = () => {
   const printBtn = document.querySelector('button#print');
   printBtn.addEventListener('click', onPrintClick);
 };
 
-/**
- *
- */
 const onPrintClick = () => {
   printProvider?.print(true)?.catch(error => {
     console.log('Error while printing: ' + error);
   });
 };
 
-/**
- *
- */
 const fillCombos = () => {
   const layoutSelect = document.querySelector('select#layout-select');
   printProvider.getLayouts().forEach((layout) => {
