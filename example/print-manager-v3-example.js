@@ -56,7 +56,7 @@ function onLayoutChange(event) {
 
 function onDpiChange(event) {
   const value = event.target.value;
-  printProvider.setDpi(value);
+  printProvider.setDpi(parseFloat(value));
 }
 
 function onFormatChange(event) {
@@ -66,7 +66,7 @@ function onFormatChange(event) {
 
 function onScaleChange(event) {
   const value = event.target.value;
-  printProvider.setScale(value);
+  printProvider.setScale(parseFloat(value));
 }
 
 function registerPrintHandler() {
@@ -87,7 +87,7 @@ function onPrintClick() {
 }
 
 function onCancelPrintClick() {
-  printProvider.cancelPrint(printProvider.printJobReference);
+  printProvider.cancelPrint(printProvider.getPrintJobReference());
 }
 
 function fillPrintAppCombo() {

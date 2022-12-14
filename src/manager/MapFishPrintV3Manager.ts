@@ -77,14 +77,14 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @private
    */
-  _printApps: any[] = [];
+  _printApps: string[] = [];
 
   /**
    * The currently selected print application.
    *
    * @private
    */
-  _printApp: any = {};
+  _printApp?: string;
 
   /**
    * ID of currently started print job. Will be used while polling will be
@@ -122,14 +122,14 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
       const defaultPrintApp = this.getPrintApps()[0];
 
-      this.setPrintApp(defaultPrintApp);
+      await this.setPrintApp(defaultPrintApp);
     } else if (!this.url && this.capabilities) {
       this.initManager(this.capabilities);
     }
   }
 
   /**
-   * @param {*} capabilities
+   * @param capabilities
    */
   initManager(capabilities: any) {
     this.capabilities = capabilities;
@@ -163,15 +163,20 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * Returns attribute value contained in currently chosen layout by its name.
    *
    * @param attributeName The attribute name (key) to be searched.
-   * @param layoutName Name of currently chosen layout.
    *
-   * @return {*} Obtained attribute value.
+   * @return Obtained attribute value.
    */
-  getAttributeByName(attributeName: string, layoutName: string = this.getLayout().name): any {
-    const layout = this.getLayoutByName(layoutName);
-    const layoutAttributes = layout.attributes;
+  getAttributeByName(attributeName: string) {
+    const layoutName = this.getLayout()?.name;
 
-    const attribute = layoutAttributes.find((layoutAttribute: any) => {
+    if (!layoutName) {
+      return;
+    }
+
+    const layout = this.getLayoutByName(layoutName);
+    const layoutAttributes = layout?.attributes;
+
+    const attribute = layoutAttributes?.find((layoutAttribute: any) => {
       return layoutAttribute.name === attributeName;
     });
 
@@ -185,7 +190,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @return Layout configuration object.
    */
-  getLayoutByName(layoutName: string): any {
+  getLayoutByName(layoutName: string) {
     const layouts = this.getLayouts();
 
     return layouts.find(layout => layout.name === layoutName);
@@ -194,9 +199,9 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Returns all available print applications.
    *
-   * @return {Promise} Promise containing available print apps.
+   * @return Promise containing available print apps.
    */
-  async loadPrintApps(): Promise<any> {
+  async loadPrintApps(): Promise<string[]> {
     const printAppResponse = await fetch(`${this.url}${MapFishPrintV3Manager.APPS_JSON_ENDPOINT}`, {
       method: 'GET',
       headers: {
@@ -216,7 +221,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Loads the print capabilities from the provided remote source.
    */
-  async loadAppCapabilities(printApp: any) {
+  async loadAppCapabilities(printApp: string) {
     const capEndpoint = MapFishPrintV3Manager.CAPABILITIES_JSON_ENDPOINT;
     const url = `${this.url}${printApp}/${capEndpoint}`;
 
@@ -286,14 +291,26 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     this._printJobReference = ref;
 
     try {
-      const downloadUrl = await this.pollUntilDone.call(this, fullStatusUrl, 1000, this.timeout);
+      const statusResponseJson = await this.pollUntilDone(fullStatusUrl, 1000, this.timeout);
 
-      const fullDownloadUrl = Shared.sanitizeUrl(basePath + downloadUrl);
+      const status = statusResponseJson.status;
 
-      if (forceDownload) {
-        this.download(fullDownloadUrl);
-      } else {
-        return fullDownloadUrl;
+      if (status === 'finished') {
+        const fullDownloadUrl = Shared.sanitizeUrl(basePath + statusResponseJson.downloadURL);
+
+        if (forceDownload) {
+          this.download(fullDownloadUrl);
+        } else {
+          return fullDownloadUrl;
+        }
+      }
+
+      if (status === 'error') {
+        throw new Error(`There was an error executing the job: ${statusResponseJson.error}`);
+      }
+
+      if (status === 'cancelled') {
+        throw new Error('The job was cancelled.');
       }
     } finally {
       this._printJobReference = null;
@@ -301,61 +318,12 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   }
 
   async pollUntilDone(url: string, interval: number, timeout: number): Promise<any> {
-    // let start = Date.now();
-
-    this.poll(
+    return this.poll(
       () => this.getStatus(url),
-      responseJson => {
-        return false;
-        // const status = responseJson.status;
-        // if (status === 'finished') {
-        //   return responseJson.downloadURL;
-        // } else if (status === 'error') {
-        //   throw new Error(`There was an error executing the job: ${responseJson.error}`);
-        // } else if (status === 'cancelled') {
-        //   throw new Error('The job was cancelled.');
-        // } else if (['waiting', 'running'].includes(status)) {
-        //   if (timeout !== 0 && Date.now() - start > timeout) {
-        //     throw new Error('timeout error on pollUntilDone');
-        //   }
-        // }
-      },
+      responseJson => ['waiting', 'running'].includes(responseJson.status),
       interval,
-      this.timeout
+      timeout
     );
-
-    // const run = async () => {
-    //   const response = await fetch(url, {
-    //     method: 'GET',
-    //     headers: {
-    //       ...this.headers
-    //     },
-    //     credentials: this.credentialsMode
-    //   });
-
-    //   this.validateResponse(response);
-
-    //   const responseJson = await response.json();
-
-    //   const status = responseJson.status;
-    //   if (status === 'finished') {
-    //     return responseJson.downloadURL;
-    //   } else if (status === 'error') {
-    //     throw new Error(`There was an error executing the job: ${responseJson.error}`);
-    //   } else if (status === 'cancelled') {
-    //     throw new Error('The job was cancelled.');
-    //   } else if (['waiting', 'running'].includes(status)) {
-    //     if (timeout !== 0 && Date.now() - start > timeout) {
-    //       throw new Error('timeout error on pollUntilDone');
-    //     } else {
-    //       return new Promise(resolve => {
-    //         setTimeout(resolve, interval);
-    //       }).then(run.bind(this));
-    //     }
-    //   }
-    // };
-
-    // return run.call(this);
   }
 
   async getStatus(url: string) {
@@ -426,7 +394,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    *
    * @return The print payload.
    */
-  getPrintPayload(): any {
+  getPrintPayload() {
     const mapView = this.map.getView();
     const mapProjection = mapView.getProjection();
     const mapLayers = Shared.getMapLayers(this.map);
@@ -453,7 +421,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
       }, []).reverse();
 
     const payload = {
-      layout: this.getLayout().name,
+      layout: this.getLayout()?.name,
       attributes: {
         map: {
           center: getCenter(extentFeatureGeometry?.getExtent() || [0, 0, 0, 0]),
@@ -476,34 +444,34 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * Returns all supported print applications.
    *
-   * @return {Array} The supported print applications.
+   * @return The supported print applications.
    */
-  getPrintApps(): Array<any> {
+  getPrintApps() {
     return this._printApps;
   }
 
   /**
    * Sets the supported print applications.
    *
-   * @param {Array} printApps The supported print applications to set.
+   * @param printApps The supported print applications to set.
    */
-  setPrintApps(printApps: Array<any>) {
+  setPrintApps(printApps: string[]) {
     this._printApps = printApps;
   }
 
   /**
    * Returns the currently selected print application.
    *
-   * @return {string} The currently selected print application.
+   * @return The currently selected print application.
    */
-  getPrintApp(): string {
+  getPrintApp() {
     return this._printApp;
   }
 
   /**
    * Sets the layout to use. Updates the print extent accordingly.
    *
-   * @param {string} name The name of the layout to use.
+   * @param name The name of the layout to use.
    */
   setLayout(name: string) {
     const layout = this.getLayouts().find(l => l.name === name);
@@ -539,7 +507,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    * For each print app the appropriate capabilities will be load and the
    * manager will be initialized afterwards.
    *
-   * @param {string} printAppName The name of the application to use.
+   * @param printAppName The name of the application to use.
    */
   setPrintApp = async (printAppName: string) => {
     const printApps = this.getPrintApps();
@@ -556,35 +524,13 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
     // reinit print manager with capabilities from set app
     const appCapabilities = await this.loadAppCapabilities(printApp);
+
     this.initManager(appCapabilities);
-
-    // return Promise.resolve(true);
-
-    // Logger.error(error);
-    // Promise.reject(new Error(`${error.message}`));
   };
 
-  /**
-   * Sets the dpi to use.
-   *
-   * @param value The value of the dpi to use.
-   */
-  setDpi = (value: number | string) => {
-    if (typeof value === 'string') {
-      value = parseFloat(value);
-    }
-
-    const dpi = this.getDpis().find(d => d === value);
-
-    if (!dpi) {
-      Logger.warn(`No dpi '${value}' found.`);
-      return;
-    }
-
-    this._dpi = dpi;
-
-    this.dispatch('change:dpi', dpi);
-  };
+  getPrintJobReference() {
+    return this._printJobReference;
+  }
 }
 
 export default MapFishPrintV3Manager;

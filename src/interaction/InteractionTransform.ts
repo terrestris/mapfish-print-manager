@@ -66,9 +66,9 @@ export class InteractionTransformEvent extends OlBaseEvent {
 
 export type OlInteractionTransformOpts = OlInteractionPointerOpts & {
   // Array of layers to transform
-  layers: OlLayerVector<OlSourceVector>[] | OlLayerVector<OlSourceVector>;
+  layers?: OlLayerVector<OlSourceVector>[] | OlLayerVector<OlSourceVector>;
   // Collection of feature to transform
-  features: OlFeature<OlGeometry>[];
+  features?: OlFeature<OlGeometry>[];
   // Translate when click on feature
   translateFeature?: boolean;
   // Can translate the feature

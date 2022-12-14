@@ -40,7 +40,7 @@ printProvider.init()
 
 const onChangePrintExtent = scale => {
   const scaleSelect = document.querySelector('select#scale-select');
-  scaleSelect.value = scale.name;
+  scaleSelect.value = scale;
 };
 
 const onLayoutChange = event => {
@@ -50,7 +50,7 @@ const onLayoutChange = event => {
 
 const onDpiChange = event => {
   const value = event.target.value;
-  printProvider.setDpi(value);
+  printProvider.setDpi(parseFloat(value));
 };
 
 const onFormatChange = event => {
@@ -60,7 +60,7 @@ const onFormatChange = event => {
 
 const onScaleChange = event => {
   const value = event.target.value;
-  printProvider.setScale(value);
+  printProvider.setScale(parseFloat(value));
 };
 
 const registerPrintHandler = () => {
@@ -88,27 +88,27 @@ const fillCombos = () => {
   const dpiSelect = document.querySelector('select#dpi-select');
   printProvider.getDpis().forEach((dpi) => {
     const option = document.createElement('option');
-    option.text = dpi.name;
+    option.text = dpi;
     dpiSelect?.add(option);
   });
-  dpiSelect.value = printProvider.getDpi().name;
+  dpiSelect.value = printProvider.getDpi();
   dpiSelect.onchange = onDpiChange;
 
   const formatSelect = document.querySelector('select#format-select');
   printProvider.getOutputFormats().forEach((format) => {
     const option = document.createElement('option');
-    option.text = format.name;
+    option.text = format;
     formatSelect.add(option);
   });
-  formatSelect.value = printProvider.getOutputFormat().name;
+  formatSelect.value = printProvider.getOutputFormat();
   formatSelect.onchange = onFormatChange;
 
   const scaleSelect = document.querySelector('select#scale-select');
   printProvider.getScales().forEach((scale) => {
     const option = document.createElement('option');
-    option.text = scale.name;
+    option.text = scale;
     scaleSelect.add(option);
   });
-  scaleSelect.value = printProvider.getScale().name;
+  scaleSelect.value = printProvider.getScale();
   scaleSelect.onchange = onScaleChange;
 };

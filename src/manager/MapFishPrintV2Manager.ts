@@ -1,23 +1,18 @@
-import {Extent as OlExtent, getCenter} from 'ol/extent';
+import { getCenter } from 'ol/extent';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceWMTS from 'ol/source/WMTS';
 import OlLayer from 'ol/layer/Layer';
-import {Coordinate as OlCoordinate} from 'ol/coordinate';
+import { Coordinate as OlCoordinate } from 'ol/coordinate';
 
 import BaseMapFishPrintManager, { BaseMapFishPrintManagerOpts } from './BaseMapFishPrintManager';
 import MapFishPrintV2WMSSerializer from '../serializer/MapFishPrintV2WMSSerializer';
 import MapFishPrintV2VectorSerializer from '../serializer/MapFishPrintV2VectorSerializer';
 import Shared from '../util/Shared';
-import Log from '../util/Logger';
+import Logger from '../util/Logger';
 
 export type MapFishPrintV2ManagerOpts = BaseMapFishPrintManagerOpts & {};
 
-/**
- * The MapFishPrintV2Manager.
- *
- * @class
- */
 export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
 
   /**
@@ -60,14 +55,14 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     this.capabilities = capabilities;
 
     this._layouts = this.capabilities.layouts;
-    this._outputFormats = this.capabilities.outputFormats;
-    this._dpis = this.capabilities.dpis;
-    this._scales = this.capabilities.scales;
+    this._outputFormats = this.capabilities.outputFormats?.map((format: any) => format.name);
+    this._dpis = this.capabilities.dpis?.map((dpi: any) => parseInt(dpi.value, 10));
+    this._scales = this.capabilities.scales?.map((scale: any) => parseFloat(scale.value));
 
     this.setLayout(this.getLayouts()[0].name);
-    this.setOutputFormat(this.getOutputFormats()[0].name);
-    this.setDpi(this.getDpis()[0].name);
-    this.setScale(this.getClosestScaleToFitMap().name);
+    this.setOutputFormat(this.getOutputFormats()[0]);
+    this.setDpi(this.getDpis()[0]);
+    this.setScale(this.getClosestScaleToFitMap());
 
     this.initPrintExtentLayer();
     this.initPrintExtentFeature();
@@ -110,7 +105,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    */
   async print(forceDownload?: boolean) {
     if (!(this.isInitiated())) {
-      Log.warn('The manager hasn\'t been initiated yet. Please call init() first.');
+      Logger.warn('The manager hasn\'t been initiated yet. Please call init() first.');
       return;
     }
 
@@ -154,7 +149,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * @return The print payload.
    */
-  getPrintPayload(): any {
+  getPrintPayload() {
     const mapView = this.map.getView();
     const mapProjection = mapView.getProjection();
     const mapLayers = Shared.getMapLayers(this.map);
@@ -183,13 +178,13 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     const payload = {
       units: mapProjection.getUnits(),
       srs: mapProjection.getCode(),
-      layout: this.getLayout().name,
-      outputFormat: this.getOutputFormat().name,
-      dpi: this.getDpi().value,
+      layout: this.getLayout()?.name,
+      outputFormat: this.getOutputFormat(),
+      dpi: this.getDpi(),
       layers: serializedLayers,
       pages: [{
         center: getCenter(extentFeatureGeometry?.getExtent() || [0, 0, 0, 0]),
-        scale: this.getScale().value,
+        scale: this.getScale(),
         rotation: this.calculateRotation() || 0
       }],
       legends: serializedLegends,
@@ -226,80 +221,40 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    */
   onTransformScaling() {
     const scale = this.getClosestScaleToFitExtentFeature();
-    this.setScale(scale.name);
-  }
-
-  /**
-   * Calculates the extent based on a scale.
-   * Overrides the method from base class.
-   *
-   * @param scale The scale to calculate the extent for. If not given,
-   *              the current scale of the provider will be used.
-   * @return The extent.
-   */
-  calculatePrintExtent(scale?: number): OlExtent {
-    const printMapSize = this.getLayout().map;
-    const printScale = scale || this.getScale().value;
-    const {
-      width,
-      height
-    } = this.getPrintExtentSize(printMapSize, printScale);
-
-    let center: OlCoordinate;
-    const geom = this._extentFeature?.getGeometry();
-    if (geom) {
-      center = getCenter(geom.getExtent());
-    } else {
-      center = this.map.getView().getCenter() || [0, 0];
-    }
-
-    return [
-      center[0] - (width / 2),
-      center[1] - (height / 2),
-      center[0] + (width / 2),
-      center[1] + (height / 2)
-    ];
-  }
-
-  /**
-   * Sets the output format to use.
-   * Overrides the method from base class.
-   *
-   * @param name The name of the output format to use.
-   */
-  setOutputFormat(name: string) {
-    const format = this.getOutputFormats().find(f => f.name === name);
-
-    if (!format) {
-      Log.warn(`No output format named '${name}' found.`);
-      return;
-    }
-
-    this._outputFormat = format;
-
-    this.dispatch('change:outputformat', format);
-  }
-
-  /**
-   * Sets the scale to use. Updates the print extent accordingly.
-   * Overrides the method from base class.
-   *
-   * @param {string} name The name of the scale to use.
-   */
-  setScale = (name: string) => {
-    const scale = this.getScales().find(s => s.name === name);
 
     if (!scale) {
-      Log.warn(`No scale named '${name}' found.`);
       return;
     }
 
-    this._scale = scale;
+    this.setScale(scale);
+  }
+
+  /**
+   * Sets the layout to use. Updates the print extent accordingly.
+   *
+   * @param name The name of the layout to use.
+   */
+  setLayout(name: string) {
+    const layout = this.getLayouts().find(l => l.name === name);
+
+    if (!layout) {
+      Logger.warn(`No layout named '${name}' found.`);
+      return;
+    }
+
+    this._layout = layout;
+
+    this.setPrintMapSize({
+      // @ts-ignore
+      width: layout.map.width,
+      // @ts-ignore
+      height: layout.map.height
+    });
 
     this.updatePrintExtent();
 
-    this.dispatch('change:scale', scale);
-  };
+    this.dispatch('change:layout', layout);
+  }
 }
 
 export default MapFishPrintV2Manager;
