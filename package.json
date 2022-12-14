@@ -27,7 +27,7 @@
     "clean:dist": "rimraf ./dist/*",
     "clean:docs": "rimraf ./build/docs/*",
     "clean:examples": "rimraf ./build/examples/*",
-    "lint": "eslint --ext ts,js ./src/ ./spec/",
+    "lint": "eslint --ext ts,js ./src/ ./spec/ ./example/",
     "lint:fix": "npm run lint -- --fix",
     "prepublishOnly": "npm run build:dist && npm run build:docs",
     "postpublish": "node ./tasks/update-gh-pages.js",

@@ -13,7 +13,7 @@ const map = new OlMap({
       source: new OlSourceTileWMS({
         url: 'https://ows.terrestris.de/osm/service',
         params: {
-          'LAYERS': 'OSM-WMS'
+          LAYERS: 'OSM-WMS'
         }
       })
     })
@@ -79,6 +79,7 @@ function registerCancelPrintHandler() {
 
 function onPrintClick() {
   printProvider?.print(true)?.catch(error => {
+    // eslint-disable-next-line no-console
     console.log('Error while printing: ' + error);
   });
 }
