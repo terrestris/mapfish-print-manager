@@ -58,6 +58,7 @@
     "@types/lodash": "^4.14.191",
     "@types/parse-color": "^1.0.1",
     "@types/url-parse": "^1.4.8",
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@webpack-cli/serve": "^2.0.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^29.3.1",
