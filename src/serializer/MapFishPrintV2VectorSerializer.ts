@@ -1,3 +1,6 @@
+import OlSource from 'ol/source/Source';
+import OlLayer from 'ol/layer/Layer';
+import OlLayerVector from 'ol/layer/Vector';
 import OlSourceVector from 'ol/source/Vector';
 import OlFormatGeoJSON from 'ol/format/GeoJSON';
 import OlStyleStyle from 'ol/style/Style';
@@ -11,86 +14,63 @@ import OlStyleImage from 'ol/style/Image';
 import OlStyleText from 'ol/style/Text';
 import OlStyleStroke from 'ol/style/Stroke';
 import OlStyleFill from 'ol/style/Fill';
-import OlSource from 'ol/source/Source';
-import OlLayer from 'ol/layer/Layer';
-// eslint-disable-next-line no-unused-vars
-import OlLayerVector from 'ol/layer/Vector';
+
 import get from 'lodash/get';
 import pickBy from 'lodash/pickBy';
+
 import parseColor from 'parse-color';
-// eslint-disable-next-line no-unused-vars
 import parseFont, { IFont } from 'parse-css-font';
 
 import BaseSerializer from './BaseSerializer';
 
-/**
- * The MapFishPrintV2VectorSerializer.
- *
- * @class
- */
-export class MapFishPrintV2VectorSerializer extends BaseSerializer {
+export class MapFishPrintV2VectorSerializer implements BaseSerializer {
 
   /**
    * The vector layer type identificator.
-   *
-   * @type {string}
    */
-  static TYPE_VECTOR = 'Vector';
+  static TYPE_VECTOR: string = 'Vector';
 
   /**
    * The property to get the style dictionary key from.
-   *
-   * @type {string}
    */
-  static FEAT_STYLE_PROPERTY = '_style';
+  static FEAT_STYLE_PROPERTY: string = '_style';
 
-  /**
-   * The constructor
-   */
-  constructor() {
-    super();
-  }
-
-  /**
-   * @param {OlSource} source
-   * @return {boolean}
-   */
-  canSerialize(source) {
+  validateSource(source: OlSource): source is OlSourceVector {
     return source instanceof OlSourceVector;
   }
 
-  /**
-   * Serializes/Encodes the given layer.
-   *
-   * @abstract
-   * @param {OlLayer} oLayer The layer to serialize/encode.
-   * @param {Object} opts Additional properties to pass to the serialized
-   *   layer object that can't be obtained by the layer itself. It can also be
-   *   used to override all generated layer values, e.g. the image format. Only
-   *   used in V3.
-   * @param {number} viewResolution The resolution to calculate the styles for.
-   * @return {Object} The serialized/encoded layer.
-   */
-  serialize(oLayer, opts, viewResolution) {
-    const layer = /** @type {OlLayerVector} */ (oLayer);
-    const source = /** @type {OlSourceVector} */ (layer.getSource());
+  serialize(olLayer: OlLayer, opts?: any, viewResolution?: number) {
+    const source = olLayer.getSource();
 
-    if (!this.validateSource(source)) {
+    if (!source || !this.validateSource(source)) {
+      return;
+    }
+
+    if (!viewResolution) {
       return;
     }
 
     const features = source.getFeatures();
     const format = new OlFormatGeoJSON();
-    const serializedFeatures = [];
-    const serializedStyles = {};
-    const serializedStylesDict = {};
-    let styleName;
+    const serializedFeatures: any[] = [];
+    const serializedStyles: {
+      [key: string]: any;
+    } = {};
+    const serializedStylesDict: {
+      [key: string]: number;
+    } = {};
+    let styleName: string | number;
     let styleId = 0;
 
     features.forEach(feature => {
       const geometry = feature.getGeometry();
-      const geometryType = geometry.getType();
-      let serializedFeature;
+      const geometryType = geometry?.getType();
+
+      if (!geometryType) {
+        return;
+      }
+
+      let serializedFeature: any;
 
       // as GeoJSON format doesn't support circle geometries, we need to
       // transform circles to polygons.
@@ -106,11 +86,11 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       let styleFunction = feature.getStyleFunction();
 
       if (styleFunction) {
-        styles = styleFunction.call(feature, viewResolution);
+        styles = styleFunction.call(feature, feature, viewResolution);
       } else {
-        styleFunction = layer.getStyleFunction();
+        styleFunction = (olLayer as OlLayerVector<OlSourceVector>).getStyleFunction();
         if (styleFunction) {
-          styles = styleFunction.call(layer, feature, viewResolution);
+          styles = styleFunction.call(olLayer, feature, viewResolution);
         }
       }
 
@@ -143,8 +123,8 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
 
     const serialized = {
       ...{
-        name: layer.get('name') || 'Vector Layer',
-        opacity: layer.getOpacity(),
+        name: olLayer.get('name') || 'Vector Layer',
+        opacity: olLayer.getOpacity(),
         geoJson: {
           type: 'FeatureCollection',
           features: serializedFeatures
@@ -161,11 +141,11 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
   /**
    * Returns a plain object matching the passed `ol.style.Style` instance.
    *
-   * @param {OlStyleStyle} olStyle An ol.style.Style instance.
-   * @return {Object} A plain object matching the passed `ol.style.Style`
-   *                  instance.
+   * @param olStyle An ol.style.Style instance.
+   * @param geomType The geometry type.
+   * @return A plain object matching the passed `ol.style.Style` instance.
    */
-  writeStyle = (olStyle, geomType) => {
+  writeStyle = (olStyle: OlStyleStyle, geomType: string) => {
     if (!(olStyle instanceof OlStyleStyle)) {
       return undefined;
     }
@@ -192,9 +172,9 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
           graphicWidth: get(imageStyle, 'size[0]'),
           graphicHeight: get(imageStyle, 'size[1]'),
           graphicOpacity: imageStyle instanceof OlStyleIcon ? imageStyle.getOpacity() : undefined,
-          // TODO not available in ol3?
+          // TODO not available in ol?
           graphicXOffset: undefined,
-          // TODO not available in ol3?
+          // TODO not available in ol?
           graphicYOffset: undefined,
           rotation: get(imageStyle, 'rotation'),
           graphicName: get(imageStyle, 'graphicName') || 'circle'
@@ -203,8 +183,8 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       case 'LineString':
       case 'MultiLineString':
         style = {
-          strokeColor: parseColor(strokeStyle.color).hex,
-          strokeOpacity: get(parseColor(strokeStyle.color), 'rgba[3]'),
+          strokeColor: parseColor(strokeStyle.color as string).hex,
+          strokeOpacity: get(parseColor(strokeStyle.color as string), 'rgba[3]'),
           strokeWidth: strokeStyle.width,
           strokeLinecap: strokeStyle.lineCap,
           strokeDashstyle: strokeStyle.lineDash
@@ -214,40 +194,39 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       case 'MultiPolygon':
       case 'Circle':
         style = {
-          strokeColor: parseColor(strokeStyle.color).hex,
-          strokeOpacity: get(parseColor(strokeStyle.color), 'rgba[3]'),
+          strokeColor: parseColor(strokeStyle.color as string).hex,
+          strokeOpacity: get(parseColor(strokeStyle.color as string), 'rgba[3]'),
           strokeWidth: strokeStyle.width,
           strokeLinecap: strokeStyle.lineCap,
           strokeDashstyle: strokeStyle.lineDash,
-          fillColor: parseColor(fillStyle.color).hex,
-          fillOpacity: get(parseColor(fillStyle.color), 'rgba[3]')
+          fillColor: parseColor(fillStyle.color as string).hex,
+          fillOpacity: get(parseColor(fillStyle.color as string), 'rgba[3]')
         };
         break;
       default:
         // TODO some fallback style?!
-        style = {
-
-        };
+        style = { };
     }
 
     if (textStyle && textStyle.text) {
-      const parsedFont: any = /** @type {IFont} */ (parseFont(textStyle.font));
+      const parsedFont = textStyle.font ? parseFont(textStyle.font) as IFont : undefined;
+      const fontColor = get(textStyle, 'fill.color') as string;
       style = {
         ...style,
         ...{
           label: textStyle.text,
-          fontFamily: parsedFont.family.join(','),
-          fontSize: parsedFont.size,
-          fontWeight: parsedFont.weight,
-          fontStyle: parsedFont.style,
-          fontColor: parseColor(get(textStyle, 'fill.color')).hex,
-          fontOpacity: get(parseColor(get(textStyle, 'fill.color')), 'rgba[3]')
+          fontFamily: parsedFont?.family?.join(','),
+          fontSize: parsedFont?.size,
+          fontWeight: parsedFont?.weight,
+          fontStyle: parsedFont?.style,
+          fontColor: parseColor(fontColor).hex,
+          fontOpacity: get(parseColor(fontColor), 'rgba[3]')
         }
       };
     }
 
     return pickBy(style, v => v !== undefined);
-  }
+  };
 
   /**
    * Returns a plain object matching the passed ol.style.Image instance.
@@ -255,11 +234,10 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
    * Works with `ol.style.Circle`, `ol.style.Icon` and
    * `ol.style.RegularShape`
    *
-   * @param {OlStyleImage} olImageStyle An ol.style.Image instance.
-   * @return {Object} A plain object matching the passed `ol.style.Image`
-   *                  instance.
+   * @param olImageStyle An ol.style.Image instance.
+   * @return A plain object matching the passed `ol.style.Image` instance.
    */
-  writeImageStyle = olImageStyle => {
+  writeImageStyle = (olImageStyle: OlStyleImage) => {
     if (!(olImageStyle instanceof OlStyleImage)) {
       return {};
     }
@@ -275,16 +253,15 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
     if (olImageStyle instanceof OlStyleRegularShape) {
       return this.writeRegularShapeStyle(olImageStyle);
     }
-  }
+  };
 
   /**
    * Returns a plain object matching the passed ol.style.Circle instance.
    *
-   * @param {OlStyleCircle} olCircleStyle An ol.style.Circle instance.
-   * @return {Object} A plain object matching the passed `ol.style.Circle`
-   *                  instance.
+   * @param olCircleStyle An ol.style.Circle instance.
+   * @return A plain object matching the passed `ol.style.Circle` instance.
    */
-  writeCircleStyle = olCircleStyle => {
+  writeCircleStyle = (olCircleStyle: OlStyleCircle) => {
     if (!(olCircleStyle instanceof OlStyleCircle)) {
       return {};
     }
@@ -299,16 +276,15 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       scale: olCircleStyle.getScale(),
       stroke: this.writeStrokeStyle(olCircleStyle.getStroke())
     };
-  }
+  };
 
   /**
    * Returns a plain object matching the passed ol.style.Icon instance.
    *
-   * @param {OlStyleIcon} olIconStyle An ol.style.Icon instance.
-   * @return {Object} A plain object matching the passed `ol.style.Icon`
-   *                  instance.
+   * @param olIconStyle An ol.style.Icon instance.
+   * @return A plain object matching the passed `ol.style.Icon` instance.
    */
-  writeIconStyle = olIconStyle => {
+  writeIconStyle = (olIconStyle: OlStyleIcon) => {
     if (!(olIconStyle instanceof OlStyleIcon)) {
       return {};
     }
@@ -327,18 +303,17 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       size: olIconStyle.getSize(),
       src: olIconStyle.getSrc()
     };
-  }
+  };
 
   /**
    * Returns a plain object matching the passed ol.style.RegularShape
    * instance.
    *
-   * @param {OlStyleRegularShape} olRegularShape An ol.style.RegularShape
-   *                                               instance.
-   * @return {Object} A plain object matching the passed `ol.style.RegularShape`
-   *                  instance.
+   * @param olRegularShape An ol.style.RegularShape instance.
+   *
+   * @return A plain object matching the passed `ol.style.RegularShape` instance.
    */
-  writeRegularShapeStyle = olRegularShape => {
+  writeRegularShapeStyle = (olRegularShape: OlStyleRegularShape) => {
     if (!(olRegularShape instanceof OlStyleRegularShape)) {
       return {};
     }
@@ -347,8 +322,7 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
      * Returns the graphicName of a RegularShape or undefined based on the
      * number of points, radius and angle.
      *
-     * @returns {string | undefined} The graphicName of a RegularShape feature
-     *                                (triangle, square, cross, x and star)
+     * @returns The graphicName of a RegularShape feature (triangle, square, cross, x and star)
      */
     const getGraphicName = () => {
       if (olRegularShape.getPoints() === 3) {
@@ -394,16 +368,16 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       stroke: this.writeStrokeStyle(olRegularShape.getStroke()),
       graphicName: getGraphicName()
     };
-  }
+  };
 
   /**
    * Returns a plain object matching the passed ol.style.Fill instance.
    *
-   * @param {OlStyleFill} olFillStyle An ol.style.Fill instance.
-   * @return {Object} A plain object matching the passed `ol.style.Fill`
-   *                  instance.
+   * @param olFillStyle An ol.style.Fill instance.
+   *
+   * @return A plain object matching the passed `ol.style.Fill` instance.
    */
-  writeFillStyle = olFillStyle => {
+  writeFillStyle = (olFillStyle: OlStyleFill) => {
     if (!(olFillStyle instanceof OlStyleFill)) {
       return {};
     }
@@ -411,16 +385,15 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
     return {
       color: olFillStyle.getColor()
     };
-  }
+  };
 
   /**
    * Returns a plain object matching the passed ol.style.Stroke instance.
    *
-   * @param {OlStyleStroke} olStrokeStyle An ol.style.Stroke instance.
-   * @return {Object} A plain object matching the passed `ol.style.Stroke`
-   *                  instance.
+   * @param olStrokeStyle An ol.style.Stroke instance.
+   * @return A plain object matching the passed `ol.style.Stroke` instance.
    */
-  writeStrokeStyle = olStrokeStyle => {
+  writeStrokeStyle = (olStrokeStyle: OlStyleStroke) => {
     if (!(olStrokeStyle instanceof OlStyleStroke)) {
       return {};
     }
@@ -435,16 +408,15 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       miterLimit: olStrokeStyle.getMiterLimit(),
       width: olStrokeStyle.getWidth()
     };
-  }
+  };
 
   /**
    * Returns a plain object matching the passed ol.style.Text instance.
    *
-   * @param {OlStyleText} olTextStyle An ol.style.Text instance.
-   * @return {Object} A plain object matching the passed `ol.style.Text`
-   *                  instance.
+   * @param olTextStyle An ol.style.Text instance.
+   * @return A plain object matching the passed `ol.style.Text` instance.
    */
-  writeTextStyle = olTextStyle => {
+  writeTextStyle = (olTextStyle: OlStyleText) => {
     if (!(olTextStyle instanceof OlStyleText)) {
       return {};
     }
@@ -461,7 +433,7 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
       textAlign: olTextStyle.getTextAlign(),
       textBaseline: olTextStyle.getTextBaseline()
     };
-  }
+  };
 
 }
 

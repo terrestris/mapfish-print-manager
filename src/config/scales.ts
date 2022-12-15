@@ -1,4 +1,4 @@
-module.exports = [
+const scales = [
   500,
   1000,
   5000,
@@ -11,3 +11,5 @@ module.exports = [
   1000000,
   2000000,
 ];
+
+export default scales;

@@ -1,5 +1,5 @@
 module.exports = {
   extends: [
-    '@terrestris/eslint-config-typescript-react'
+    '@terrestris/eslint-config-typescript'
   ]
 };

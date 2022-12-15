@@ -1,44 +1,34 @@
-/**
- * The ObservableEvent.
- */
 export class ObservableEvent {
 
   /**
    * The name of the event.
-   *
-   * @type {string}
    */
-  eventName = '';
+  eventName: string;
 
   /**
    * The callback functions of the event.
-   *
-   * @type {Array}
    */
-  callbacks = [];
+  callbacks: Function[] = [];
 
-  /**
-   * The constructor.
-   */
-  constructor(eventName) {
+  constructor(eventName: string) {
     this.eventName = eventName;
   }
 
   /**
    * Registers a callback to this ObservableEvent.
    *
-   * @param {Function} callback The callback function to register.
+   * @param callback The callback function to register.
    */
-  registerCallback(callback) {
+  registerCallback(callback: Function) {
     this.callbacks.push(callback);
   }
 
   /**
    * Unregisters a callback of this ObservableEvent.
    *
-   * @param {Function} callback The callback to unregister.
+   * @param callback The callback to unregister.
    */
-  unregisterCallback(callback) {
+  unregisterCallback(callback: Function) {
     const index = this.callbacks.indexOf(callback);
     if (index > -1) {
       this.callbacks.splice(index, 1);
@@ -48,9 +38,9 @@ export class ObservableEvent {
   /**
    * Calls all given callbacks of the event with the provided data.
    *
-   * @param {Object} data The data to call the callback(s) with.
+   * @param data The data to call the callback(s) with.
    */
-  fire(data) {
+  fire(data: any) {
     const callbacks = this.callbacks.slice(0);
     callbacks.forEach(callback => {
       callback(data);

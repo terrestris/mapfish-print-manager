@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import OlLayerVector from 'ol/layer/Vector';
 import OlLayerTile from 'ol/layer/Tile';
 import OlSourceVector from 'ol/source/Vector';
@@ -18,7 +17,8 @@ import { Geometry } from 'ol/geom';
 import Feature from 'ol/Feature';
 
 describe('MapFishPrintV2VectorSerializer', () => {
-  let serializer;
+  let serializer: MapFishPrintV2VectorSerializer;
+
   // const featureCollection = {
   //   type: 'FeatureCollection',
   //   features: [{
@@ -134,7 +134,7 @@ describe('MapFishPrintV2VectorSerializer', () => {
       source: new OlSourceOSM()
     });
 
-    const serialized = serializer.serialize(layer);
+    const serialized = serializer.serialize(layer, {}, 1909);
 
     expect(serialized).toBeUndefined();
   });
@@ -214,7 +214,7 @@ describe('MapFishPrintV2VectorSerializer', () => {
       name: layerName
     } as any);
 
-    const serialized = serializer.serialize(layer, 1909);
+    const serialized = serializer.serialize(layer, {}, 1909);
 
     expect(serialized).toEqual({
       type: 'Vector',

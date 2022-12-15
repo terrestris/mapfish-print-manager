@@ -1,4 +1,3 @@
-// @ts-nocheck
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OlLayerTile from 'ol/layer/Tile';
@@ -7,6 +6,8 @@ import { fromLonLat } from 'ol/proj';
 
 import { MapFishPrintV2Manager } from '../src/index';
 
+import 'ol/ol.css';
+
 const map = new OlMap({
   target: 'map',
   layers: [
@@ -14,7 +15,7 @@ const map = new OlMap({
       source: new OlSourceTileWMS({
         url: 'https://ows.terrestris.de/osm/service',
         params: {
-          'LAYERS': 'OSM-WMS'
+          LAYERS: 'OSM-WMS'
         }
       })
     })
@@ -25,13 +26,11 @@ const map = new OlMap({
   })
 });
 
-// @ts-ignore
 const printProvider = new MapFishPrintV2Manager({
   url: 'http://localhost:9000/print-v2/pdf',
   map: map
 });
 
-// @ts-ignore
 printProvider.init()
   .then(() => {
     fillCombos();
@@ -39,66 +38,43 @@ printProvider.init()
     printProvider.on('change:scale', onChangePrintExtent);
   });
 
-/**
- *
- */
 const onChangePrintExtent = scale => {
   const scaleSelect = document.querySelector('select#scale-select');
-  scaleSelect.value = scale.name;
+  scaleSelect.value = scale;
 };
 
-/**
- *
- */
 const onLayoutChange = event => {
   const value = event.target.value;
   printProvider.setLayout(value);
 };
 
-/**
- *
- */
 const onDpiChange = event => {
   const value = event.target.value;
-  printProvider.setDpi(value);
+  printProvider.setDpi(parseFloat(value));
 };
 
-/**
- *
- */
 const onFormatChange = event => {
   const value = event.target.value;
   printProvider.setOutputFormat(value);
 };
 
-/**
- *
- */
 const onScaleChange = event => {
   const value = event.target.value;
-  printProvider.setScale(value);
+  printProvider.setScale(parseFloat(value));
 };
 
-/**
- *
- */
 const registerPrintHandler = () => {
   const printBtn = document.querySelector('button#print');
   printBtn.addEventListener('click', onPrintClick);
 };
 
-/**
- *
- */
 const onPrintClick = () => {
   printProvider?.print(true)?.catch(error => {
+    // eslint-disable-next-line no-console
     console.log('Error while printing: ' + error);
   });
 };
 
-/**
- *
- */
 const fillCombos = () => {
   const layoutSelect = document.querySelector('select#layout-select');
   printProvider.getLayouts().forEach((layout) => {
@@ -112,27 +88,27 @@ const fillCombos = () => {
   const dpiSelect = document.querySelector('select#dpi-select');
   printProvider.getDpis().forEach((dpi) => {
     const option = document.createElement('option');
-    option.text = dpi.name;
+    option.text = dpi;
     dpiSelect?.add(option);
   });
-  dpiSelect.value = printProvider.getDpi().name;
+  dpiSelect.value = printProvider.getDpi();
   dpiSelect.onchange = onDpiChange;
 
   const formatSelect = document.querySelector('select#format-select');
   printProvider.getOutputFormats().forEach((format) => {
     const option = document.createElement('option');
-    option.text = format.name;
+    option.text = format;
     formatSelect.add(option);
   });
-  formatSelect.value = printProvider.getOutputFormat().name;
+  formatSelect.value = printProvider.getOutputFormat();
   formatSelect.onchange = onFormatChange;
 
   const scaleSelect = document.querySelector('select#scale-select');
   printProvider.getScales().forEach((scale) => {
     const option = document.createElement('option');
-    option.text = scale.name;
+    option.text = scale;
     scaleSelect.add(option);
   });
-  scaleSelect.value = printProvider.getScale().name;
+  scaleSelect.value = printProvider.getScale();
   scaleSelect.onchange = onScaleChange;
 };

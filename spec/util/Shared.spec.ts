@@ -1,4 +1,3 @@
-/* eslint-env jest*/
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OlInteractionDragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
@@ -14,7 +13,7 @@ import OlCollection from 'ol/Collection';
 import { Shared } from '../../src/util/Shared';
 
 describe('Shared', () => {
-  let map;
+  let map: OlMap;
 
   beforeEach(() => {
     map = new OlMap({
@@ -75,8 +74,6 @@ describe('Shared', () => {
     });
 
     it('handles flat layer lists properly', () => {
-      expect(Shared.getMapLayers).toBeDefined();
-
       const names = [
         'layer1',
         'layer2',
@@ -89,8 +86,8 @@ describe('Shared', () => {
         const source = new OlSourceTileWMS({
           url: 'https://ows.terrestris.de/osm/service',
           params: {
-            'LAYERS': 'OSM-WMS',
-            'TILED': true
+            LAYERS: 'OSM-WMS',
+            TILED: true
           },
           serverType: 'geoserver'
         });
@@ -126,8 +123,8 @@ describe('Shared', () => {
         const source = new OlSourceTileWMS({
           url: 'https://ows.terrestris.de/osm/service',
           params: {
-            'LAYERS': 'OSM-WMS',
-            'TILED': true
+            LAYERS: 'OSM-WMS',
+            TILED: true
           },
           serverType: 'geoserver'
         });
@@ -184,7 +181,9 @@ describe('Shared', () => {
     it('returns an empty array if no layer candidates could be found', () => {
       const layerName = 'Peter';
       const layer = new OlLayerVector({
-        name: layerName
+        properties: {
+          name: layerName
+        }
       });
       map.addLayer(layer);
       const got = Shared.getLayersByName(map, layerName);
@@ -207,7 +206,8 @@ describe('Shared', () => {
     });
 
     it('returns a valid GetLegendGraphic url for the given (ol.layer.Image and ol.layer.Tile) layer', () => {
-      const expected = 'http://bvb.de/maps?LAYER=SHINJI%3AKAGAWA&VERSION=1.3.0&SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image%2Fpng';
+      const expected = 'http://bvb.de/maps?LAYER=SHINJI%3AKAGAWA&VERSION=1.3.0&' +
+        'SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image%2Fpng';
 
       const imageLayer = new OlLayerImage({
         source: new OlSourceImageWMS({
@@ -239,7 +239,8 @@ describe('Shared', () => {
     });
 
     it('handles the given request parameters correctly', () => {
-      const expected = 'http://bvb.de/maps?LAYER=SHINJI%3AKAGAWA&VERSION=1.1.0&SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image%2Fjpg&LANGUAGE=DE';
+      const expected = 'http://bvb.de/maps?LAYER=SHINJI%3AKAGAWA&VERSION=1.1.0&' +
+        'SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image%2Fjpg&LANGUAGE=DE';
 
       const layer = new OlLayerTile({
         source: new OlSourceTileWMS({
@@ -261,7 +262,8 @@ describe('Shared', () => {
     });
 
     it('adds custom print parameters (customPrintLegendParams) to the url if available', () => {
-      const expected = 'http://bvb.de/maps?LAYER=SHINJI%3AKAGAWA&VERSION=1.3.0&SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image%2Fpng&SCALE=5000';
+      const expected = 'http://bvb.de/maps?LAYER=SHINJI%3AKAGAWA&VERSION=1.3.0&' +
+        'SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image%2Fpng&SCALE=5000';
 
       const layer = new OlLayerTile({
         source: new OlSourceTileWMS({
@@ -270,8 +272,10 @@ describe('Shared', () => {
             LAYERS: 'SHINJI:KAGAWA'
           }
         }),
-        customPrintLegendParams: {
-          SCALE: 5000
+        properties: {
+          customPrintLegendParams: {
+            SCALE: 5000
+          }
         }
       });
 
@@ -279,7 +283,8 @@ describe('Shared', () => {
     });
 
     it('adds a question mark to the URL if needed', () => {
-      const expected = 'http://bvb.de/maps?LAYER=SHINJI%3AKAGAWA&VERSION=1.3.0&SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image%2Fpng&SCALE=5000';
+      const expected = 'http://bvb.de/maps?LAYER=SHINJI%3AKAGAWA&VERSION=1.3.0' +
+        '&SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image%2Fpng&SCALE=5000';
 
       const layer = new OlLayerTile({
         source: new OlSourceTileWMS({
@@ -288,8 +293,10 @@ describe('Shared', () => {
             LAYERS: 'SHINJI:KAGAWA'
           }
         }),
-        customPrintLegendParams: {
-          SCALE: 5000
+        properties: {
+          customPrintLegendParams: {
+            SCALE: 5000
+          }
         }
       });
 
@@ -302,8 +309,10 @@ describe('Shared', () => {
             LAYERS: 'SHINJI:KAGAWA'
           }
         }),
-        customPrintLegendParams: {
-          SCALE: 5000
+        properties: {
+          customPrintLegendParams: {
+            SCALE: 5000
+          }
         }
       });
 

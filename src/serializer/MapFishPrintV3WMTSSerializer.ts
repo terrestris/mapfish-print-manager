@@ -1,61 +1,34 @@
 import OlSource from 'ol/source/Source';
-import OlWMTS from 'ol/source/WMTS';
+import OlSourceWMTS from 'ol/source/WMTS';
 import OlLayer from 'ol/layer/Layer';
-// eslint-disable-next-line no-unused-vars
-import OlWMTSTileGrid from 'ol/tilegrid/WMTS';
+import OlTileGridWMTS from 'ol/tilegrid/WMTS';
 
 import BaseSerializer from './BaseSerializer';
 
-/**
- * The MapFishPrintV3WMTSSerializer.
- * Documentation on http://mapfish.github.io/mapfish-print-doc/layers.html
- *
- * @class
- */
-export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
+export class MapFishPrintV3WMTSSerializer implements BaseSerializer {
 
   /**
    * The WMS layer type identificator.
-   *
-   * @type {string}
    */
-  static TYPE_WMTS = 'wmts';
+  static TYPE_WMTS: string = 'wmts';
 
-  /**
-   * The constructor
-   */
-  constructor() {
-    super();
+  validateSource(source: OlSource): source is OlSourceWMTS {
+    return source instanceof OlSourceWMTS;
   }
 
-  /**
-   * @param {OlSource} source
-   * @return {boolean}
-   */
-  canSerialize(source) {
-    return source instanceof OlWMTS;
-  }
+  serialize(olLayer: OlLayer, opts?: any) {
+    const source = olLayer.getSource();
 
-  /**
-   * Serializes/Encodes the given layer.
-   *
-   * @abstract
-   * @param {OlLayer} layer The layer to serialize/encode.
-   * @param {Object} opts Additional properties to pass to the serialized
-   *   layer object that can't be obtained by the layer itself. It can also be
-   *   used to override all generated layer values, e.g. the image format. Only
-   *   used in V3.
-   * @param {number} viewResolution The resolution to calculate the styles for.
-   * @return {Object} The serialized/encoded layer.
-   */
-  serialize(layer, opts = {}, viewResolution) { // eslint-disable-line no-unused-vars
-    const source = /** @type {OlWMTS} */ (layer.getSource());
-
-    if (!this.validateSource(source)) {
+    if (!source || !this.validateSource(source)) {
       return;
     }
 
-    let baseUrl = source.getUrls()[0];
+    const urls = source.getUrls();
+    let baseUrl = urls ? urls[0] : undefined;
+
+    if (!baseUrl) {
+      return;
+    }
 
     // MapFish Print replaces {style}
     // https://mapfish.github.io/mapfish-print-doc/layers.html#WMTS%20Layer
@@ -63,8 +36,12 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
       baseUrl = baseUrl.replace('{Style}', '{style}');
     }
 
-    const tileGrid = /** @type {OlWMTSTileGrid} */ (source.getTileGrid());
+    const tileGrid = source.getTileGrid() as OlTileGridWMTS;
     const matrixSizes = source.get('matrixSizes');
+
+    if (!tileGrid) {
+      return;
+    }
 
     // 28mm is the pixel size
     const scaleDenominators = tileGrid.getResolutions().map(resolution => resolution / 0.00028);
@@ -88,14 +65,15 @@ export class MapFishPrintV3WMTSSerializer extends BaseSerializer {
       })),
       matrixSet: source.getMatrixSet(),
       mergeableParams: undefined,
-      name: layer.get('name'),
-      opacity: layer.getOpacity(),
+      name: olLayer.get('name'),
+      opacity: olLayer.getOpacity(),
       rasterStyle: '',
       requestEncoding: source.getRequestEncoding(),
       style: source.getStyle(),
       version: source.getVersion() || '1.1.0',
       type: MapFishPrintV3WMTSSerializer.TYPE_WMTS
     };
+
     return serialized;
   }
 }

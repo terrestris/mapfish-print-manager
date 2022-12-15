@@ -9,14 +9,12 @@
     "declaration": true,
     "emitDeclarationOnly": false,
     "outDir": "./dist",
+    "resolveJsonModule": true,
     "noEmit": false,
-    "strict": false,
+    "strict": true,
+    "noImplicitAny": true,
     "baseUrl": ".",
-    "esModuleInterop": true,
-    "paths": {
-      "ol": ["node_modules/@hanreev/types-ol/ol"],
-      "ol/*": ["node_modules/@hanreev/types-ol/ol/*"]
-    }
+    "esModuleInterop": true
   },
   "include": [
     "src"

@@ -1,8 +1,15 @@
-/* eslint-env jest */
+import {
+  enableFetchMocks,
+  disableFetchMocks,
+  FetchMock
+} from 'jest-fetch-mock';
+
 import OlMap from 'ol/Map';
 import OlLayerImage from 'ol/layer/Image';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlView from 'ol/View';
+import OlLayerVector from 'ol/layer/Vector';
+import OlSourceVector from 'ol/source/Vector';
 
 import { MapFishPrintV2Manager } from '../../src/index';
 
@@ -18,31 +25,30 @@ describe('MapFishPrintV2Manager', () => {
     })
   });
 
+  beforeAll(() => {
+    enableFetchMocks();
+  });
+
+  afterAll(() => {
+    disableFetchMocks();
+  });
+
   it('is defined', () => {
     expect(MapFishPrintV2Manager).not.toBeUndefined();
   });
 
-  it('loads the print capabilities from a remote source', () => {
-    // @ts-ignore
-    fetch.mockResponse(JSON.stringify(mockResponse));
+  it('loads the print capabilities from a remote source', async () => {
+    (fetch as FetchMock).mockResponse(JSON.stringify(mockResponse));
 
-    // @ts-ignore
     const manager = new MapFishPrintV2Manager({
       map: testMap,
       url: 'https://mock:8080/print/pdf/'
     });
 
-    // @ts-ignore
-    return manager.init()
-      .then(resp => {
-        expect(resp).toBeTruthy();
-        // @ts-ignore
-        fetch.resetMocks();
-      });
+    await expect(manager.init()).resolves.not.toThrow();
   });
 
   it('loads the print capabilities from a local source', () => {
-    // @ts-ignore
     const manager = new MapFishPrintV2Manager({
       map: testMap,
       capabilities: mockResponse
@@ -52,7 +58,6 @@ describe('MapFishPrintV2Manager', () => {
   });
 
   it('renders the print extent', () => {
-    // @ts-ignore
     const manager = new MapFishPrintV2Manager({
       map: testMap,
       capabilities: mockResponse
@@ -61,12 +66,11 @@ describe('MapFishPrintV2Manager', () => {
 
     expect(testMap.getLayers().getArray().length).toEqual(1);
     expect(
-      // @ts-ignore
-      testMap.getLayers().getArray()[0].getSource().getFeatures().length
+      (testMap.getLayers().getArray()[0] as OlLayerVector<OlSourceVector>).getSource()?.getFeatures().length
     ).toEqual(1);
   });
 
-  it('returns the print download url', () => {
+  it('returns the print download url', async () => {
     const map = new OlMap({
       layers: [
         new OlLayerImage({
@@ -85,7 +89,6 @@ describe('MapFishPrintV2Manager', () => {
         zoom: 2
       })
     });
-    // @ts-ignore
     const manager = new MapFishPrintV2Manager({
       method: 'POST',
       map: map,
@@ -95,19 +98,14 @@ describe('MapFishPrintV2Manager', () => {
       'http://localhost:4321/print/pdf/919288886008494300.png.printout';
     manager.init();
 
-    // @ts-ignore
-    fetch.mockResponse(
+    (fetch as FetchMock).mockResponse(
       JSON.stringify({
         getURL: getURLMock
       })
     );
 
-    // @ts-ignore
-    return manager.print().then(payload => {
-      expect(payload).toEqual(getURLMock);
-      // @ts-ignore
-      fetch.resetMocks();
-    });
-  });
+    const payload = await manager.print();
 
+    expect(payload).toEqual(getURLMock);
+  });
 });
