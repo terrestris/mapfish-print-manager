@@ -38,8 +38,8 @@ describe('MapFishPrintV3Manager', () => {
 
   it('loads the print capabilities from a remote source', async () => {
     (fetch as FetchMock).mockResponses(
-      JSON.stringify(printCapabilitiesMockResponse),
-      JSON.stringify(printAppsMockResponse)
+      JSON.stringify(printAppsMockResponse),
+      JSON.stringify(printCapabilitiesMockResponse)
     );
 
     const manager = new MapFishPrintV3Manager({
@@ -59,53 +59,47 @@ describe('MapFishPrintV3Manager', () => {
     await expect(manager.init()).resolves.not.toThrow();
   });
 
-  // it('renders the print extent', () => {
-  //   const manager = new MapFishPrintV3Manager({
-  //     map: testMap,
-  //     capabilities: printCapabilitiesMockResponse
-  //   });
-  //   manager.init();
+  it('renders the print extent', () => {
+    const manager = new MapFishPrintV3Manager({
+      map: testMap,
+      capabilities: printCapabilitiesMockResponse
+    });
+    manager.init();
 
-  //   expect(testMap.getLayers().getArray().length).toEqual(1);
-  //   expect((testMap.getLayers().getArray()[0] as OlLayerVector<OlSourceVector>)
-  //     .getSource().getFeatures().length).toEqual(1);
-  // });
+    expect(testMap.getLayers().getArray().length).toEqual(1);
+    expect((testMap.getLayers().getArray()[0] as OlLayerVector<OlSourceVector>)
+      .getSource()?.getFeatures().length).toEqual(1);
+  });
 
+  it('loads available print apps', async () => {
+    (fetch as FetchMock).mockResponses(
+      JSON.stringify(printAppsMockResponse)
+    );
+    const manager = new MapFishPrintV3Manager({
+      map: testMap,
+      url: 'https://mock:8080/print/pdf/'
+    });
 
-  // it('loads available print apps', async () => {
-  //   (fetch as FetchMock).mockResponses(
-  //     JSON.stringify(printCapabilitiesMockResponse),
-  //     JSON.stringify(printAppsMockResponse)
-  //   );
-  //   const manager = new MapFishPrintV3Manager({
-  //     map: testMap,
-  //     url: 'https://mock:8080/print/pdf/'
-  //   });
-  //   manager.init();
+    const response = await manager.loadPrintApps();
 
-  //   const response = await manager.loadPrintApps();
+    expect(response).toEqual(printAppsMockResponse);
+  });
 
-  //   expect(response).toEqual(printAppsMockResponse);
-  // });
+  it('loads capabilities for chosen app', async () => {
+    (fetch as FetchMock).mockResponses(
+      JSON.stringify(printCapabilitiesMockResponse)
+    );
+    const manager = new MapFishPrintV3Manager({
+      map: testMap,
+      url: 'https://mock:8080/print/pdf/'
+    });
 
-  // it('loads capabilities for chosen app', async () => {
-  //   (fetch as FetchMock).mockResponses(
-  //     JSON.stringify(printCapabilitiesMockResponse),
-  //     JSON.stringify(printAppsMockResponse)
-  //   );
-  //   const manager = new MapFishPrintV3Manager({
-  //     map: testMap,
-  //     url: 'https://mock:8080/print/pdf/'
-  //     // printApps: []
-  //   });
-  //   manager.init();
+    const printApp = 'default';
 
-  //   const printApp = 'default';
+    const response = await manager.loadAppCapabilities(printApp);
 
-  //   const response = await manager.loadAppCapabilities(printApp);
-
-  //   expect(response.app).toBe(printCapabilitiesMockResponse.app);
-  // });
+    expect(response.app).toBe(printCapabilitiesMockResponse.app);
+  });
 
   describe('#getBasePath', () => {
     it('is defined', () => {
