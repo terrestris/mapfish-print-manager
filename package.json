@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build:dist": "npm run clean:dist && babel src --out-dir dist && tsc --pretty -p .",
+    "build:dist": "npm run clean:dist && tsc -p .",
     "build:docs": "npm run clean:docs && typedoc",
     "build:examples": "npm run clean:examples && webpack --config ./webpack.production.config.js",
     "clean": "npm run clean:dist && npm run clean:examples && npm run clean:docs",
