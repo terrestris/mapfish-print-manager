@@ -98,6 +98,16 @@ export type BaseMapFishPrintManagerOpts = {
    * custom functionality.
    */
   serializers?: BaseSerializer[];
+  /**
+   * A filter function that will be called before the print call. Should
+   * return a Boolean whether to serialize a layer for print or not.
+   */
+  layerFilter?: (layer: OlLayer) => boolean;
+  /**
+   * A filter function that will be called before the print call. Should
+   * return a Boolean whether to serialize a legend of a layer for print or not.
+   */
+  legendFilter?: (layer: OlLayer) => boolean;
 };
 
 /**
@@ -150,6 +160,10 @@ export class BaseMapFishPrintManager extends Observable {
   timeout: number;
 
   serializers: BaseSerializer[] = [];
+
+  layerFilter: (layer: OlLayer) => boolean;
+
+  legendFilter: (layer: OlLayer) => boolean;
 
   /**
    * The supported layouts by the print service.
@@ -244,6 +258,8 @@ export class BaseMapFishPrintManager extends Observable {
     this.customPrintScales = opts.customPrintScales;
     this.timeout = opts.timeout ? opts.timeout : 30000;
     this.serializers = opts.serializers ? opts.serializers : [];
+    this.layerFilter = opts.layerFilter || (() => true);
+    this.legendFilter = opts.legendFilter || (() => true);
 
     if (!(this.map instanceof OlMap)) {
       Logger.warn(
@@ -263,19 +279,6 @@ export class BaseMapFishPrintManager extends Observable {
       this.url += '/';
     }
   }
-
-  /**
-   * A filter function that will be called before the print call. Should
-   * return a Boolean whether to serialize a layer for print or not.
-   */
-  layerFilter: (layer: OlLayer) => boolean = layer => true;
-
-  /**
-   * A filter function that will be called before the print call. Should
-   * return a Boolean whether to serialize a legend of a layer for print or not.
-   *
-   */
-  legendFilter: (layer: OlLayer) => boolean = (layer): boolean => true;
 
   /**
    * Shuts down the manager.
