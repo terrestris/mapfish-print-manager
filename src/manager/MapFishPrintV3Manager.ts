@@ -70,29 +70,23 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    */
   static CAPABILITIES_JSON_ENDPOINT: string = 'capabilities.json';
 
-  customMapParams: V3CustomMapParams = {};
+  protected customMapParams: V3CustomMapParams = {};
 
   /**
    * The supported print applications by the print service.
-   *
-   * @private
    */
-  _printApps: string[] = [];
+  protected _printApps: string[] = [];
 
   /**
    * The currently selected print application.
-   *
-   * @private
    */
-  _printApp?: string;
+  protected _printApp?: string;
 
   /**
    * ID of currently started print job. Will be used while polling will be
    * performed.
-   *
-   * @private
    */
-  _printJobReference: string | null = null;
+  protected _printJobReference: string | null = null;
 
   /**
    * The constructor
@@ -126,132 +120,6 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     } else if (!this.url && this.capabilities) {
       this.initManager(this.capabilities);
     }
-  }
-
-  /**
-   * @param capabilities
-   */
-  initManager(capabilities: any) {
-    this.capabilities = capabilities;
-
-    this._layouts = capabilities.layouts;
-    this._outputFormats = capabilities.formats;
-
-    this.setLayout(this.getLayouts()[0].name);
-    this.setOutputFormat(this.getOutputFormats()[0]);
-
-    // mapfish3 doesn't provide scales via capabilities, so we get them from
-    // initialized manager if set or set some most common used values here
-    // manually as fallback
-    if (this.customPrintScales && this.customPrintScales.length > 0) {
-      this._scales = this.customPrintScales;
-    } else {
-      this._scales = scales;
-    }
-    this.setScale(this.getClosestScaleToFitMap());
-
-    this.initPrintExtentLayer();
-    this.initPrintExtentFeature();
-    this.initTransformInteraction();
-
-    this._initiated = true;
-
-    return this.isInitiated();
-  }
-
-  /**
-   * Returns attribute value contained in currently chosen layout by its name.
-   *
-   * @param attributeName The attribute name (key) to be searched.
-   *
-   * @return Obtained attribute value.
-   */
-  getAttributeByName(attributeName: string) {
-    const layoutName = this.getLayout()?.name;
-
-    if (!layoutName) {
-      return;
-    }
-
-    const layout = this.getLayoutByName(layoutName);
-    const layoutAttributes = layout?.attributes;
-
-    const attribute = layoutAttributes?.find((layoutAttribute: any) => {
-      return layoutAttribute.name === attributeName;
-    });
-
-    return attribute;
-  }
-
-  /**
-   * Returns an object containing configuration for layout based on its name
-   *
-   * @param layoutName Layout name.
-   *
-   * @return Layout configuration object.
-   */
-  getLayoutByName(layoutName: string) {
-    const layouts = this.getLayouts();
-
-    return layouts.find(layout => layout.name === layoutName);
-  }
-
-  /**
-   * Returns all available print applications.
-   *
-   * @return Promise containing available print apps.
-   */
-  async loadPrintApps(): Promise<string[]> {
-    const printAppResponse = await fetch(`${this.url}${MapFishPrintV3Manager.APPS_JSON_ENDPOINT}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...this.headers
-      },
-      credentials: this.credentialsMode
-    });
-
-    this.validateResponse(printAppResponse);
-
-    const printAppResponseJson = await printAppResponse.json();
-
-    return printAppResponseJson;
-  }
-
-  /**
-   * Loads the print capabilities from the provided remote source.
-   */
-  async loadAppCapabilities(printApp: string) {
-    const capEndpoint = MapFishPrintV3Manager.CAPABILITIES_JSON_ENDPOINT;
-    const url = `${this.url}${printApp}/${capEndpoint}`;
-
-    const appCapabilitiesResponse = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...this.headers
-      },
-      credentials: this.credentialsMode
-    });
-
-    this.validateResponse(appCapabilitiesResponse);
-
-    const appCapabilitiesResponseJson = await appCapabilitiesResponse.json();
-
-    return appCapabilitiesResponseJson;
-  }
-
-  /**
-   * Determine the base path the application is running
-   * @return The base host path
-   */
-  getBasePath() {
-    if (!this.url) {
-      return;
-    }
-    const baseUrlObj = new URL(this.url, undefined, QueryString.parse);
-    const baseHost = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
-    return baseHost;
   }
 
   /**
@@ -317,54 +185,6 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     }
   }
 
-  async pollUntilDone(url: string, interval: number, timeout: number): Promise<any> {
-    return this.poll(
-      () => this.getStatus(url),
-      responseJson => ['waiting', 'running'].includes(responseJson.status),
-      interval,
-      timeout
-    );
-  }
-
-  async getStatus(url: string) {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        ...this.headers
-      },
-      credentials: this.credentialsMode
-    });
-
-    this.validateResponse(response);
-
-    const responseJson = await response.json();
-
-    return responseJson;
-  }
-
-  async poll<T = any, >(fn: () => Promise<T>, fnCondition: (res?: T) => boolean,
-    interval: number = 1000, timeout: number = 30000) {
-    let start = Date.now();
-    let result = await fn();
-
-    while (fnCondition(result)) {
-      if (timeout > 0 && Date.now() - start > timeout) {
-        break;
-      }
-
-      await this.wait(interval);
-      result = await fn();
-    }
-
-    return result;
-  };
-
-  async wait(interval: number) {
-    return new Promise(resolve => {
-      setTimeout(resolve, interval);
-    });
-  };
-
   /**
    * Cancels current print job by id.
    *
@@ -386,59 +206,6 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     });
 
     this.validateResponse(cancelPrintResponse);
-  }
-
-  /**
-   * Collects the payload that is required for the print call to the print
-   * servlet.
-   *
-   * @return The print payload.
-   */
-  getPrintPayload() {
-    const mapView = this.map.getView();
-    const mapProjection = mapView.getProjection();
-    const mapLayers = Shared.getMapLayers(this.map);
-    const extentFeatureGeometry = this._extentFeature?.getGeometry();
-
-    const serializedLayers = mapLayers
-      .filter(this.filterPrintableLayer.bind(this))
-      .reduce((acc: any[], layer) => {
-        const serializedLayer = this.serializeLayer(layer);
-        if (serializedLayer) {
-          acc.push(serializedLayer);
-        }
-        return acc;
-      }, []).reverse();
-
-    const serializedLegends = mapLayers
-      .filter(this.filterPrintableLegend.bind(this))
-      .reduce((acc: any[], layer) => {
-        const serializedLegend = this.serializeLegend(layer);
-        if (serializedLegend) {
-          acc.push(serializedLegend);
-        }
-        return acc;
-      }, []).reverse();
-
-    const payload = {
-      layout: this.getLayout()?.name,
-      attributes: {
-        map: {
-          center: getCenter(extentFeatureGeometry?.getExtent() || [0, 0, 0, 0]),
-          dpi: this.getDpi(),
-          layers: serializedLayers,
-          projection: mapProjection.getCode(),
-          rotation: this.calculateRotation() || 0,
-          scale: this.getScale(),
-          ...this.customMapParams
-        },
-        legend: {
-          classes: serializedLegends
-        },
-        ...this.customParams
-      }
-    };
-    return payload;
   }
 
   /**
@@ -530,6 +297,233 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
   getPrintJobReference() {
     return this._printJobReference;
+  }
+
+  /**
+   * @param capabilities
+   */
+  protected initManager(capabilities: any) {
+    this.capabilities = capabilities;
+
+    this._layouts = capabilities.layouts;
+    this._outputFormats = capabilities.formats;
+
+    this.setLayout(this.getLayouts()[0].name);
+    this.setOutputFormat(this.getOutputFormats()[0]);
+
+    // mapfish3 doesn't provide scales via capabilities, so we get them from
+    // initialized manager if set or set some most common used values here
+    // manually as fallback
+    if (this.customPrintScales && this.customPrintScales.length > 0) {
+      this._scales = this.customPrintScales;
+    } else {
+      this._scales = scales;
+    }
+    this.setScale(this.getClosestScaleToFitMap());
+
+    this.initPrintExtentLayer();
+    this.initPrintExtentFeature();
+    this.initTransformInteraction();
+
+    this._initiated = true;
+
+    return this.isInitiated();
+  }
+
+  /**
+   * Returns attribute value contained in currently chosen layout by its name.
+   *
+   * @param attributeName The attribute name (key) to be searched.
+   *
+   * @return Obtained attribute value.
+   */
+  protected getAttributeByName(attributeName: string) {
+    const layoutName = this.getLayout()?.name;
+
+    if (!layoutName) {
+      return;
+    }
+
+    const layout = this.getLayoutByName(layoutName);
+    const layoutAttributes = layout?.attributes;
+
+    const attribute = layoutAttributes?.find((layoutAttribute: any) => {
+      return layoutAttribute.name === attributeName;
+    });
+
+    return attribute;
+  }
+
+  /**
+   * Returns an object containing configuration for layout based on its name
+   *
+   * @param layoutName Layout name.
+   *
+   * @return Layout configuration object.
+   */
+  protected getLayoutByName(layoutName: string) {
+    const layouts = this.getLayouts();
+
+    return layouts.find(layout => layout.name === layoutName);
+  }
+
+  /**
+   * Returns all available print applications.
+   *
+   * @return Promise containing available print apps.
+   */
+  protected async loadPrintApps(): Promise<string[]> {
+    const printAppResponse = await fetch(`${this.url}${MapFishPrintV3Manager.APPS_JSON_ENDPOINT}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...this.headers
+      },
+      credentials: this.credentialsMode
+    });
+
+    this.validateResponse(printAppResponse);
+
+    const printAppResponseJson = await printAppResponse.json();
+
+    return printAppResponseJson;
+  }
+
+  /**
+   * Loads the print capabilities from the provided remote source.
+   */
+  protected async loadAppCapabilities(printApp: string) {
+    const capEndpoint = MapFishPrintV3Manager.CAPABILITIES_JSON_ENDPOINT;
+    const url = `${this.url}${printApp}/${capEndpoint}`;
+
+    const appCapabilitiesResponse = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...this.headers
+      },
+      credentials: this.credentialsMode
+    });
+
+    this.validateResponse(appCapabilitiesResponse);
+
+    const appCapabilitiesResponseJson = await appCapabilitiesResponse.json();
+
+    return appCapabilitiesResponseJson;
+  }
+
+  /**
+   * Determine the base path the application is running
+   * @return The base host path
+   */
+  protected getBasePath() {
+    if (!this.url) {
+      return;
+    }
+    const baseUrlObj = new URL(this.url, undefined, QueryString.parse);
+    const baseHost = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
+    return baseHost;
+  }
+
+  protected async pollUntilDone(url: string, interval: number, timeout: number): Promise<any> {
+    return this.poll(
+      () => this.getStatus(url),
+      responseJson => ['waiting', 'running'].includes(responseJson.status),
+      interval,
+      timeout
+    );
+  }
+
+  protected async getStatus(url: string) {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...this.headers
+      },
+      credentials: this.credentialsMode
+    });
+
+    this.validateResponse(response);
+
+    const responseJson = await response.json();
+
+    return responseJson;
+  }
+
+  protected async poll<T = any,>(fn: () => Promise<T>, fnCondition: (res?: T) => boolean,
+    interval: number = 1000, timeout: number = 30000) {
+    let start = Date.now();
+    let result = await fn();
+
+    while (fnCondition(result)) {
+      if (timeout > 0 && Date.now() - start > timeout) {
+        break;
+      }
+
+      await this.wait(interval);
+      result = await fn();
+    }
+
+    return result;
+  };
+
+  protected async wait(interval: number) {
+    return new Promise(resolve => {
+      setTimeout(resolve, interval);
+    });
+  };
+
+  /**
+   * Collects the payload that is required for the print call to the print
+   * servlet.
+   *
+   * @return The print payload.
+   */
+  protected getPrintPayload() {
+    const mapView = this.map.getView();
+    const mapProjection = mapView.getProjection();
+    const mapLayers = Shared.getMapLayers(this.map);
+    const extentFeatureGeometry = this._extentFeature?.getGeometry();
+
+    const serializedLayers = mapLayers
+      .filter(this.filterPrintableLayer.bind(this))
+      .reduce((acc: any[], layer) => {
+        const serializedLayer = this.serializeLayer(layer);
+        if (serializedLayer) {
+          acc.push(serializedLayer);
+        }
+        return acc;
+      }, []).reverse();
+
+    const serializedLegends = mapLayers
+      .filter(this.filterPrintableLegend.bind(this))
+      .reduce((acc: any[], layer) => {
+        const serializedLegend = this.serializeLegend(layer);
+        if (serializedLegend) {
+          acc.push(serializedLegend);
+        }
+        return acc;
+      }, []).reverse();
+
+    const payload = {
+      layout: this.getLayout()?.name,
+      attributes: {
+        map: {
+          center: getCenter(extentFeatureGeometry?.getExtent() || [0, 0, 0, 0]),
+          dpi: this.getDpi(),
+          layers: serializedLayers,
+          projection: mapProjection.getCode(),
+          rotation: this.calculateRotation() || 0,
+          scale: this.getScale(),
+          ...this.customMapParams
+        },
+        legend: {
+          classes: serializedLegends
+        },
+        ...this.customParams
+      }
+    };
+    return payload;
   }
 }
 

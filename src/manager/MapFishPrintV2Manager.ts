@@ -3,7 +3,6 @@ import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceWMTS from 'ol/source/WMTS';
 import OlLayer from 'ol/layer/Layer';
-import { Coordinate as OlCoordinate } from 'ol/coordinate';
 
 import BaseMapFishPrintManager, { BaseMapFishPrintManagerOpts } from './BaseMapFishPrintManager';
 import MapFishPrintV2WMSSerializer from '../serializer/MapFishPrintV2WMSSerializer';
@@ -44,51 +43,6 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       const json = await this.loadCapabilities();
       this.initManager(json);
     }
-  }
-
-  /**
-   * Initializes the manager instance. Typically called by subclasses via init().
-   *
-   * @param capabilities The capabilities to set.
-   */
-  initManager(capabilities: any) {
-    this.capabilities = capabilities;
-
-    this._layouts = this.capabilities.layouts;
-    this._outputFormats = this.capabilities.outputFormats?.map((format: any) => format.name);
-    this._dpis = this.capabilities.dpis?.map((dpi: any) => parseInt(dpi.value, 10));
-    this._scales = this.capabilities.scales?.map((scale: any) => parseFloat(scale.value));
-
-    this.setLayout(this.getLayouts()[0].name);
-    this.setOutputFormat(this.getOutputFormats()[0]);
-    this.setDpi(this.getDpis()[0]);
-    this.setScale(this.getClosestScaleToFitMap());
-
-    this.initPrintExtentLayer();
-    this.initPrintExtentFeature();
-    this.initTransformInteraction();
-
-    this._initiated = true;
-  }
-
-  /**
-   * Loads the print capabilities from the provided remote source.
-   */
-  async loadCapabilities(): Promise<any> {
-    const response = await fetch(this.url + MapFishPrintV2Manager.INFO_JSON_ENDPOINT, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...this.headers
-      },
-      credentials: this.credentialsMode
-    });
-
-    this.validateResponse(response);
-
-    const responseJson = await response.json();
-
-    return responseJson;
   }
 
   /**
@@ -144,12 +98,61 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   }
 
   /**
+   * Sets the layout to use. Updates the print extent accordingly.
+   *
+   * @param name The name of the layout to use.
+   */
+  setLayout(name: string) {
+    const layout = this.getLayouts().find(l => l.name === name);
+
+    if (!layout) {
+      Logger.warn(`No layout named '${name}' found.`);
+      return;
+    }
+
+    this._layout = layout;
+
+    this.setPrintMapSize({
+      // @ts-ignore
+      width: layout.map.width,
+      // @ts-ignore
+      height: layout.map.height
+    });
+
+    this.updatePrintExtent();
+
+    this.dispatch('change:layout', layout);
+  }
+
+  /**
+   * Serializes/encodes the legend payload for the given layer.
+   *
+   * @param layer The layer to serialize/encode the legend for.
+   *
+   * @return The serialized/encoded legend.
+   */
+  protected serializeLegend(layer: OlLayer): any {
+    const source = layer.getSource();
+    if (source instanceof OlSourceTileWMS ||
+      source instanceof OlSourceImageWMS ||
+      source instanceof OlSourceWMTS) {
+      return {
+        name: layer.get('name') || (!(source instanceof OlSourceWMTS) && source.getParams().LAYERS) || '',
+        classes: [{
+          name: '',
+          icons: [Shared.getLegendGraphicUrl(layer)]
+        }]
+      };
+    }
+  }
+
+  /**
    * Collects the payload that is required for the print call to the print
    * servlet.
    *
    * @return The print payload.
    */
-  getPrintPayload() {
+  protected getPrintPayload() {
     const mapView = this.map.getView();
     const mapProjection = mapView.getProjection();
     const mapLayers = Shared.getMapLayers(this.map);
@@ -195,31 +198,9 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   }
 
   /**
-   * Serializes/encodes the legend payload for the given layer.
-   *
-   * @param layer The layer to serialize/encode the legend for.
-   *
-   * @return The serialized/encoded legend.
-   */
-  serializeLegend(layer: OlLayer): any {
-    const source = layer.getSource();
-    if (source instanceof OlSourceTileWMS ||
-      source instanceof OlSourceImageWMS ||
-      source instanceof OlSourceWMTS) {
-      return {
-        name: layer.get('name') || (!(source instanceof OlSourceWMTS) && source.getParams().LAYERS) || '',
-        classes: [{
-          name: '',
-          icons: [Shared.getLegendGraphicUrl(layer)]
-        }]
-      };
-    }
-  }
-
-  /**
    * Called on translate interaction's `scaling` event.
    */
-  onTransformScaling() {
+  protected onTransformScaling() {
     const scale = this.getClosestScaleToFitExtentFeature();
 
     if (!scale) {
@@ -230,30 +211,48 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   }
 
   /**
-   * Sets the layout to use. Updates the print extent accordingly.
+   * Initializes the manager instance. Typically called by subclasses via init().
    *
-   * @param name The name of the layout to use.
+   * @param capabilities The capabilities to set.
    */
-  setLayout(name: string) {
-    const layout = this.getLayouts().find(l => l.name === name);
+  protected initManager(capabilities: any) {
+    this.capabilities = capabilities;
 
-    if (!layout) {
-      Logger.warn(`No layout named '${name}' found.`);
-      return;
-    }
+    this._layouts = this.capabilities.layouts;
+    this._outputFormats = this.capabilities.outputFormats?.map((format: any) => format.name);
+    this._dpis = this.capabilities.dpis?.map((dpi: any) => parseInt(dpi.value, 10));
+    this._scales = this.capabilities.scales?.map((scale: any) => parseFloat(scale.value));
 
-    this._layout = layout;
+    this.setLayout(this.getLayouts()[0].name);
+    this.setOutputFormat(this.getOutputFormats()[0]);
+    this.setDpi(this.getDpis()[0]);
+    this.setScale(this.getClosestScaleToFitMap());
 
-    this.setPrintMapSize({
-      // @ts-ignore
-      width: layout.map.width,
-      // @ts-ignore
-      height: layout.map.height
+    this.initPrintExtentLayer();
+    this.initPrintExtentFeature();
+    this.initTransformInteraction();
+
+    this._initiated = true;
+  }
+
+  /**
+   * Loads the print capabilities from the provided remote source.
+   */
+  protected async loadCapabilities(): Promise<any> {
+    const response = await fetch(this.url + MapFishPrintV2Manager.INFO_JSON_ENDPOINT, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...this.headers
+      },
+      credentials: this.credentialsMode
     });
 
-    this.updatePrintExtent();
+    this.validateResponse(response);
 
-    this.dispatch('change:layout', layout);
+    const responseJson = await response.json();
+
+    return responseJson;
   }
 }
 

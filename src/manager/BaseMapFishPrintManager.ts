@@ -133,114 +133,92 @@ export class BaseMapFishPrintManager extends Observable {
    */
   static CUSTOM_PRINT_SERIALIZER_OPTS_KEY: string = 'customPrintSerializerOpts';
 
-  map: OlMap;
+  protected map: OlMap;
 
-  url?: string;
+  protected url?: string;
 
-  capabilities?: any;
+  protected capabilities?: any;
 
-  method: 'GET' | 'POST';
+  protected method: 'GET' | 'POST';
 
-  headers?: {
+  protected headers?: {
     [key: string]: string;
   };
 
-  credentialsMode: RequestCredentials;
+  protected credentialsMode: RequestCredentials;
 
-  customParams?: any;
+  protected customParams?: any;
 
-  extentLayer?: OlLayerVector<OlSourceVector>;
+  protected extentLayer?: OlLayerVector<OlSourceVector>;
 
-  maskColor: string;
+  protected maskColor: string;
 
-  transformOpts?: OlInteractionTransformOpts;
+  protected transformOpts?: OlInteractionTransformOpts;
 
-  customPrintScales?: number[];
+  protected customPrintScales?: number[];
 
-  timeout: number;
+  protected timeout: number;
 
-  serializers: BaseSerializer[] = [];
+  protected serializers: BaseSerializer[] = [];
 
-  layerFilter: (layer: OlLayer) => boolean;
+  protected layerFilter: (layer: OlLayer) => boolean;
 
-  legendFilter: (layer: OlLayer) => boolean;
+  protected legendFilter: (layer: OlLayer) => boolean;
 
   /**
    * The supported layouts by the print service.
-   *
-   * @private
    */
-  _layouts: Layout[] = [];
+  protected _layouts: Layout[] = [];
 
   /**
    * The supported output formats by the print service.
-   *
-   * @private
    */
-  _outputFormats: string[] = [];
+  protected _outputFormats: string[] = [];
 
   /**
    * The supported DPIs by the print service.
-   *
-   * @private
    */
-  _dpis: number[] = [];
+  protected _dpis: number[] = [];
 
   /**
    * The supported scales by the print service.
-   *
-   * @private
    */
-  _scales: number[] = [];
+  protected _scales: number[] = [];
 
   /**
    * The currently selected layout.
-   *
-   * @private
    */
-  _layout?: Layout;
+  protected _layout?: Layout;
 
   /**
    * The currently selected output format.
-   *
-   * @private
    */
-  _outputFormat?: string;
+  protected _outputFormat?: string;
 
   /**
    * The currently selected dpi.
-   *
-   * @private
    */
-  _dpi?: number;
+  protected _dpi?: number;
 
   /**
    * The currently selected scale.
-   *
-   * @private
    */
-  _scale?: number;
+  protected _scale?: number;
 
   /**
    * The currently set map size defined with its width and height.
-   *
-   * @private
    */
-  _printMapSize?: PrintMapSize;
+  protected _printMapSize?: PrintMapSize;
 
   /**
    * Whether this manger has been initiated or not.
-   *
-   * @private
    */
-  _initiated: boolean = false;
+  protected _initiated: boolean = false;
 
   /**
    * Feature representing the page extent.
-   *
-   * @private
    */
-  _extentFeature?: OlFeature<OlGeomPolygon>;
+  protected _extentFeature?: OlFeature<OlGeomPolygon>;
 
   constructor(opts: BaseMapFishPrintManagerOpts) {
     super();
@@ -249,13 +227,13 @@ export class BaseMapFishPrintManager extends Observable {
     this.url = opts.url;
     this.capabilities = opts.capabilities;
     this.method = opts.method ? opts.method : 'POST';
-    this.headers = opts.headers;
+    this.headers = opts.headers || {};
     this.credentialsMode = opts.credentialsMode ? opts.credentialsMode : 'same-origin';
-    this.customParams = opts.customParams;
+    this.customParams = opts.customParams || {};
     this.extentLayer = opts.extentLayer;
     this.maskColor = opts.maskColor ? opts.maskColor : 'rgba(130, 130, 130, 0.5)';
     this.transformOpts = opts.transformOpts;
-    this.customPrintScales = opts.customPrintScales;
+    this.customPrintScales = opts.customPrintScales || [];
     this.timeout = opts.timeout ? opts.timeout : 30000;
     this.serializers = opts.serializers ? opts.serializers : [];
     this.layerFilter = opts.layerFilter || (() => true);
@@ -264,14 +242,14 @@ export class BaseMapFishPrintManager extends Observable {
     if (!(this.map instanceof OlMap)) {
       Logger.warn(
         'Invalid value given to config option `map`. You need to ' +
-          'provide an ol.Map to use the PrintManager.'
+        'provide an ol.Map to use the PrintManager.'
       );
     }
 
     if (!this.url && !this.capabilities) {
       Logger.warn(
         'Invalid init options given. Please provide either an `url` ' +
-          'or `capabilities`.'
+        'or `capabilities`.'
       );
     }
 
@@ -304,223 +282,6 @@ export class BaseMapFishPrintManager extends Observable {
   }
 
   /**
-   * Validates the given HTTP fetch response.
-   *
-   * @param response The response to validate.
-   */
-  validateResponse(response: Response): void {
-    if (!response.ok) {
-      throw new Error(
-        'Error while trying to request ' +
-          `${response.url} (${response.status}: ${response.statusText})`
-      );
-    }
-  }
-
-  /**
-   * Initializes the print extent layer.
-   */
-  initPrintExtentLayer() {
-    if (!(this.extentLayer instanceof OlLayerVector)) {
-      const extentLayer = new OlLayerVector({
-        source: new OlSourceVector(),
-        style: new OlStyleStyle({
-          fill: new OlStyleFill({
-            color: 'rgba(255, 255, 130, 0)'
-          })
-        })
-      });
-
-      extentLayer.set('name', BaseMapFishPrintManager.EXTENT_LAYER_NAME);
-
-      extentLayer.on('prerender', this.onExtentLayerPreRender.bind(this));
-      extentLayer.on('postrender', this.onExtentLayerPostRender.bind(this));
-
-      this.extentLayer = extentLayer;
-
-      if (
-        Shared.getLayersByName(
-          this.map,
-          BaseMapFishPrintManager.EXTENT_LAYER_NAME
-        ).length === 0
-      ) {
-        this.map.addLayer(this.extentLayer);
-      }
-    }
-  }
-
-  /**
-   * Called on the extentLayer's `prerender` event.
-   *
-   * @param olEvt The ol render event.
-   */
-  onExtentLayerPreRender(olEvt: OlRenderEvent) {
-    const ctx = olEvt.context;
-
-    if (!(ctx instanceof CanvasRenderingContext2D)) {
-      return;
-    }
-
-    ctx.save();
-  }
-
-  /**
-   * Called on the extentLayer's `postrender` event.
-   *
-   * @param olEvt The ol render event.
-   */
-  onExtentLayerPostRender(olEvt: OlRenderEvent) {
-    const ctx = olEvt.context;
-
-    if (!(ctx instanceof CanvasRenderingContext2D)) {
-      return;
-    }
-
-    const canvas = ctx.canvas;
-    const width = canvas.width;
-    const height = canvas.height;
-    const coords = olEvt.target
-      .getSource()
-      .getFeatures()[0]
-      .getGeometry()
-      .getCoordinates()[0];
-
-    const A = this.map.getPixelFromCoordinate(coords[1]);
-    const B = this.map.getPixelFromCoordinate(coords[4]);
-    const C = this.map.getPixelFromCoordinate(coords[3]);
-    const D = this.map.getPixelFromCoordinate(coords[2]);
-
-    ctx.fillStyle = this.maskColor;
-
-    ctx.beginPath();
-
-    ctx.moveTo(0, 0);
-    ctx.lineTo(width, 0);
-    ctx.lineTo(width, height);
-    ctx.lineTo(0, height);
-    ctx.lineTo(0, 0);
-    ctx.closePath();
-
-    ctx.moveTo(A[0], A[1]);
-    ctx.lineTo(B[0], B[1]);
-    ctx.lineTo(C[0], C[1]);
-    ctx.lineTo(D[0], D[1]);
-    ctx.lineTo(A[0], A[1]);
-    ctx.closePath();
-
-    ctx.fill();
-
-    ctx.restore();
-  }
-
-  /**
-   * Initializes the print extent feature.
-   *
-   * @return The extent feature.
-   */
-  initPrintExtentFeature() {
-    const printExtent = this.calculatePrintExtent();
-
-    if (!printExtent) {
-      return;
-    }
-
-    const extentFeature = new OlFeature(fromExtent(printExtent));
-    const extentLayerSource = this.extentLayer?.getSource();
-
-    if (!extentLayerSource) {
-      return;
-    }
-
-    this._extentFeature = extentFeature;
-
-    extentLayerSource.clear();
-    extentLayerSource.addFeature(this._extentFeature);
-
-    return this._extentFeature;
-  }
-
-  /**
-   * Initializes the transform interaction.
-   */
-  initTransformInteraction() {
-    if (
-      Shared.getInteractionsByName(
-        this.map,
-        BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME
-      ).length === 0
-    ) {
-      const transform = new InteractionTransform({
-        features: this._extentFeature ? [this._extentFeature] : undefined,
-        translateFeature: true,
-        translate: true,
-        stretch: false,
-        scale: true,
-        rotate: true,
-        ...this.transformOpts
-      });
-
-      transform.setActive(true);
-
-      transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
-
-      // @ts-ignore
-      transform.on('scaling', this.onTransformScaling.bind(this));
-
-      this.map.addInteraction(transform);
-    }
-  }
-
-  /**
-   * Called on translate interaction's `scaling` event.
-   */
-  onTransformScaling() {
-    const scale = this.getClosestScaleToFitExtentFeature();
-
-    if (!scale) {
-      return;
-    }
-
-    this.setScale(scale);
-  }
-
-  /**
-   * Returns the closest scale to current print feature's extent.
-   */
-  getClosestScaleToFitExtentFeature() {
-    const scales = this.getScales();
-    const printFeatureExtent = this._extentFeature?.getGeometry()?.getExtent();
-
-    if (!printFeatureExtent) {
-      return;
-    }
-
-    const printFeatureSize = getSize(printFeatureExtent);
-    let closest = Number.POSITIVE_INFINITY;
-    let fitScale = scales[0];
-
-    scales.forEach(scale => {
-      const printScaleExtent = this.calculatePrintExtent(scale);
-
-      if (!printScaleExtent) {
-        return;
-      }
-
-      const printScaleSize = getSize(printScaleExtent);
-      const diff =
-        Math.abs(printScaleSize[0] - printFeatureSize[0]) +
-        Math.abs(printScaleSize[1] - printFeatureSize[1]);
-
-      if (diff < closest) {
-        closest = diff;
-        fitScale = scale;
-      }
-    });
-
-    return fitScale;
-  }
-
-  /**
    * Returns the closest scale to fit the print feature's extent into the
    * current extent of the map.
    */
@@ -548,21 +309,13 @@ export class BaseMapFishPrintManager extends Observable {
   }
 
   /**
-   * Calculates the current rotation of the print extent feature.
+   * Updates the geometry of the print extent feature to match the current scale.
    */
-  calculateRotation() {
-    const extentFeature = this._extentFeature;
-    const coords = extentFeature?.getGeometry()?.getCoordinates()[0];
-
-    if (!coords) {
-      return;
+  updatePrintExtent() {
+    const printExtent = this.calculatePrintExtent();
+    if (this._extentFeature && printExtent) {
+      this._extentFeature.setGeometry(fromExtent(printExtent));
     }
-
-    const p1 = coords[0];
-    const p2 = coords[3];
-    const rotation = (Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180) / Math.PI;
-
-    return -rotation;
   }
 
   /**
@@ -592,180 +345,6 @@ export class BaseMapFishPrintManager extends Observable {
 
     const center = getCenter(extent);
     this._extentFeature?.getGeometry()?.rotate(rotation, center);
-  }
-
-  /**
-   * Updates the geometry of the print extent feature to match the current scale.
-   */
-  updatePrintExtent() {
-    const printExtent = this.calculatePrintExtent();
-    if (this._extentFeature && printExtent) {
-      this._extentFeature.setGeometry(fromExtent(printExtent));
-    }
-  }
-
-  /**
-   * Calculates the extent based on a scale.
-   *
-   * @param scale The scale to calculate the extent for. If not given,
-   *              the current scale of the provider will be used.
-   *
-   * @return The extent.
-   */
-  calculatePrintExtent(scale?: number) {
-    const printMapSize = this.getPrintMapSize();
-    const printScale = scale || this.getScale();
-
-    if (!printMapSize || !printScale) {
-      return;
-    }
-
-    const {
-      width,
-      height
-    } = this.getPrintExtentSize(printMapSize, printScale);
-    const extentGeometry = this._extentFeature?.getGeometry();
-
-    let center: OlCoordinate;
-    if (extentGeometry) {
-      center = getCenter(extentGeometry.getExtent());
-    } else {
-      center = this.map.getView().getCenter() || [0, 0];
-    }
-
-    return [
-      center[0] - width / 2,
-      center[1] - height / 2,
-      center[0] + width / 2,
-      center[1] + height / 2
-    ];
-  }
-
-  /**
-   * Computes size of print extent in pixel depending on dimensions of print map
-   * and print scale.
-   * @param printMapSize Print map size containing its width and height.
-   * @param printScale Print scale.
-   *
-   * @return Print extent size.
-   */
-  getPrintExtentSize(printMapSize: PrintMapSize, printScale: number): PrintMapSize {
-    const inchesPerUnit = {
-      degrees: 4374754,
-      ft: 12,
-      m: 39.37
-    };
-    const mapUnits = this.map.getView().getProjection().getUnits() as keyof typeof inchesPerUnit;
-
-    return {
-      width: (printMapSize.width * printScale) / (72 * inchesPerUnit[mapUnits]),
-      height:
-        (printMapSize.height * printScale) / (72 * inchesPerUnit[mapUnits])
-    };
-  }
-
-  /**
-   * Opens the given URL in a new browser tab to download the given response
-   * (if header are set correctly).
-   *
-   * @param url The url to open.
-   */
-  download(url: string) {
-    if (/Opera|OPR\//.test(navigator.userAgent)) {
-      window.open(url);
-    } else {
-      window.location.href = url;
-    }
-  }
-
-  /**
-   * Checks if a given layer should be printed.
-   *
-   * @param layer The layer to check.
-   *
-   * @return Whether the layer should be printed or not.
-   */
-  filterPrintableLayer(layer: OlLayer) {
-    return (
-      layer !== this.extentLayer &&
-      layer.getVisible() &&
-      this.layerFilter(layer)
-    );
-  }
-
-  /**
-   * Checks if the legend of a given legend should be printed.
-   *
-   * @param layer The layer to check.
-   *
-   * @return Whether the legend of the layer should be printed or not.
-   */
-  filterPrintableLegend(layer: OlLayer): boolean {
-    return (
-      layer !== this.extentLayer &&
-      layer.getVisible() &&
-      this.legendFilter(layer)
-    );
-  }
-
-  /**
-   * Serializes/encodes the given layer.
-   *
-   * @param layer The layer to serialize/encode.
-   *
-   * @return The serialized/encoded layer.
-   */
-  serializeLayer(layer: OlLayer) {
-    const viewResolution = this.map.getView().getResolution();
-    const layerSource = layer.getSource();
-
-    if (!layerSource) {
-      return;
-    }
-
-    const serializer = this.serializers.find(s => {
-      return s.validateSource(layerSource);
-    });
-
-    if (serializer) {
-      return serializer.serialize(
-        layer,
-        layer.get(BaseMapFishPrintManager.CUSTOM_PRINT_SERIALIZER_OPTS_KEY),
-        viewResolution
-      );
-    } else {
-      Logger.info(
-        'No suitable serializer for this layer/source found. ' +
-          'Please check the input layer or provide an own serializer capabale ' +
-          'of serializing the given layer/source to the manager. Layer ' +
-          'candidate is: ',
-        layer
-      );
-    }
-  }
-
-  /**
-   * Serializes/encodes the legend payload for the given layer.
-   *
-   * @param layer The layer to serialize/encode the legend for.
-   *
-   * @return The serialized/encoded legend.
-   */
-  serializeLegend(layer: OlLayer) {
-    const source = layer.getSource();
-    if (
-      source instanceof OlSourceTileWMS ||
-      source instanceof OlSourceImageWMS ||
-      source instanceof OlSourceWMTS
-    ) {
-      return {
-        name:
-          layer.get('name') ||
-          (!(source instanceof OlSourceWMTS) && source.getParams().LAYERS) ||
-          '',
-        icons: [Shared.getLegendGraphicUrl(layer)]
-      };
-    }
   }
 
   /**
@@ -909,10 +488,49 @@ export class BaseMapFishPrintManager extends Observable {
    * Sets the map size to use while printing.
    *
    * @param printMapSize The object containing width and height of
-   * printed map.
+   *                     printed map.
    */
   setPrintMapSize(printMapSize: PrintMapSize) {
     this._printMapSize = printMapSize;
+  }
+
+  /**
+   * Sets the custom params.
+   *
+   * @param params The params to set.
+   */
+  setCustomParams(params: any) {
+    this.customParams = params;
+  }
+
+  /**
+   * Returns the custom params.
+   *
+   * @returns The custom params
+   */
+  getCustomParams() {
+    return this.customParams;
+  }
+
+  /**
+   * Sets an inidividual custom param.
+   *
+   * @param key The key of the param.
+   * @param value The value of the param.
+   */
+  setCustomParam(key: string, value: any) {
+    this.customParams[key] = value;
+  }
+
+  /**
+   * Returns an inidividual custom param.
+   *
+   * @param key The custom param to get.
+   *
+   * @returns The custom param
+   */
+  getCustomParam(key: string) {
+    return this.customParams[key];
   }
 
   /**
@@ -922,6 +540,405 @@ export class BaseMapFishPrintManager extends Observable {
    */
   isInitiated() {
     return this._initiated;
+  }
+
+  /**
+   * Validates the given HTTP fetch response.
+   *
+   * @param response The response to validate.
+   */
+  protected validateResponse(response: Response): void {
+    if (!response.ok) {
+      throw new Error(
+        'Error while trying to request ' +
+        `${response.url} (${response.status}: ${response.statusText})`
+      );
+    }
+  }
+
+  /**
+   * Initializes the print extent layer.
+   */
+  protected initPrintExtentLayer() {
+    if (!(this.extentLayer instanceof OlLayerVector)) {
+      const extentLayer = new OlLayerVector({
+        source: new OlSourceVector(),
+        style: new OlStyleStyle({
+          fill: new OlStyleFill({
+            color: 'rgba(255, 255, 130, 0)'
+          })
+        })
+      });
+
+      extentLayer.set('name', BaseMapFishPrintManager.EXTENT_LAYER_NAME);
+
+      extentLayer.on('prerender', this.onExtentLayerPreRender.bind(this));
+      extentLayer.on('postrender', this.onExtentLayerPostRender.bind(this));
+
+      this.extentLayer = extentLayer;
+
+      if (
+        Shared.getLayersByName(
+          this.map,
+          BaseMapFishPrintManager.EXTENT_LAYER_NAME
+        ).length === 0
+      ) {
+        this.map.addLayer(this.extentLayer);
+      }
+    }
+  }
+
+  /**
+   * Called on the extentLayer's `prerender` event.
+   *
+   * @param olEvt The ol render event.
+   */
+  protected onExtentLayerPreRender(olEvt: OlRenderEvent) {
+    const ctx = olEvt.context;
+
+    if (!(ctx instanceof CanvasRenderingContext2D)) {
+      return;
+    }
+
+    ctx.save();
+  }
+
+  /**
+   * Called on the extentLayer's `postrender` event.
+   *
+   * @param olEvt The ol render event.
+   */
+  protected onExtentLayerPostRender(olEvt: OlRenderEvent) {
+    const ctx = olEvt.context;
+
+    if (!(ctx instanceof CanvasRenderingContext2D)) {
+      return;
+    }
+
+    const canvas = ctx.canvas;
+    const width = canvas.width;
+    const height = canvas.height;
+    const coords = olEvt.target
+      .getSource()
+      .getFeatures()[0]
+      .getGeometry()
+      .getCoordinates()[0];
+
+    const A = this.map.getPixelFromCoordinate(coords[1]);
+    const B = this.map.getPixelFromCoordinate(coords[4]);
+    const C = this.map.getPixelFromCoordinate(coords[3]);
+    const D = this.map.getPixelFromCoordinate(coords[2]);
+
+    ctx.fillStyle = this.maskColor;
+
+    ctx.beginPath();
+
+    ctx.moveTo(0, 0);
+    ctx.lineTo(width, 0);
+    ctx.lineTo(width, height);
+    ctx.lineTo(0, height);
+    ctx.lineTo(0, 0);
+    ctx.closePath();
+
+    ctx.moveTo(A[0], A[1]);
+    ctx.lineTo(B[0], B[1]);
+    ctx.lineTo(C[0], C[1]);
+    ctx.lineTo(D[0], D[1]);
+    ctx.lineTo(A[0], A[1]);
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Initializes the print extent feature.
+   *
+   * @return The extent feature.
+   */
+  protected initPrintExtentFeature() {
+    const printExtent = this.calculatePrintExtent();
+
+    if (!printExtent) {
+      return;
+    }
+
+    const extentFeature = new OlFeature(fromExtent(printExtent));
+    const extentLayerSource = this.extentLayer?.getSource();
+
+    if (!extentLayerSource) {
+      return;
+    }
+
+    this._extentFeature = extentFeature;
+
+    extentLayerSource.clear();
+    extentLayerSource.addFeature(this._extentFeature);
+
+    return this._extentFeature;
+  }
+
+  /**
+   * Initializes the transform interaction.
+   */
+  protected initTransformInteraction() {
+    if (
+      Shared.getInteractionsByName(
+        this.map,
+        BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME
+      ).length === 0
+    ) {
+      const transform = new InteractionTransform({
+        features: this._extentFeature ? [this._extentFeature] : undefined,
+        translateFeature: true,
+        translate: true,
+        stretch: false,
+        scale: true,
+        rotate: true,
+        ...this.transformOpts
+      });
+
+      transform.setActive(true);
+
+      transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
+
+      // @ts-ignore
+      transform.on('scaling', this.onTransformScaling.bind(this));
+
+      this.map.addInteraction(transform);
+    }
+  }
+
+  /**
+   * Called on translate interaction's `scaling` event.
+   */
+  protected onTransformScaling() {
+    const scale = this.getClosestScaleToFitExtentFeature();
+
+    if (!scale) {
+      return;
+    }
+
+    this.setScale(scale);
+  }
+
+  /**
+   * Returns the closest scale to current print feature's extent.
+   */
+  protected getClosestScaleToFitExtentFeature() {
+    const scales = this.getScales();
+    const printFeatureExtent = this._extentFeature?.getGeometry()?.getExtent();
+
+    if (!printFeatureExtent) {
+      return;
+    }
+
+    const printFeatureSize = getSize(printFeatureExtent);
+    let closest = Number.POSITIVE_INFINITY;
+    let fitScale = scales[0];
+
+    scales.forEach(scale => {
+      const printScaleExtent = this.calculatePrintExtent(scale);
+
+      if (!printScaleExtent) {
+        return;
+      }
+
+      const printScaleSize = getSize(printScaleExtent);
+      const diff =
+        Math.abs(printScaleSize[0] - printFeatureSize[0]) +
+        Math.abs(printScaleSize[1] - printFeatureSize[1]);
+
+      if (diff < closest) {
+        closest = diff;
+        fitScale = scale;
+      }
+    });
+
+    return fitScale;
+  }
+
+  /**
+   * Checks if a given layer should be printed.
+   *
+   * @param layer The layer to check.
+   *
+   * @return Whether the layer should be printed or not.
+   */
+  protected filterPrintableLayer(layer: OlLayer) {
+    return (
+      layer !== this.extentLayer &&
+      layer.getVisible() &&
+      this.layerFilter(layer)
+    );
+  }
+
+  /**
+   * Checks if the legend of a given legend should be printed.
+   *
+   * @param layer The layer to check.
+   *
+   * @return Whether the legend of the layer should be printed or not.
+   */
+  protected filterPrintableLegend(layer: OlLayer): boolean {
+    return (
+      layer !== this.extentLayer &&
+      layer.getVisible() &&
+      this.legendFilter(layer)
+    );
+  }
+
+  /**
+   * Calculates the current rotation of the print extent feature.
+   */
+  protected calculateRotation() {
+    const extentFeature = this._extentFeature;
+    const coords = extentFeature?.getGeometry()?.getCoordinates()[0];
+
+    if (!coords) {
+      return;
+    }
+
+    const p1 = coords[0];
+    const p2 = coords[3];
+    const rotation = (Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180) / Math.PI;
+
+    return -rotation;
+  }
+
+  /**
+   * Calculates the extent based on a scale.
+   *
+   * @param scale The scale to calculate the extent for. If not given,
+   *              the current scale of the provider will be used.
+   *
+   * @return The extent.
+   */
+  protected calculatePrintExtent(scale?: number) {
+    const printMapSize = this.getPrintMapSize();
+    const printScale = scale || this.getScale();
+
+    if (!printMapSize || !printScale) {
+      return;
+    }
+
+    const {
+      width,
+      height
+    } = this.getPrintExtentSize(printMapSize, printScale);
+    const extentGeometry = this._extentFeature?.getGeometry();
+
+    let center: OlCoordinate;
+    if (extentGeometry) {
+      center = getCenter(extentGeometry.getExtent());
+    } else {
+      center = this.map.getView().getCenter() || [0, 0];
+    }
+
+    return [
+      center[0] - width / 2,
+      center[1] - height / 2,
+      center[0] + width / 2,
+      center[1] + height / 2
+    ];
+  }
+
+  /**
+   * Computes size of print extent in pixel depending on dimensions of print map
+   * and print scale.
+   * @param printMapSize Print map size containing its width and height.
+   * @param printScale Print scale.
+   *
+   * @return Print extent size.
+   */
+  protected getPrintExtentSize(printMapSize: PrintMapSize, printScale: number): PrintMapSize {
+    const inchesPerUnit = {
+      degrees: 4374754,
+      ft: 12,
+      m: 39.37
+    };
+    const mapUnits = this.map.getView().getProjection().getUnits() as keyof typeof inchesPerUnit;
+
+    return {
+      width: (printMapSize.width * printScale) / (72 * inchesPerUnit[mapUnits]),
+      height:
+        (printMapSize.height * printScale) / (72 * inchesPerUnit[mapUnits])
+    };
+  }
+
+  /**
+   * Opens the given URL in a new browser tab to download the given response
+   * (if header are set correctly).
+   *
+   * @param url The url to open.
+   */
+  protected download(url: string) {
+    if (/Opera|OPR\//.test(navigator.userAgent)) {
+      window.open(url);
+    } else {
+      window.location.href = url;
+    }
+  }
+
+  /**
+   * Serializes/encodes the given layer.
+   *
+   * @param layer The layer to serialize/encode.
+   *
+   * @return The serialized/encoded layer.
+   */
+  protected serializeLayer(layer: OlLayer) {
+    const viewResolution = this.map.getView().getResolution();
+    const layerSource = layer.getSource();
+
+    if (!layerSource) {
+      return;
+    }
+
+    const serializer = this.serializers.find(s => {
+      return s.validateSource(layerSource);
+    });
+
+    if (serializer) {
+      return serializer.serialize(
+        layer,
+        layer.get(BaseMapFishPrintManager.CUSTOM_PRINT_SERIALIZER_OPTS_KEY),
+        viewResolution
+      );
+    } else {
+      Logger.info(
+        'No suitable serializer for this layer/source found. ' +
+        'Please check the input layer or provide an own serializer capabale ' +
+        'of serializing the given layer/source to the manager. Layer ' +
+        'candidate is: ',
+        layer
+      );
+    }
+  }
+
+  /**
+   * Serializes/encodes the legend payload for the given layer.
+   *
+   * @param layer The layer to serialize/encode the legend for.
+   *
+   * @return The serialized/encoded legend.
+   */
+  protected serializeLegend(layer: OlLayer) {
+    const source = layer.getSource();
+    if (
+      source instanceof OlSourceTileWMS ||
+      source instanceof OlSourceImageWMS ||
+      source instanceof OlSourceWMTS
+    ) {
+      return {
+        name:
+          layer.get('name') ||
+          (!(source instanceof OlSourceWMTS) && source.getParams().LAYERS) ||
+          '',
+        icons: [Shared.getLegendGraphicUrl(layer)]
+      };
+    }
   }
 }
 
