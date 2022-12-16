@@ -5,7 +5,7 @@ export class Observable {
   /**
    * The registered events.
    */
-  events: any = {};
+  protected events: any = {};
 
   /**
    * Registers an event.
