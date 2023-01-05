@@ -13,6 +13,7 @@ import { fromExtent } from 'ol/geom/Polygon';
 import OlStyleStyle from 'ol/style/Style';
 import OlStyleFill from 'ol/style/Fill';
 import { Coordinate as OlCoordinate } from 'ol/coordinate';
+import {DEVICE_PIXEL_RATIO} from 'ol/has';
 
 import InteractionTransform, { OlInteractionTransformOpts } from '../interaction/InteractionTransform';
 
@@ -624,10 +625,10 @@ export class BaseMapFishPrintManager extends Observable {
       .getGeometry()
       .getCoordinates()[0];
 
-    const A = this.map.getPixelFromCoordinate(coords[1]);
-    const B = this.map.getPixelFromCoordinate(coords[4]);
-    const C = this.map.getPixelFromCoordinate(coords[3]);
-    const D = this.map.getPixelFromCoordinate(coords[2]);
+    const A = this.map.getPixelFromCoordinate(coords[1]).map(el => el * DEVICE_PIXEL_RATIO);
+    const B = this.map.getPixelFromCoordinate(coords[4]).map(el => el * DEVICE_PIXEL_RATIO);
+    const C = this.map.getPixelFromCoordinate(coords[3]).map(el => el * DEVICE_PIXEL_RATIO);
+    const D = this.map.getPixelFromCoordinate(coords[2]).map(el => el * DEVICE_PIXEL_RATIO);
 
     ctx.fillStyle = this.maskColor;
 
