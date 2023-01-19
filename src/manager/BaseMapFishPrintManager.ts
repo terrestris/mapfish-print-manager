@@ -937,7 +937,11 @@ export class BaseMapFishPrintManager extends Observable {
           layer.get('name') ||
           (!(source instanceof OlSourceWMTS) && source.getParams().LAYERS) ||
           '',
-        icons: [Shared.getLegendGraphicUrl(layer)]
+        icons: [
+          Shared.getLegendGraphicUrl(layer) !== ''
+            ? Shared.getLegendGraphicUrl(layer)
+            : undefined
+        ]
       };
     }
   }
