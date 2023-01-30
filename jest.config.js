@@ -9,6 +9,7 @@ module.exports = {
   setupFiles: [
     '<rootDir>/spec/jest/setup.js'
   ],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   modulePathIgnorePatterns: [
     '<rootDir>/build/',
     '<rootDir>/dist/'

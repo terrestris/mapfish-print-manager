@@ -6,9 +6,7 @@ import URL from 'url-parse';
 import QueryString from 'query-string';
 
 import OlLayer from 'ol/layer/Layer';
-import {
-  getCenter
-} from 'ol/extent';
+import { getCenter } from 'ol/extent';
 
 import BaseMapFishPrintManager, { BaseMapFishPrintManagerOpts } from './BaseMapFishPrintManager';
 import MapFishPrintV3GeoJsonSerializer from '../serializer/MapFishPrintV3GeoJsonSerializer';
@@ -111,11 +109,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   async init(): Promise<void> {
     if (this.url && !this.capabilities) {
       const printApps = await this.loadPrintApps();
-
       this.setPrintApps(printApps);
-
       const defaultPrintApp = this.getPrintApps()[0];
-
       await this.setPrintApp(defaultPrintApp);
     } else if (!this.url && this.capabilities) {
       this.initManager(this.capabilities);
@@ -132,9 +127,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     }
 
     const payload = this.getPrintPayload();
-
     const createPrintJobUrl = `${this.url}${this.getPrintApp()}/report.${this.getOutputFormat()}`;
-
     const printResponse = await fetch(createPrintJobUrl, {
       method: 'POST',
       headers: {
@@ -346,12 +339,9 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
 
     const layout = this.getLayoutByName(layoutName);
     const layoutAttributes = layout?.attributes;
-
-    const attribute = layoutAttributes?.find((layoutAttribute: any) => {
+    return layoutAttributes?.find((layoutAttribute: any) => {
       return layoutAttribute.name === attributeName;
     });
-
-    return attribute;
   }
 
   /**
@@ -363,7 +353,6 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    */
   protected getLayoutByName(layoutName: string) {
     const layouts = this.getLayouts();
-
     return layouts.find(layout => layout.name === layoutName);
   }
 
@@ -383,10 +372,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     });
 
     this.validateResponse(printAppResponse);
-
-    const printAppResponseJson = await printAppResponse.json();
-
-    return printAppResponseJson;
+    return await printAppResponse.json();
   }
 
   /**
@@ -406,10 +392,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     });
 
     this.validateResponse(appCapabilitiesResponse);
-
-    const appCapabilitiesResponseJson = await appCapabilitiesResponse.json();
-
-    return appCapabilitiesResponseJson;
+    return await appCapabilitiesResponse.json();
   }
 
   /**
@@ -421,8 +404,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
       return;
     }
     const baseUrlObj = new URL(this.url, undefined, QueryString.parse);
-    const baseHost = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
-    return baseHost;
+    return `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
   }
 
   protected async pollUntilDone(url: string, interval: number, timeout: number): Promise<any> {
@@ -444,10 +426,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     });
 
     this.validateResponse(response);
-
-    const responseJson = await response.json();
-
-    return responseJson;
+    return await response.json();
   }
 
   protected async poll<T = any,>(fn: () => Promise<T>, fnCondition: (res?: T) => boolean,
@@ -505,7 +484,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
         return acc;
       }, []).reverse();
 
-    const payload = {
+    return {
       layout: this.getLayout()?.name,
       attributes: {
         map: {
@@ -523,7 +502,6 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
         ...this.customParams
       }
     };
-    return payload;
   }
 }
 

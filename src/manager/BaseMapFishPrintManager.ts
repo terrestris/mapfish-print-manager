@@ -514,7 +514,7 @@ export class BaseMapFishPrintManager extends Observable {
   }
 
   /**
-   * Sets an inidividual custom param.
+   * Sets an individual custom param.
    *
    * @param key The key of the param.
    * @param value The value of the param.
@@ -524,7 +524,7 @@ export class BaseMapFishPrintManager extends Observable {
   }
 
   /**
-   * Returns an inidividual custom param.
+   * Returns an individual custom param.
    *
    * @param key The custom param to get.
    *
@@ -541,6 +541,14 @@ export class BaseMapFishPrintManager extends Observable {
    */
   isInitiated() {
     return this._initiated;
+  }
+
+  /**
+   * Setter for legend filter
+   * @param filterFn The new legend filter function
+   */
+  setLegendFilter(filterFn: (layer: OlLayer) => boolean) {
+    this.legendFilter = filterFn;
   }
 
   /**
