@@ -544,6 +544,14 @@ export class BaseMapFishPrintManager extends Observable {
   }
 
   /**
+   * Setter for legend filter
+   * @param filterFn The new legend filter function
+   */
+  setLegendFilter(filterFn: (layer: OlLayer) => boolean) {
+    this.legendFilter = filterFn;
+  }
+
+  /**
    * Validates the given HTTP fetch response.
    *
    * @param response The response to validate.
