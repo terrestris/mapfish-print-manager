@@ -514,7 +514,7 @@ export class BaseMapFishPrintManager extends Observable {
   }
 
   /**
-   * Sets an inidividual custom param.
+   * Sets an individual custom param.
    *
    * @param key The key of the param.
    * @param value The value of the param.
@@ -524,7 +524,7 @@ export class BaseMapFishPrintManager extends Observable {
   }
 
   /**
-   * Returns an inidividual custom param.
+   * Returns an individual custom param.
    *
    * @param key The custom param to get.
    *
