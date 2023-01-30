@@ -5,3 +5,6 @@ dist
 *.log
 npm-debug.log*
 coverage
+
+# IntelliJ iml files
+*.iml
