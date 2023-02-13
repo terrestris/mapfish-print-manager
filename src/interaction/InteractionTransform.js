@@ -450,7 +450,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
    * @param {ol.MapBrowserEvent} evt Map browser event.
    * @return {boolean} `true` to start the drag sequence.
    */
-  handleDownEvent_ = function(evt) {
+  handleDownEvent = function (evt) {
     var sel = this.getFeatureAtPixel_(evt.pixel);
     var feature = sel.feature;
 
@@ -501,7 +501,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
   /**
    * @param {ol.MapBrowserEvent} evt Map browser event.
    */
-  handleDragEvent_ = function(evt) {
+  handleDragEvent = function (evt) {
     var geometry;
 
     switch (this.mode_) {
@@ -598,7 +598,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
   /**
    * @param {ol.MapBrowserEvent} evt Event.
    */
-  handleMoveEvent_ = function(evt) {
+  handleMoveEvent = function (evt) {
     if (!this.mode_) {
       var sel = this.getFeatureAtPixel_(evt.pixel);
       var element = evt.map.getTargetElement();
@@ -623,7 +623,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
   /**
    * @return {boolean} `false` to stop the drag sequence.
    */
-  handleUpEvent_ = function() {
+  handleUpEvent = function () {
     this.dispatchEvent({
       type: this.mode_ + 'end',
       feature: this.feature_,
