@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import _isArray from 'lodash/isArray';
+import _isNil from 'lodash/isNil';
 
 import URL from 'url-parse';
 
@@ -19,21 +20,21 @@ import Logger from '../util/Logger';
 import scales from '../config/scales';
 
 export type V3CustomMapParams = {
-  center?: number;
+  areaOfInterest?: any;
+  bbox?: [number];
+  center?: number[];
   dpi?: number;
+  dpiSensitiveStyle?: boolean;
+  height?: number;
   layers?: [OlLayer];
+  longitudeFirst?: boolean;
   projection?: string;
   rotation?: number;
   scale?: number;
-  areaOfInterest?: any;
-  bbox?: [number];
-  useNearestScale?: boolean;
-  dpiSensitiveStyle?: boolean;
   useAdjustBounds?: boolean;
+  useNearestScale?: boolean;
   width?: number;
-  longitudeFirst?: boolean;
   zoomToFeatures?: boolean;
-  height?: number;
 };
 
 export type MapFishPrintV3ManagerOpts = BaseMapFishPrintManagerOpts & {
@@ -68,7 +69,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    */
   static CAPABILITIES_JSON_ENDPOINT: string = 'capabilities.json';
 
-  protected customMapParams: V3CustomMapParams = {};
+  protected _customMapParams: V3CustomMapParams = {};
 
   /**
    * The supported print applications by the print service.
@@ -91,6 +92,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    */
   constructor(opts: MapFishPrintV3ManagerOpts) {
     super(opts);
+
+    this._customMapParams = opts?.customMapParams ?? {};
 
     if (!this.serializers || this.serializers.length === 0) {
       this.serializers = [
@@ -226,6 +229,43 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
    */
   getPrintApp() {
     return this._printApp;
+  }
+
+  /**
+   * Set custom map parmeters
+   * @param params The parameters to set
+   */
+  setCustomMapParams(params: V3CustomMapParams) {
+    this._customMapParams = params;
+  }
+
+  /**
+   * Append (partial) map parameters
+   * @param params The parameters to append
+   */
+  appendCustomMapParams(params: Partial<V3CustomMapParams>) {
+    if (_isNil(this._customMapParams)) {
+      this.setCustomMapParams(params);
+      return;
+    }
+    this._customMapParams = {
+      ...this._customMapParams,
+      ...params
+    };
+  }
+
+  /**
+   * Returns the currently set custom map parameters
+   */
+  getCustomMapParams() {
+    return this._customMapParams;
+  }
+
+  /**
+   * Resets the currently set custom map parameters to an emtpy object
+   */
+  clearCustomMapParams() {
+    this._customMapParams = {};
   }
 
   /**
@@ -494,7 +534,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
           projection: mapProjection.getCode(),
           rotation: this.calculateRotation() || 0,
           scale: this.getScale(),
-          ...this.customMapParams
+          ...this._customMapParams
         },
         legend: {
           classes: serializedLegends
