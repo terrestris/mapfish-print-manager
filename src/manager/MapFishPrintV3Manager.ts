@@ -20,21 +20,21 @@ import Logger from '../util/Logger';
 import scales from '../config/scales';
 
 export type V3CustomMapParams = {
-  center?: number;
+  areaOfInterest?: any;
+  bbox?: [number];
+  center?: number[];
   dpi?: number;
+  dpiSensitiveStyle?: boolean;
+  height?: number;
   layers?: [OlLayer];
+  longitudeFirst?: boolean;
   projection?: string;
   rotation?: number;
   scale?: number;
-  areaOfInterest?: any;
-  bbox?: [number];
-  useNearestScale?: boolean;
-  dpiSensitiveStyle?: boolean;
   useAdjustBounds?: boolean;
+  useNearestScale?: boolean;
   width?: number;
-  longitudeFirst?: boolean;
   zoomToFeatures?: boolean;
-  height?: number;
 };
 
 export type MapFishPrintV3ManagerOpts = BaseMapFishPrintManagerOpts & {
