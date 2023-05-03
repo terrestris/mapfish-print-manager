@@ -9,7 +9,7 @@ import OlView from 'ol/View';
 import OlLayerVector from 'ol/layer/Vector';
 import OlSourceVector from 'ol/source/Vector';
 
-import { MapFishPrintV3Manager } from '../../src/manager/MapFishPrintV3Manager';
+import { MapFishPrintV3Manager, V3CustomMapParams } from '../../src/manager/MapFishPrintV3Manager';
 
 import printAppsMockResponse from '../../assets/v3/apps.json';
 import printCapabilitiesMockResponse from '../../assets/v3/capabilities.json';
@@ -108,6 +108,91 @@ describe('MapFishPrintV3Manager', () => {
         url: 'https://mock:8080/print/pdf/'
       });
       expect(manager.getBasePath).not.toBeUndefined();
+    });
+  });
+
+  describe('#setCustomMapParams', () => {
+    const customPrintManager = new MapFishPrintV3Manager({
+      map: testMap,
+      url: 'https://mock:8080/print/pdf/'
+    });
+
+    it('is defined', () => {
+      expect(customPrintManager.setCustomMapParams).not.toBeUndefined();
+    });
+
+    it('works as expected', () => {
+      const parameters: V3CustomMapParams = {
+        projection: 'EPSG:25832',
+        longitudeFirst: true
+      };
+      customPrintManager.setCustomMapParams(parameters);
+      expect(customPrintManager.getCustomMapParams()).toEqual(parameters);
+    });
+  });
+
+  describe('#getCustomMapParams', () => {
+    const customPrintManager = new MapFishPrintV3Manager({
+      map: testMap,
+      url: 'https://mock:8080/print/pdf/',
+      customMapParams: {
+        projection: 'EPSG:25832',
+        longitudeFirst: true
+      }
+    });
+
+    it('is defined', () => {
+      expect(customPrintManager.getCustomMapParams).not.toBeUndefined();
+    });
+
+    it('works as expected', () => {
+      expect(customPrintManager.getCustomMapParams()).toEqual({
+        projection: 'EPSG:25832',
+        longitudeFirst: true
+      });
+    });
+  });
+
+  describe('#appendCustomMapParams', () => {
+    const customPrintManager = new MapFishPrintV3Manager({
+      map: testMap,
+      url: 'https://mock:8080/print/pdf/',
+      customMapParams: {
+        projection: 'EPSG:25832'
+      }
+    });
+
+    it('is defined', () => {
+      expect(customPrintManager.appendCustomMapParams).not.toBeUndefined();
+    });
+
+    it('works as expected', () => {
+      customPrintManager.appendCustomMapParams({
+        longitudeFirst: true
+      });
+      expect(customPrintManager.getCustomMapParams()).toEqual({
+        projection: 'EPSG:25832',
+        longitudeFirst: true
+      });
+    });
+  });
+
+  describe('#clearCustomMapParams', () => {
+    const customPrintManager = new MapFishPrintV3Manager({
+      map: testMap,
+      url: 'https://mock:8080/print/pdf/',
+      customMapParams: {
+        projection: 'EPSG:25832'
+      }
+    });
+
+    it('is defined', () => {
+      expect(customPrintManager.clearCustomMapParams).not.toBeUndefined();
+    });
+
+    it('works as expected', () => {
+      customPrintManager.clearCustomMapParams();
+      expect(customPrintManager.getCustomMapParams()).toEqual({});
     });
   });
 
