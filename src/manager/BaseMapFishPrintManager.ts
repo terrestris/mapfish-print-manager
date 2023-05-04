@@ -680,7 +680,11 @@ export class BaseMapFishPrintManager extends Observable {
       return;
     }
 
-    this._extentFeature = extentFeature;
+    if (!this._extentFeature) {
+      this._extentFeature = extentFeature;
+    } else {
+      this._extentFeature.setGeometry(fromExtent(printExtent));
+    }
 
     extentLayerSource.clear();
     extentLayerSource.addFeature(this._extentFeature);
