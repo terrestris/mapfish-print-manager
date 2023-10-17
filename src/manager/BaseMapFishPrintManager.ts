@@ -367,6 +367,15 @@ export class BaseMapFishPrintManager extends Observable {
   }
 
   /**
+   * Returns the extent layer.
+   *
+   * @return The extent layer.
+   */
+  getExtentLayer() {
+    return this.extentLayer;
+  }
+
+  /**
    * Sets the output format to use.
    *
    * @param name The name of the output format to use.
