@@ -1,5 +1,5 @@
-/*eslint-env node*/
-/*eslint-disable no-console */
+/* eslint-env node */
+/* eslint-disable no-console */
 
 const ghpages = require('gh-pages');
 const url = require('url');
@@ -23,19 +23,19 @@ ghpages.publish('build/docs', {
   if (err) {
     console.log(`Error while deploying docs to gh-pages (versioned): ${err.message}`);
   } else {
-    console.log(`Successfully deployed docs to gh-pages (versioned)!`);
+    console.log('Successfully deployed docs to gh-pages (versioned)!');
 
     // Publish the current version in the 'latest' directory.
     ghpages.publish('build/docs', {
-      dest: `latest`,
+      dest: 'latest',
       message: message,
       repo: httpsRepoUrl,
       add: false
-    }, function(err) {
-      if (err) {
-        console.log(`Error while deploying docs to gh-pages (latest): ${err.message}`);
+    }, function(error) {
+      if (error) {
+        console.log(`Error while deploying docs to gh-pages (latest): ${error.message}`);
       } else {
-        console.log(`Successfully deployed docs to gh-pages (latest)!`);
+        console.log('Successfully deployed docs to gh-pages (latest)!');
       }
     });
   }
