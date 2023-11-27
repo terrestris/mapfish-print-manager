@@ -54,8 +54,9 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
       rasterStyle: undefined,
       resolutionTolerance: 0,
       resolutions: [],
-      tileSize: [256, 256]
-    });
+      tileSize: [256, 256],
+      max
+  });
 
     const source = layer.getSource();
 
@@ -68,7 +69,9 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
       ...{
         name: layer.get('name'),
         opacity: layer.getOpacity(),
-        type: this.constructor.TYPE_OSM
+        type: this.constructor.TYPE_OSM,
+        minScaleDenominator: undefined,
+        maxScaleDenominator: undefined
       },
       ...opts
     };
