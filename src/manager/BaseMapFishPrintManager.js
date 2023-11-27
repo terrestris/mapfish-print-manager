@@ -608,7 +608,8 @@ export class BaseMapFishPrintManager extends Observable {
    * @return {boolean} Whether the layer should be printed or not.
    */
   filterPrintableLayer(layer) {
-    return layer !== this.extentLayer && layer.getVisible() && this.layerFilter(layer);
+    const res = Shared.getResolutionForScale(this.getScale(), 'm');
+    return layer !== this.extentLayer && layer.getVisible() && this.layerFilter(layer) && layer.get('minResolution') < res && layer.get('maxResolution') > res;
   }
 
   /**
