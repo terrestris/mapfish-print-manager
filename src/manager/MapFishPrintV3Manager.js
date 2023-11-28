@@ -121,7 +121,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     if (this.url && !this.capabilities) {
       return this.loadPrintApps()
         .then(printApps => {
-          this.setPrintApps(printApps);
+          this.setPrintApps([printApps]);
 
           const defaultPrintApp = this.getPrintApps()[0];
 

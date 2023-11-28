@@ -54,9 +54,8 @@ export class MapFishPrintV3OSMSerializer extends BaseSerializer {
       rasterStyle: undefined,
       resolutionTolerance: 0,
       resolutions: [],
-      tileSize: [256, 256],
-      max
-  });
+      tileSize: [256, 256]
+    });
 
     const source = layer.getSource();
 
