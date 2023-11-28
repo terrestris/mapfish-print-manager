@@ -110,6 +110,15 @@ export class Shared {
 
     return parseFloat(resolution) * mpu * inchesPerMeter * dpi;
   }
+
+  static getResolutionForScale = (scale, units) => {
+    const dpi = 25.4 / 0.28;
+    const mpu = METERS_PER_UNIT[units];
+    const inchesPerMeter = 39.37;
+
+    return scale / (mpu * inchesPerMeter * dpi);
+  }
+
 }
 
 export default Shared;
