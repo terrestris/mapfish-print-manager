@@ -20,6 +20,7 @@
     "dist"
   ],
   "scripts": {
+    "build": "npm run clean && npm run build:dist",
     "build:dist": "npm run clean:dist && tsc -p .",
     "build:docs": "npm run clean:docs && typedoc",
     "build:examples": "npm run clean:examples && webpack --config ./webpack.production.config.js",
@@ -33,7 +34,6 @@
     "prepare": "husky",
     "prepublishOnly": "npm run build:dist && npm run build:docs",
     "pretest": "npm run typecheck && npm run lint",
-    "release": "np --no-yarn",
     "start": "webpack-dev-server --config ./webpack.development.config.js",
     "test": "jest --maxWorkers=4 --coverage",
     "test:watch": "jest --watchAll",
@@ -83,7 +83,6 @@
     "jest-canvas-mock": "^2.4.0",
     "jest-environment-jsdom": "^29.3.1",
     "jest-fetch-mock": "^3.0.3",
-    "np": "^8.0.4",
     "ol": "^7.2.2",
     "rimraf": "^3.0.2",
     "semantic-release": "^22.0.2",
