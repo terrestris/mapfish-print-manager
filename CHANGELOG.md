@@ -1,3 +1,10 @@
+## [11.0.2](https://github.com/terrestris/mapfish-print-manager/compare/v11.0.1...v11.0.2) (2024-02-23)
+
+
+### Bug Fixes
+
+* dimension serialization for WMTS layers for Mapfish v3 ([f430695](https://github.com/terrestris/mapfish-print-manager/commit/f430695ab15d3b5abf1cb1d6317fd0c39b0b1990))
+
 ## [11.0.1](https://github.com/terrestris/mapfish-print-manager/compare/v11.0.0...v11.0.1) (2024-02-23)
 
 
