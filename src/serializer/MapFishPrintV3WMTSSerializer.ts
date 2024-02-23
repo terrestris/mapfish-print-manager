@@ -4,6 +4,7 @@ import OlLayer from 'ol/layer/Layer';
 import OlTileGridWMTS from 'ol/tilegrid/WMTS';
 
 import BaseSerializer from './BaseSerializer';
+import _isNil from 'lodash/isNil';
 
 export class MapFishPrintV3WMTSSerializer implements BaseSerializer {
 
@@ -43,14 +44,20 @@ export class MapFishPrintV3WMTSSerializer implements BaseSerializer {
       return;
     }
 
+    const dimensionParams = source.getDimensions();
+    let dimensions = undefined;
+    if (!_isNil(dimensionParams) && Object.keys(dimensionParams).length > 0) {
+      dimensions = Object.keys(dimensionParams);
+    }
+
     // 28mm is the pixel size
     const scaleDenominators = tileGrid.getResolutions().map(resolution => resolution / 0.00028);
-    const serialized = {
+    return {
       ...opts,
       baseURL: baseUrl,
       customParams: undefined,
-      dimensionParams: undefined,
-      dimensions: source.getDimensions(),
+      dimensionParams,
+      dimensions,
       failOnError: opts?.failOnError || true,
       imageFormat: source.getFormat() || 'image/png',
       layer: source.getLayer(),
@@ -73,8 +80,6 @@ export class MapFishPrintV3WMTSSerializer implements BaseSerializer {
       version: source.getVersion() || '1.1.0',
       type: MapFishPrintV3WMTSSerializer.TYPE_WMTS
     };
-
-    return serialized;
   }
 }
 
