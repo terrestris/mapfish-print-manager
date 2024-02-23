@@ -1,3 +1,10 @@
+## [11.0.1](https://github.com/terrestris/mapfish-print-manager/compare/v11.0.0...v11.0.1) (2024-02-23)
+
+
+### Bug Fixes
+
+* webpack configs for v5 and bump css and style loader ([b8f68ed](https://github.com/terrestris/mapfish-print-manager/commit/b8f68edbb12b72e14ad04ca99b03186fe88fbd6a))
+
 # [11.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v10.1.0...v11.0.0) (2024-02-22)
 
 
