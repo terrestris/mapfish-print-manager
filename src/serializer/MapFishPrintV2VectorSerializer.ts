@@ -237,7 +237,7 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
    * @param olImageStyle An ol.style.Image instance.
    * @return A plain object matching the passed `ol.style.Image` instance.
    */
-  writeImageStyle = (olImageStyle: OlStyleImage) => {
+  writeImageStyle = (olImageStyle: OlStyleImage | null) => {
     if (!(olImageStyle instanceof OlStyleImage)) {
       return {};
     }
@@ -377,7 +377,7 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
    *
    * @return A plain object matching the passed `ol.style.Fill` instance.
    */
-  writeFillStyle = (olFillStyle: OlStyleFill) => {
+  writeFillStyle = (olFillStyle: OlStyleFill | null) => {
     if (!(olFillStyle instanceof OlStyleFill)) {
       return {};
     }
@@ -393,7 +393,7 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
    * @param olStrokeStyle An ol.style.Stroke instance.
    * @return A plain object matching the passed `ol.style.Stroke` instance.
    */
-  writeStrokeStyle = (olStrokeStyle: OlStyleStroke) => {
+  writeStrokeStyle = (olStrokeStyle: OlStyleStroke| null) => {
     if (!(olStrokeStyle instanceof OlStyleStroke)) {
       return {};
     }
@@ -416,7 +416,7 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
    * @param olTextStyle An ol.style.Text instance.
    * @return A plain object matching the passed `ol.style.Text` instance.
    */
-  writeTextStyle = (olTextStyle: OlStyleText) => {
+  writeTextStyle = (olTextStyle: OlStyleText | null) => {
     if (!(olTextStyle instanceof OlStyleText)) {
       return {};
     }
