@@ -44,7 +44,7 @@
     "lodash": "^4.17.21",
     "parse-color": "^1.0.0",
     "parse-css-font": "^4.0.0",
-    "query-string": "^7.1.2",
+    "query-string": "^9.0.0",
     "url-parse": "^1.5.10"
   },
   "devDependencies": {
