@@ -1,6 +1,11 @@
 {
   "branches": [
-    "main"
+    "main",
+    {
+      name: "ol-8",
+      range: "11.x",
+      channel: "11.x
+    }
   ],
   "plugins": [
     "@semantic-release/commit-analyzer",
