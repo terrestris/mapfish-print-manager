@@ -1,3 +1,12 @@
+## [11.0.3](https://github.com/terrestris/mapfish-print-manager/compare/v11.0.2...v11.0.3) (2024-04-03)
+
+
+### Bug Fixes
+
+* adjust serializer for ol9 update ([96d0406](https://github.com/terrestris/mapfish-print-manager/commit/96d040664cac14ff37e09cd5f58d2e1a21186b18))
+* adjustments to match existing code ([f97b0cd](https://github.com/terrestris/mapfish-print-manager/commit/f97b0cdfae3bbb971e055ac02058034e5c825b4b))
+* update query-string and adjust dev settings ([5f72b81](https://github.com/terrestris/mapfish-print-manager/commit/5f72b81af747df18b196c3ad02b863cebb952afd))
+
 ## [11.0.2](https://github.com/terrestris/mapfish-print-manager/compare/v11.0.1...v11.0.2) (2024-02-23)
 
 
