@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - ol-8
 
 jobs:
   build:

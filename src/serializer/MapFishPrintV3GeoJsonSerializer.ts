@@ -20,6 +20,7 @@ import parseColor from 'parse-color';
 import parseFont, { IFont } from 'parse-css-font';
 
 import BaseSerializer from './BaseSerializer';
+import _isNil from 'lodash/isNil';
 
 export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
 
@@ -33,7 +34,7 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
    *
    * @type {string}
    */
-  static FEAT_STYLE_PROPERTY = '_style';
+  static FEAT_STYLE_PROPERTY: string = '_style';
 
   validateSource(source: OlSource): source is OlSourceVector {
     return source instanceof OlSourceVector;
@@ -127,7 +128,7 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
       }
     });
 
-    const serialized = {
+    return {
       geoJson: {
         type: 'FeatureCollection',
         features: serializedFeatures
@@ -138,8 +139,6 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
       type: MapFishPrintV3GeoJsonSerializer.TYPE_GEOJSON,
       ...optsToApply
     };
-
-    return serialized;
   }
 
   /**
@@ -150,7 +149,7 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
    * @return A plain object matching the passed `ol.style.Style` instance.
    */
   writeStyle = (olStyle: OlStyleStyle, geomType: string) => {
-    if (!(olStyle instanceof OlStyleStyle)) {
+    if (_isNil(olStyle)) {
       return undefined;
     }
 
@@ -159,7 +158,7 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
     const strokeStyle = this.writeStrokeStyle(olStyle.getStroke());
     const textStyle = this.writeTextStyle(olStyle.getText());
 
-    let style = {};
+    let style: {};
     switch (geomType) {
       case 'Point':
       case 'MultiPoint':
@@ -249,8 +248,8 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
    * @param olImageStyle An ol.style.Image instance.
    * @return A plain object matching the passed `ol.style.Image` instance.
    */
-  writeImageStyle = (olImageStyle: OlStyleImage) => {
-    if (!(olImageStyle instanceof OlStyleImage)) {
+  writeImageStyle = (olImageStyle?: OlStyleImage | null) => {
+    if (_isNil(olImageStyle)) {
       return {};
     }
 
@@ -273,8 +272,8 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
    * @param olCircleStyle An ol.style.Circle instance.
    * @return A plain object matching the passed `ol.style.Circle` instance.
    */
-  writeCircleStyle = (olCircleStyle: OlStyleCircle) => {
-    if (!(olCircleStyle instanceof OlStyleCircle)) {
+  writeCircleStyle = (olCircleStyle?: OlStyleCircle | null) => {
+    if (_isNil(olCircleStyle)) {
       return {};
     }
 
@@ -296,8 +295,8 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
    * @param olIconStyle An ol.style.Icon instance.
    * @return A plain object matching the passed `ol.style.Icon` instance.
    */
-  writeIconStyle = (olIconStyle: OlStyleIcon) => {
-    if (!(olIconStyle instanceof OlStyleIcon)) {
+  writeIconStyle = (olIconStyle?: OlStyleIcon | null) => {
+    if (_isNil(olIconStyle)) {
       return {};
     }
 
@@ -324,8 +323,8 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
    * @param olRegularShape An ol.style.RegularShape instance.
    * @return A plain object matching the passed `ol.style.RegularShape` instance.
    */
-  writeRegularShapeStyle = (olRegularShape: OlStyleRegularShape) => {
-    if (!(olRegularShape instanceof OlStyleRegularShape)) {
+  writeRegularShapeStyle = (olRegularShape?: OlStyleRegularShape | null) => {
+    if (_isNil(olRegularShape)) {
       return {};
     }
 
@@ -349,8 +348,8 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
    * @param olFillStyle An ol.style.Fill instance.
    * @return A plain object matching the passed `ol.style.Fill` instance.
    */
-  writeFillStyle = (olFillStyle: OlStyleFill) => {
-    if (olFillStyle && !(olFillStyle instanceof OlStyleFill)) {
+  writeFillStyle = (olFillStyle?: OlStyleFill | null) => {
+    if (_isNil(olFillStyle)) {
       return {};
     }
 
@@ -367,8 +366,8 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
    * @param olStrokeStyle An ol.style.Stroke instance.
    * @return A plain object matching the passed `ol.style.Stroke` instance.
    */
-  writeStrokeStyle = (olStrokeStyle: OlStyleStroke) => {
-    if (!(olStrokeStyle instanceof OlStyleStroke)) {
+  writeStrokeStyle = (olStrokeStyle?: OlStyleStroke | null) => {
+    if (_isNil(olStrokeStyle)) {
       return {};
     }
 
@@ -404,8 +403,8 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
    * @param olTextStyle An ol.style.Text instance.
    * @return A plain object matching the passed `ol.style.Text` instance.
    */
-  writeTextStyle = (olTextStyle: OlStyleText) => {
-    if (!(olTextStyle instanceof OlStyleText)) {
+  writeTextStyle = (olTextStyle?: OlStyleText | null) => {
+    if (_isNil(olTextStyle)) {
       return {};
     }
 
