@@ -22,6 +22,7 @@ import parseColor from 'parse-color';
 import parseFont, { IFont } from 'parse-css-font';
 
 import BaseSerializer from './BaseSerializer';
+import _isNil from 'lodash/isNil';
 
 export class MapFishPrintV2VectorSerializer implements BaseSerializer {
 
@@ -237,8 +238,8 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
    * @param olImageStyle An ol.style.Image instance.
    * @return A plain object matching the passed `ol.style.Image` instance.
    */
-  writeImageStyle = (olImageStyle: OlStyleImage) => {
-    if (!(olImageStyle instanceof OlStyleImage)) {
+  writeImageStyle = (olImageStyle?: OlStyleImage | null) => {
+    if (_isNil(olImageStyle)) {
       return {};
     }
 
@@ -377,8 +378,8 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
    *
    * @return A plain object matching the passed `ol.style.Fill` instance.
    */
-  writeFillStyle = (olFillStyle: OlStyleFill) => {
-    if (!(olFillStyle instanceof OlStyleFill)) {
+  writeFillStyle = (olFillStyle?: OlStyleFill | null) => {
+    if (_isNil(olFillStyle)) {
       return {};
     }
 
@@ -393,8 +394,8 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
    * @param olStrokeStyle An ol.style.Stroke instance.
    * @return A plain object matching the passed `ol.style.Stroke` instance.
    */
-  writeStrokeStyle = (olStrokeStyle: OlStyleStroke) => {
-    if (!(olStrokeStyle instanceof OlStyleStroke)) {
+  writeStrokeStyle = (olStrokeStyle?: OlStyleStroke| null) => {
+    if (_isNil(olStrokeStyle)) {
       return {};
     }
 
@@ -416,7 +417,7 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
    * @param olTextStyle An ol.style.Text instance.
    * @return A plain object matching the passed `ol.style.Text` instance.
    */
-  writeTextStyle = (olTextStyle: OlStyleText) => {
+  writeTextStyle = (olTextStyle: OlStyleText | null) => {
     if (!(olTextStyle instanceof OlStyleText)) {
       return {};
     }
