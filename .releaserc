@@ -4,7 +4,7 @@
     {
       name: "ol-8",
       range: "11.x",
-      channel: "11.x
+      channel: "11.x"
     }
   ],
   "plugins": [
