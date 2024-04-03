@@ -4,7 +4,7 @@ module.exports = {
     'ts'
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!ol|color-[^/]+/.*)'
+    'node_modules/(?!ol|decode-uri-component|query-string|split-on-first|filter-obj|color-[^/]+/.*)'
   ],
   setupFiles: [
     '<rootDir>/spec/jest/setup.js'

@@ -4,7 +4,7 @@ import _isNil from 'lodash/isNil';
 
 import URL from 'url-parse';
 
-import QueryString from 'query-string';
+import queryString from 'query-string';
 
 import OlLayer from 'ol/layer/Layer';
 import { getCenter } from 'ol/extent';
@@ -443,7 +443,7 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
     if (!this.url) {
       return;
     }
-    const baseUrlObj = new URL(this.url, undefined, QueryString.parse);
+    const baseUrlObj = new URL(this.url, undefined, queryString.parse);
     return `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
   }
 
