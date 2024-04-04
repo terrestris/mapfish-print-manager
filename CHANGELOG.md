@@ -1,3 +1,15 @@
+# [12.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v11.0.3...v12.0.0) (2024-04-04)
+
+
+### chore
+
+* uses ol v9.1.0 and adjusts a version mismatch ([9155780](https://github.com/terrestris/mapfish-print-manager/commit/915578068138f55ecbe29603ee3530c22ab9553c))
+
+
+### BREAKING CHANGES
+
+* Uses ol9 now
+
 ## [11.0.3](https://github.com/terrestris/mapfish-print-manager/compare/v11.0.2...v11.0.3) (2024-04-03)
 
 
