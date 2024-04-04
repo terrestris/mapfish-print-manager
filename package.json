@@ -82,7 +82,7 @@
     "jest-canvas-mock": "^2.4.0",
     "jest-environment-jsdom": "^29.3.1",
     "jest-fetch-mock": "^3.0.3",
-    "ol": "^9.0.0",
+    "ol": "^9.1.0",
     "rimraf": "^5.0.5",
     "semantic-release": "^23.0.6",
     "style-loader": "^3.3.4",
