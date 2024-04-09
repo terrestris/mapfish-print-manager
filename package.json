@@ -74,7 +74,7 @@
     "babel-jest": "^29.3.1",
     "babel-loader": "^9.1.0",
     "canvas": "^2.10.2",
-    "css-loader": "^6.10.0",
+    "css-loader": "^7.1.0",
     "eslint": "^8.44.0",
     "gh-pages": "^6.1.1",
     "husky": "^9.0.6",
