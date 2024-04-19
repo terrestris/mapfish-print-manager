@@ -34,7 +34,7 @@ describe('MapFishPrintV3OSMSerializer', () => {
     const serializedSimple = serializer.serialize(layer);
 
     expect(serializedSimple).toEqual({
-      baseURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      baseURL: undefined,
       customParams: {},
       dpi: 72,
       failOnError: false,
@@ -81,7 +81,7 @@ describe('MapFishPrintV3OSMSerializer', () => {
     });
 
     expect(serializedSimple).toEqual({
-      baseURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      baseURL: undefined,
       customParams: {},
       dpi: 72,
       failOnError: false,
