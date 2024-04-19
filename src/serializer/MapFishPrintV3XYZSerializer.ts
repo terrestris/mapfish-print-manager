@@ -11,7 +11,7 @@ export class MapFishPrintV3XYZSerializer implements BaseSerializer {
    * We use OSM for the type because the backend does not
    * have XYZ implemented which leads to the map not being printed
    */
-  static TYPE_XYZ: string = 'OSM';
+  static TYPE_XYZ: string = 'osm';
 
   validateSource(source: OlSource): source is OlSourceXYZ {
     return source instanceof OlSourceXYZ;

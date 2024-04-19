@@ -11,6 +11,17 @@ export class MapFishPrintV3OSMSerializer extends MapFishPrintV3XYZSerializer {
 
   serialize(olLayer: OlLayer, opts?: any) {
     const source = olLayer.getSource();
+    const optsToApply = {
+      baseURL: undefined,
+      customParams: {},
+      dpi: 72,
+      failOnError: false,
+      imageExtension: 'png',
+      maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+      rasterStyle: undefined,
+      tileSize: [256, 256],
+      ...opts
+    };
 
     if (!source || !this.validateSource(source)) {
       return;
@@ -21,7 +32,8 @@ export class MapFishPrintV3OSMSerializer extends MapFishPrintV3XYZSerializer {
 
     return {
       ...super.serialize(olLayer, opts),
-      baseURL: baseUrl
+      baseURL: baseUrl,
+      ...optsToApply
     };
   }
 }
