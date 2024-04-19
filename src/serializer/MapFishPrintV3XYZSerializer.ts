@@ -19,7 +19,7 @@ export class MapFishPrintV3XYZSerializer implements BaseSerializer {
 
   serialize(olLayer: OlLayer, opts?: any) {
     const optsToApply = {
-      baseURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      baseURL: undefined,
       customParams: {},
       dpi: 72,
       failOnError: false,
