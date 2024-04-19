@@ -1,51 +1,28 @@
-import OlSource from 'ol/source/Source';
-import OlSourceOSM from 'ol/source/OSM';
 import OlLayer from 'ol/layer/Layer';
+import OlSource from 'ol/source/Source';
+import olSourceOSM from 'ol/source/OSM';
+import MapFishPrintV3XYZSerializer from './MapFishPrintV3XYZSerializer';
 
-import BaseSerializer from './BaseSerializer';
+export class MapFishPrintV3OSMSerializer extends MapFishPrintV3XYZSerializer {
 
-export class MapFishPrintV3OSMSerializer implements BaseSerializer {
-
-  /**
-   * The WMS layer type identificator.
-   */
-  static TYPE_OSM: string = 'osm';
-
-  validateSource(source: OlSource): source is OlSourceOSM {
-    return source instanceof OlSourceOSM;
+  validateSource(source: OlSource): source is olSourceOSM {
+    return source instanceof olSourceOSM;
   }
 
   serialize(olLayer: OlLayer, opts?: any) {
-    const optsToApply = {
-      baseURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-      customParams: {},
-      dpi: 72,
-      failOnError: false,
-      imageExtension: 'png',
-      maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-      rasterStyle: undefined,
-      tileSize: [256, 256],
-      ...opts
-    };
-
     const source = olLayer.getSource();
 
     if (!source || !this.validateSource(source)) {
       return;
     }
 
-    const tileGrid = source.getTileGrid();
-    const tileGridResolutions = tileGrid?.getResolutions() || [];
+    const urls = source.getUrls();
+    const baseUrl = urls ? urls[0] : undefined;
 
-    const serialized = {
-      name: olLayer.get('name'),
-      opacity: olLayer.getOpacity(),
-      resolutions: tileGridResolutions,
-      type: MapFishPrintV3OSMSerializer.TYPE_OSM,
-      ...optsToApply
+    return {
+      ...super.serialize(olLayer, opts),
+      baseURL: baseUrl
     };
-
-    return serialized;
   }
 }
 
