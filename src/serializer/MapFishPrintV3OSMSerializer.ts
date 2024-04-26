@@ -1,18 +1,18 @@
 import OlLayer from 'ol/layer/Layer';
 import OlSource from 'ol/source/Source';
-import olSourceOSM from 'ol/source/OSM';
+import OlSourceOSM from 'ol/source/OSM';
 import MapFishPrintV3XYZSerializer from './MapFishPrintV3XYZSerializer';
 
 export class MapFishPrintV3OSMSerializer extends MapFishPrintV3XYZSerializer {
 
-  validateSource(source: OlSource): source is olSourceOSM {
-    return source instanceof olSourceOSM;
+  validateSource(source: OlSource): source is OlSourceOSM {
+    return source instanceof OlSourceOSM;
   }
 
   serialize(olLayer: OlLayer, opts?: any) {
     const source = olLayer.getSource();
     const optsToApply = {
-      baseURL: undefined,
+      baseURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       customParams: {},
       dpi: 72,
       failOnError: false,
