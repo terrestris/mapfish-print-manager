@@ -81,7 +81,7 @@ describe('MapFishPrintV3OSMSerializer', () => {
     });
 
     expect(serializedSimple).toEqual({
-      baseURL:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      baseURL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       customParams: {},
       dpi: 72,
       failOnError: false,
