@@ -1,9 +1,10 @@
 import OlLayer from 'ol/layer/Layer';
 import OlSource from 'ol/source/Source';
-import StadiaMaps from 'ol/source/StadiaMaps.js';
-import MapFishPrintV3OSMSerializer from './MapFishPrintV3OSMSerializer';
+import StadiaMaps from 'ol/source/StadiaMaps';
+import MapFishPrintV3XYZSerializer from './MapFishPrintV3XYZSerializer';
 
-export class MapFishPrintV3StamenSerializer extends MapFishPrintV3OSMSerializer {
+
+export class MapFishPrintV3StamenSerializer extends MapFishPrintV3XYZSerializer {
 
   validateSource(source: OlSource): source is StadiaMaps {
     return source instanceof StadiaMaps;
