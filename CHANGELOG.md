@@ -1,3 +1,17 @@
+# [12.1.0](https://github.com/terrestris/mapfish-print-manager/compare/v12.0.0...v12.1.0) (2024-05-03)
+
+
+### Bug Fixes
+
+* fixes failed checks ([4bd0d3c](https://github.com/terrestris/mapfish-print-manager/commit/4bd0d3c9d53470d294507319f2210e4c16a2d4a3))
+* fixes url for XYZ and updates Stamen file to StadiaMaps ([83c1cb4](https://github.com/terrestris/mapfish-print-manager/commit/83c1cb4080895eb0c35207f2e6116255a1bcc31e))
+* respects Dependency Inversion principle by extending XYZ with OSM ([bb9a6cb](https://github.com/terrestris/mapfish-print-manager/commit/bb9a6cb71f831a645d52eff4b1b1fa7c27cda377))
+
+
+### Features
+
+* adds a XYZ Serializer ([f3a5b26](https://github.com/terrestris/mapfish-print-manager/commit/f3a5b26e6474927343396f140dd06140f80e1173))
+
 # [12.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v11.0.3...v12.0.0) (2024-04-04)
 
 
