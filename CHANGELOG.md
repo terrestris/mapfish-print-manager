@@ -1,3 +1,10 @@
+## [12.1.1](https://github.com/terrestris/mapfish-print-manager/compare/v12.1.0...v12.1.1) (2024-05-21)
+
+
+### Bug Fixes
+
+* fixes XYZ layer so it prints and simplifies OSM serialzer ([b4bd005](https://github.com/terrestris/mapfish-print-manager/commit/b4bd005645dd52149a420df866649a40c94ce6c0))
+
 # [12.1.0](https://github.com/terrestris/mapfish-print-manager/compare/v12.0.0...v12.1.0) (2024-05-03)
 
 
