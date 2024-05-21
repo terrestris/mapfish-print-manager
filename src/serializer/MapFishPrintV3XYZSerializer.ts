@@ -16,10 +16,14 @@ export class MapFishPrintV3XYZSerializer implements BaseSerializer {
   validateSource(source: OlSource): source is OlSourceXYZ {
     return source instanceof OlSourceXYZ;
   }
-
   serialize(olLayer: OlLayer, opts?: any) {
+    const source = olLayer.getSource();
+
+    if (!source || !this.validateSource(source)) {
+      return;
+    }
+
     const optsToApply = {
-      baseURL: undefined,
       customParams: {},
       dpi: 72,
       failOnError: false,
@@ -30,16 +34,9 @@ export class MapFishPrintV3XYZSerializer implements BaseSerializer {
       ...opts
     };
 
-    const source = olLayer.getSource();
-
-    if (!source || !this.validateSource(source)) {
-      return;
-    }
-
     const tileGrid = source.getTileGrid();
     const tileGridResolutions = tileGrid?.getResolutions() || [];
-    const urls = source.getUrls();
-    const baseUrl = urls ? urls[0] : undefined;
+    const baseUrl = source.getUrls()?.[0];
 
     const serialized = {
       name: olLayer.get('name'),
