@@ -31,7 +31,7 @@
     "clean:examples": "rimraf ./build/examples/*",
     "lint": "eslint -c .eslintrc.cjs --ext ts,js ./src/ ./spec/ ./example/",
     "lint:fix": "npm run lint -- --fix",
-    "postpublish": "node ./tasks/update-gh-pages.js",
+    "postpublish": "node ./tasks/update-gh-pages.cjs",
     "prepare": "husky",
     "prepublishOnly": "npm run build:dist && npm run build:docs",
     "pretest": "npm run typecheck && npm run lint",
