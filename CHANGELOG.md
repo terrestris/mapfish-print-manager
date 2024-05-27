@@ -1,3 +1,10 @@
+## [13.0.1](https://github.com/terrestris/mapfish-print-manager/compare/v13.0.0...v13.0.1) (2024-05-27)
+
+
+### Bug Fixes
+
+* fix release ([#549](https://github.com/terrestris/mapfish-print-manager/issues/549)) ([b99e374](https://github.com/terrestris/mapfish-print-manager/commit/b99e374ea4b723d64f5b7f8a43a5193668c2e974))
+
 # [13.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v12.1.1...v13.0.0) (2024-05-27)
 
 
