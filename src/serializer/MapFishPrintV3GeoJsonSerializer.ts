@@ -95,7 +95,7 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
       if (styleFunction) {
         styles = styleFunction.call(feature, feature, viewResolution);
       } else {
-        styleFunction = (olLayer as OlLayerVector<OlSourceVector>).getStyleFunction();
+        styleFunction = (olLayer as OlLayerVector<OlFeature>).getStyleFunction();
         if (styleFunction) {
           styles = styleFunction.call(olLayer, feature, viewResolution);
         }

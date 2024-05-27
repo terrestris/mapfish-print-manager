@@ -71,7 +71,7 @@ export type BaseMapFishPrintManagerOpts = {
    * The layer to show the actual print extent on. If not provided, a default
    * one will be created.
    */
-  extentLayer?: OlLayerVector<OlSourceVector>;
+  extentLayer?: OlLayerVector<OlFeature>;
   /**
    * The color to apply to the mask around the extent feature. Will be applied
    * to the default extentLayer only. If you don't want the mask to be shown on
@@ -150,7 +150,7 @@ export class BaseMapFishPrintManager extends Observable {
 
   protected customParams?: any;
 
-  protected extentLayer?: OlLayerVector<OlSourceVector>;
+  protected extentLayer?: OlLayerVector<OlFeature>;
 
   protected maskColor: string;
 
