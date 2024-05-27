@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
-    "lib": ["es2017", "dom", "webworker"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["ES2022", "es2017", "dom", "webworker"],
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
     "declaration": true,
     "emitDeclarationOnly": false,
+    "moduleResolution": "Bundler",
     "outDir": "./dist",
     "resolveJsonModule": true,
     "noEmit": false,

@@ -1,10 +1,10 @@
-import OlMap from 'ol/Map';
-import OlView from 'ol/View';
-import OlLayerTile from 'ol/layer/Tile';
-import OlSourceTileWMS from 'ol/source/TileWMS';
-import { fromLonLat } from 'ol/proj';
+import OlMap from 'ol/Map.js';
+import OlView from 'ol/View.js';
+import OlLayerTile from 'ol/layer/Tile.js';
+import OlSourceTileWMS from 'ol/source/TileWMS.js';
+import { fromLonLat } from 'ol/proj.js';
 
-import { MapFishPrintV2Manager } from '../src/index';
+import { MapFishPrintV2Manager } from '../src/index.ts';
 
 import 'ol/ol.css';
 
