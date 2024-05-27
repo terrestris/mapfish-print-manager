@@ -1,3 +1,17 @@
+# [13.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v12.1.1...v13.0.0) (2024-05-27)
+
+
+### Features
+
+* produce es2022 build ([#548](https://github.com/terrestris/mapfish-print-manager/issues/548)) ([10684c3](https://github.com/terrestris/mapfish-print-manager/commit/10684c333350b49d5fae0595bf33de5a822d7283))
+
+
+### BREAKING CHANGES
+
+* Keep in mind when using this library that
+downstream projects may need to adjust their bundler to include
+this library into the transpilation process.
+
 ## [12.1.1](https://github.com/terrestris/mapfish-print-manager/compare/v12.1.0...v12.1.1) (2024-05-21)
 
 
