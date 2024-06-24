@@ -1,4 +1,4 @@
-name: Test successful build of ol-util
+name: Test successful build of mapfish print manager (v5-main)
 
 on: pull_request
 
@@ -32,7 +32,7 @@ jobs:
         run: npm install
 
       - name: Run tests 🩺
-        run: npm run check
+        run: npm run test
 
       - name: Build artifacts 🏗️
-        run: npm run build
+        run: npm run build:dist
