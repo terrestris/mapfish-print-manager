@@ -142,12 +142,12 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
           if (!serializedFeature.properties) {
             serializedFeature.properties = {};
           }
-          // serializedFeature.properties[this.constructor.FEAT_STYLE_PROPERTY] = styleName;
+          serializedFeature.properties[this.constructor.FEAT_STYLE_PROPERTY] = styleName;
         });
       }
     });
 
-    const serialized = {
+    return {
       ...super.serialize(layer, opts, viewResolution),
       ...{
         geoJson: {
@@ -156,15 +156,11 @@ export class MapFishPrintV3GeoJsonSerializer extends BaseSerializer {
         },
         name: layer.get('name') || 'Vector Layer',
         opacity: layer.getOpacity(),
-        // TODO Currently not supported, GeoStyler MapFish JSON StyleParser should
-        // be used here!
-        style: {},
+        style: serializedStyles,
         type: this.constructor.TYPE_GEOJSON
       },
       ...opts
     };
-
-    return serialized;
   }
 
   /**
