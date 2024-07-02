@@ -96,7 +96,7 @@
     "webpack-merge": "^5.8.0"
   },
   "peerDependencies": {
-    "ol": "^9"
+    "ol": ">=9"
   },
   "engines": {
     "node": ">=20",
