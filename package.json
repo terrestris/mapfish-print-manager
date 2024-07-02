@@ -1,6 +1,6 @@
 {
   "name": "@terrestris/mapfish-print-manager",
-  "version": "13.0.1",
+  "version": "14.0.0",
   "description": "An interface to easily communicate with the MapFish Print module",
   "repository": {
     "type": "git",

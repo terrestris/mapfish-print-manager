@@ -1,3 +1,21 @@
+# [14.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v13.0.1...v14.0.0) (2024-07-02)
+
+
+### Bug Fixes
+
+* peer dependency definition for OpenLayers ([ecdcd1f](https://github.com/terrestris/mapfish-print-manager/commit/ecdcd1fe9895a4e7ceab86038735f9fa9d7019d5))
+* replace deprecated babel-eslint by eslint-parser package ([20047a7](https://github.com/terrestris/mapfish-print-manager/commit/20047a728f919c2858c96706c4fd521f0c53909f))
+
+
+### chore
+
+* update node version to 20 ([2e013f3](https://github.com/terrestris/mapfish-print-manager/commit/2e013f3e1e86c9659429b98062556a0871a46144))
+
+
+### BREAKING CHANGES
+
+* set node engine to v10 and npm to v10
+
 ## [13.0.1](https://github.com/terrestris/mapfish-print-manager/compare/v13.0.0...v13.0.1) (2024-05-27)
 
 
