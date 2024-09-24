@@ -1,3 +1,15 @@
+# [15.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v14.0.0...v15.0.0) (2024-09-24)
+
+
+### chore
+
+* update to latest ol ([3b7842c](https://github.com/terrestris/mapfish-print-manager/commit/3b7842c35c375feca5a9b31dd04ef2590df52e2a))
+
+
+### BREAKING CHANGES
+
+* required peer dependency of ol is now >= 10
+
 # [14.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v13.0.1...v14.0.0) (2024-07-02)
 
 
