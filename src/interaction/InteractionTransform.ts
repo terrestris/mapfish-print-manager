@@ -66,7 +66,7 @@ export class InteractionTransformEvent extends OlBaseEvent {
 
 export type OlInteractionTransformOpts = OlInteractionPointerOpts & {
   // Array of layers to transform
-  layers?: OlLayerVector<OlFeature>[] | OlLayerVector<OlFeature>;
+  layers?: OlLayerVector<OlSourceVector>[] | OlLayerVector<OlSourceVector>;
   // Collection of feature to transform
   features?: OlFeature<OlGeometry>[];
   // Translate when click on feature
@@ -102,7 +102,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
     [key: string]: OlStyleStyle[];
   };
 
-  overlayLayer_?: OlLayerVector<OlFeature>;
+  overlayLayer_?: OlLayerVector<OlSourceVector>;
 
   handles_?: OlCollection<OlFeature>;
 
@@ -110,7 +110,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
 
   feature_?: OlFeature<OlGeometry>;
 
-  layers_?: OlLayerVector<OlFeature>[];
+  layers_?: OlLayerVector<OlSourceVector>[];
 
   isTouch?: boolean;
 
