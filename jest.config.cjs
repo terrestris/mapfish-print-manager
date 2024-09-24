@@ -4,7 +4,7 @@ module.exports = {
     'ts'
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!ol|decode-uri-component|query-string|split-on-first|filter-obj|color-[^/]+/.*)'
+    'node_modules/(?!ol|decode-uri-component|query-string|split-on-first|filter-obj|color-[^/]+/.*|rbush|quickselect)'
   ],
   setupFiles: [
     '<rootDir>/spec/jest/setup.js'
