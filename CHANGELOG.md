@@ -1,3 +1,15 @@
+# [16.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v15.0.0...v16.0.0) (2024-10-21)
+
+
+### chore
+
+* update eslint to v9 ([51c032d](https://github.com/terrestris/mapfish-print-manager/commit/51c032dc02ae8990a4e3cbf651e014e72c3f8b2f))
+
+
+### BREAKING CHANGES
+
+* eslint update to v9
+
 # [15.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v14.0.0...v15.0.0) (2024-09-24)
 
 
