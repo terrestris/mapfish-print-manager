@@ -81,7 +81,6 @@ function registerCancelPrintHandler() {
 
 function onPrintClick() {
   printProvider?.print(true)?.catch(error => {
-    // eslint-disable-next-line no-console
     console.log('Error while printing: ' + error);
   });
 }

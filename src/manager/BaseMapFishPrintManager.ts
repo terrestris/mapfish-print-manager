@@ -1,40 +1,38 @@
-import OlMap from 'ol/Map';
+import { Coordinate as OlCoordinate } from 'ol/coordinate';
+import { containsExtent, getCenter, getSize } from 'ol/extent';
+import OlFeature from 'ol/Feature';
+import OlGeomPolygon, { fromExtent } from 'ol/geom/Polygon';
+import {DEVICE_PIXEL_RATIO} from 'ol/has';
 import OlLayer from 'ol/layer/Layer';
 import OlLayerVector from 'ol/layer/Vector';
-import OlSourceTileWMS from 'ol/source/TileWMS';
-import OlSourceImageWMS from 'ol/source/ImageWMS';
-import OlSourceWMTS from 'ol/source/WMTS';
-import OlSourceVector from 'ol/source/Vector';
-import OlFeature from 'ol/Feature';
-import OlGeomPolygon from 'ol/geom/Polygon';
+import OlMap from 'ol/Map';
 import OlRenderEvent from 'ol/render/Event';
-import { containsExtent, getCenter, getSize } from 'ol/extent';
-import { fromExtent } from 'ol/geom/Polygon';
-import OlStyleStyle from 'ol/style/Style';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSourceTileWMS from 'ol/source/TileWMS';
+import OlSourceVector from 'ol/source/Vector';
+import OlSourceWMTS from 'ol/source/WMTS';
 import OlStyleFill from 'ol/style/Fill';
-import { Coordinate as OlCoordinate } from 'ol/coordinate';
-import {DEVICE_PIXEL_RATIO} from 'ol/has';
+import OlStyleStyle from 'ol/style/Style';
 
 import InteractionTransform, { OlInteractionTransformOpts } from '../interaction/InteractionTransform';
 
-import Shared from '../util/Shared';
-import Logger from '../util/Logger';
-
 import Observable from '../observable/Observable';
-
 import BaseSerializer from '../serializer/BaseSerializer';
+import Logger from '../util/Logger';
+import Shared from '../util/Shared';
 
-export type PrintMapSize = {
+export interface PrintMapSize {
   width: number;
   height: number;
-};
+}
 
-export type Layout = {
+export interface Layout {
   name: string;
   attributes: any[];
-};
+  map?: PrintMapSize;
+}
 
-export type BaseMapFishPrintManagerOpts = {
+export interface BaseMapFishPrintManagerOpts {
   /**
    * The map this PrintManager is bound to. Required.
    */
@@ -109,7 +107,7 @@ export type BaseMapFishPrintManagerOpts = {
    * return a Boolean whether to serialize a legend of a layer for print or not.
    */
   legendFilter?: (layer: OlLayer) => boolean;
-};
+}
 
 /**
  * The BaseMapFishPrintManager.
@@ -121,18 +119,18 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * The name of the vector layer configured and created by the print manager.
    */
-  static EXTENT_LAYER_NAME: string = 'PrintManager Vector Layer';
+  static EXTENT_LAYER_NAME = 'PrintManager Vector Layer';
 
   /**
    * The name of the transform interaction configured and created by the
    * print manager.
    */
-  static TRANSFORM_INTERACTION_NAME: string = 'PrintManager Transform Interaction';
+  static TRANSFORM_INTERACTION_NAME = 'PrintManager Transform Interaction';
 
   /**
    * The key in the layer properties to lookup for custom serializer options.
    */
-  static CUSTOM_PRINT_SERIALIZER_OPTS_KEY: string = 'customPrintSerializerOpts';
+  static CUSTOM_PRINT_SERIALIZER_OPTS_KEY = 'customPrintSerializerOpts';
 
   protected map: OlMap;
 
@@ -142,9 +140,7 @@ export class BaseMapFishPrintManager extends Observable {
 
   protected method: 'GET' | 'POST';
 
-  protected headers?: {
-    [key: string]: string;
-  };
+  protected headers?: Record<string, string>;
 
   protected credentialsMode: RequestCredentials;
 
@@ -214,7 +210,7 @@ export class BaseMapFishPrintManager extends Observable {
   /**
    * Whether this manger has been initiated or not.
    */
-  protected _initiated: boolean = false;
+  protected _initiated = false;
 
   /**
    * Feature representing the page extent.
@@ -239,13 +235,6 @@ export class BaseMapFishPrintManager extends Observable {
     this.serializers = opts.serializers ? opts.serializers : [];
     this.layerFilter = opts.layerFilter || (() => true);
     this.legendFilter = opts.legendFilter || (() => true);
-
-    if (!(this.map instanceof OlMap)) {
-      Logger.warn(
-        'Invalid value given to config option `map`. You need to ' +
-        'provide an ol.Map to use the PrintManager.'
-      );
-    }
 
     if (!this.url && !this.capabilities) {
       Logger.warn(
@@ -725,7 +714,7 @@ export class BaseMapFishPrintManager extends Observable {
 
       transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
 
-      // @ts-ignore
+      // @ts-expect-error scaling is a valid event type for this custom interaction
       transform.on('scaling', this.onTransformScaling.bind(this));
 
       this.map.addInteraction(transform);

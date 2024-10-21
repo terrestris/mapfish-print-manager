@@ -1,7 +1,7 @@
-import OlSource from 'ol/source/Source';
-import OlSourceImageWMS from 'ol/source/ImageWMS';
-import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlLayer from 'ol/layer/Layer';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSource from 'ol/source/Source';
+import OlSourceTileWMS from 'ol/source/TileWMS';
 
 import BaseSerializer from './BaseSerializer';
 
@@ -10,7 +10,7 @@ export class MapFishPrintV3WMSSerializer implements BaseSerializer {
   /**
    * The WMS layer type identificator.
    */
-  static TYPE_WMS: string = 'wms';
+  static TYPE_WMS = 'wms';
 
   validateSource(source: OlSource): source is OlSourceImageWMS | OlSourceTileWMS {
     return source instanceof OlSourceImageWMS || source instanceof OlSourceTileWMS;
@@ -40,14 +40,23 @@ export class MapFishPrintV3WMSSerializer implements BaseSerializer {
     const stylesArray = styles ? styles.split(',') : [''];
 
     const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       LAYERS,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       STYLES,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       VERSION,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       WIDTH,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       HEIGHT,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       FORMAT,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       BBOX,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       CRS,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       SRS,
       ...customParams
     } = source.getParams();

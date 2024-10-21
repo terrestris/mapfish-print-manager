@@ -1,6 +1,7 @@
 import OlLayer from 'ol/layer/Layer';
-import OlSource from 'ol/source/Source';
 import OlSourceOSM from 'ol/source/OSM';
+import OlSource from 'ol/source/Source';
+
 import MapFishPrintV3XYZSerializer from './MapFishPrintV3XYZSerializer';
 
 export class MapFishPrintV3OSMSerializer extends MapFishPrintV3XYZSerializer {

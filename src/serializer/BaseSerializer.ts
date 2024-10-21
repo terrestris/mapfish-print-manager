@@ -1,5 +1,5 @@
-import OlSource from 'ol/source/Source';
 import OlLayer from 'ol/layer/Layer';
+import OlSource from 'ol/source/Source';
 
 export interface BaseSerializer {
 

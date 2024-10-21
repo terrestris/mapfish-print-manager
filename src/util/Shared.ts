@@ -1,9 +1,9 @@
-import OlMap from 'ol/Map';
 import OlLayerGroup from 'ol/layer/Group';
 import OlLayer from 'ol/layer/Layer';
-import OlSourceTileWMS from 'ol/source/TileWMS';
-import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlMap from 'ol/Map';
 import { METERS_PER_UNIT } from 'ol/proj/Units';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSourceTileWMS from 'ol/source/TileWMS';
 
 /**
  * Some shared static utility methods.

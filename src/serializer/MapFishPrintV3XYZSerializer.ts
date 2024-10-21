@@ -1,6 +1,6 @@
+import OlLayer from 'ol/layer/Layer';
 import OlSource from 'ol/source/Source';
 import OlSourceXYZ from 'ol/source/XYZ';
-import OlLayer from 'ol/layer/Layer';
 
 import BaseSerializer from './BaseSerializer';
 
@@ -11,7 +11,7 @@ export class MapFishPrintV3XYZSerializer implements BaseSerializer {
    * We use OSM for the type because the backend does not
    * have XYZ implemented which leads to the map not being printed
    */
-  static TYPE_XYZ: string = 'osm';
+  static TYPE_XYZ = 'osm';
 
   validateSource(source: OlSource): source is OlSourceXYZ {
     return source instanceof OlSourceXYZ;

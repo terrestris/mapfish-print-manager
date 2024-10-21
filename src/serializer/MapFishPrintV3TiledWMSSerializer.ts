@@ -1,6 +1,6 @@
+import OlLayer from 'ol/layer/Layer';
 import OlSource from 'ol/source/Source';
 import OlSourceTileWMS from 'ol/source/TileWMS';
-import OlLayer from 'ol/layer/Layer';
 
 import MapFishPrintV3WMSSerializer from './MapFishPrintV3WMSSerializer';
 
@@ -9,7 +9,7 @@ export class MapFishPrintV3TiledWMSSerializer extends MapFishPrintV3WMSSerialize
   /**
    * The WMS layer type identificator.
    */
-  static TYPE_WMS: string = 'tiledwms';
+  static TYPE_WMS = 'tiledwms';
 
   validateSource(source: OlSource): source is OlSourceTileWMS {
     return source instanceof OlSourceTileWMS;

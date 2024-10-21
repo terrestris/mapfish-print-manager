@@ -1,6 +1,7 @@
 import OlLayer from 'ol/layer/Layer';
 import OlSource from 'ol/source/Source';
 import StadiaMaps from 'ol/source/StadiaMaps';
+
 import MapFishPrintV3XYZSerializer from './MapFishPrintV3XYZSerializer';
 
 
