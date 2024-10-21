@@ -1,40 +1,41 @@
-import OlSource from 'ol/source/Source';
+import get from 'lodash/get';
+import _isNil from 'lodash/isNil';
+import pickBy from 'lodash/pickBy';
+import OlFeature from 'ol/Feature';
+import OlFormatGeoJSON from 'ol/format/GeoJSON';
+import OlGeometryCircle from 'ol/geom/Circle';
+import {fromCircle} from 'ol/geom/Polygon';
 import OlLayer from 'ol/layer/Layer';
 import OlLayerVector from 'ol/layer/Vector';
+import OlSource from 'ol/source/Source';
 import OlSourceVector from 'ol/source/Vector';
-import OlFormatGeoJSON from 'ol/format/GeoJSON';
-import OlStyleStyle from 'ol/style/Style';
-import OlStyleRegularShape from 'ol/style/RegularShape';
-import OlGeometryCircle from 'ol/geom/Circle';
-import { fromCircle } from 'ol/geom/Polygon';
-import OlFeature from 'ol/Feature';
-import OlStyleIcon from 'ol/style/Icon';
 import OlStyleCircle from 'ol/style/Circle';
-import OlStyleImage from 'ol/style/Image';
-import OlStyleText from 'ol/style/Text';
-import OlStyleStroke from 'ol/style/Stroke';
 import OlStyleFill from 'ol/style/Fill';
+import OlStyleIcon from 'ol/style/Icon';
+import OlStyleImage from 'ol/style/Image';
+import OlStyleRegularShape from 'ol/style/RegularShape';
+import OlStyleStroke from 'ol/style/Stroke';
+import OlStyleStyle from 'ol/style/Style';
+import OlStyleText from 'ol/style/Text';
 
-import get from 'lodash/get';
-import pickBy from 'lodash/pickBy';
 
 import parseColor from 'parse-color';
-import parseFont, { IFont } from 'parse-css-font';
+import parseFont, {IFont} from 'parse-css-font';
 
 import BaseSerializer from './BaseSerializer';
-import _isNil from 'lodash/isNil';
+
 
 export class MapFishPrintV2VectorSerializer implements BaseSerializer {
 
   /**
    * The vector layer type identificator.
    */
-  static TYPE_VECTOR: string = 'Vector';
+  static TYPE_VECTOR = 'Vector';
 
   /**
    * The property to get the style dictionary key from.
    */
-  static FEAT_STYLE_PROPERTY: string = '_style';
+  static FEAT_STYLE_PROPERTY = '_style';
 
   validateSource(source: OlSource): source is OlSourceVector {
     return source instanceof OlSourceVector;
@@ -54,12 +55,8 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
     const features = source.getFeatures();
     const format = new OlFormatGeoJSON();
     const serializedFeatures: any[] = [];
-    const serializedStyles: {
-      [key: string]: any;
-    } = {};
-    const serializedStylesDict: {
-      [key: string]: number;
-    } = {};
+    const serializedStyles: Record<string, any> = {};
+    const serializedStylesDict: Record<string, number> = {};
     let styleName: string | number;
     let styleId = 0;
 
@@ -71,8 +68,6 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
         return;
       }
 
-      let serializedFeature: any;
-
       // as GeoJSON format doesn't support circle geometries, we need to
       // transform circles to polygons.
       if (geometry instanceof OlGeometryCircle) {
@@ -81,7 +76,7 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
         polyFeature.setStyle(style);
         feature = polyFeature;
       }
-      serializedFeature = format.writeFeatureObject(feature);
+      const serializedFeature = format.writeFeatureObject(feature);
 
       let styles;
       let styleFunction = feature.getStyleFunction();
@@ -122,7 +117,7 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
       }
     });
 
-    const serialized = {
+    return {
       ...{
         name: olLayer.get('name') || 'Vector Layer',
         opacity: olLayer.getOpacity(),
@@ -135,8 +130,6 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
         type: MapFishPrintV2VectorSerializer.TYPE_VECTOR
       }
     };
-
-    return serialized;
   }
 
   /**
@@ -147,16 +140,12 @@ export class MapFishPrintV2VectorSerializer implements BaseSerializer {
    * @return A plain object matching the passed `ol.style.Style` instance.
    */
   writeStyle = (olStyle: OlStyleStyle, geomType: string) => {
-    if (!(olStyle instanceof OlStyleStyle)) {
-      return undefined;
-    }
-
     const fillStyle = this.writeFillStyle(olStyle.getFill());
     const imageStyle: any = this.writeImageStyle(olStyle.getImage());
     const strokeStyle = this.writeStrokeStyle(olStyle.getStroke());
     const textStyle = this.writeTextStyle(olStyle.getText());
 
-    let style = {};
+    let style;
     switch (geomType) {
       case 'Point':
       case 'MultiPoint':

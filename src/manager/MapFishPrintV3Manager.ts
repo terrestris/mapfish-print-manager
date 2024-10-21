@@ -2,24 +2,25 @@ import _get from 'lodash/get';
 import _isArray from 'lodash/isArray';
 import _isNil from 'lodash/isNil';
 
+import { getCenter } from 'ol/extent';
+import OlLayer from 'ol/layer/Layer';
+import queryString from 'query-string';
 import URL from 'url-parse';
 
-import queryString from 'query-string';
 
-import OlLayer from 'ol/layer/Layer';
-import { getCenter } from 'ol/extent';
-
-import BaseMapFishPrintManager, { BaseMapFishPrintManagerOpts } from './BaseMapFishPrintManager';
+import scales from '../config/scales';
 import MapFishPrintV3GeoJsonSerializer from '../serializer/MapFishPrintV3GeoJsonSerializer';
+
 import MapFishPrintV3OSMSerializer from '../serializer/MapFishPrintV3OSMSerializer';
 import MapFishPrintV3TiledWMSSerializer from '../serializer/MapFishPrintV3TiledWMSSerializer';
 import MapFishPrintV3WMSSerializer from '../serializer/MapFishPrintV3WMSSerializer';
 import MapFishPrintV3WMTSSerializer from '../serializer/MapFishPrintV3WMTSSerializer';
-import Shared from '../util/Shared';
 import Logger from '../util/Logger';
-import scales from '../config/scales';
+import Shared from '../util/Shared';
 
-export type V3CustomMapParams = {
+import BaseMapFishPrintManager, { BaseMapFishPrintManagerOpts } from './BaseMapFishPrintManager';
+
+export interface V3CustomMapParams {
   areaOfInterest?: any;
   bbox?: [number];
   center?: number[];
@@ -35,7 +36,7 @@ export type V3CustomMapParams = {
   useNearestScale?: boolean;
   width?: number;
   zoomToFeatures?: boolean;
-};
+}
 
 export type MapFishPrintV3ManagerOpts = BaseMapFishPrintManagerOpts & {
   /**
@@ -62,12 +63,12 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   /**
    * The capabilities endpoint of the print service.
    */
-  static APPS_JSON_ENDPOINT: string = 'apps.json';
+  static APPS_JSON_ENDPOINT = 'apps.json';
 
   /**
    * The capabilities endpoint of the print service.
    */
-  static CAPABILITIES_JSON_ENDPOINT: string = 'capabilities.json';
+  static CAPABILITIES_JSON_ENDPOINT = 'capabilities.json';
 
   protected _customMapParams: V3CustomMapParams = {};
 
@@ -470,8 +471,8 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
   }
 
   protected async poll<T = any,>(fn: () => Promise<T>, fnCondition: (res?: T) => boolean,
-    interval: number = 1000, timeout: number = 30000) {
-    let start = Date.now();
+    interval = 1000, timeout = 30000) {
+    const start = Date.now();
     let result = await fn();
 
     while (fnCondition(result)) {

@@ -1,7 +1,7 @@
-import OlSource from 'ol/source/Source';
-import OlSourceImageWMS from 'ol/source/ImageWMS';
-import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlLayer from 'ol/layer/Layer';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSource from 'ol/source/Source';
+import OlSourceTileWMS from 'ol/source/TileWMS';
 
 import BaseSerializer from './BaseSerializer';
 
@@ -10,7 +10,7 @@ export class MapFishPrintV2WMSSerializer implements BaseSerializer {
   /**
    * The WMS layer type identificator.
    */
-  static TYPE_WMS: string = 'WMS';
+  static TYPE_WMS = 'WMS';
 
   constructor() { }
 
@@ -31,14 +31,23 @@ export class MapFishPrintV2WMSSerializer implements BaseSerializer {
     const stylesArray = styles ? styles.split(',') : [''];
 
     const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       LAYERS,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       STYLES,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       VERSION,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       WIDTH,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       HEIGHT,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       FORMAT,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       BBOX,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       CRS,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       SRS,
       ...customParams
     } = source.getParams();
@@ -53,7 +62,7 @@ export class MapFishPrintV2WMSSerializer implements BaseSerializer {
       baseUrl = urls ? urls[0] : undefined;
     }
 
-    const serialized = {
+    return {
       baseURL: baseUrl,
       customParams: customParams,
       format: source.getParams().FORMAT || 'image/png',
@@ -63,8 +72,6 @@ export class MapFishPrintV2WMSSerializer implements BaseSerializer {
       styles: stylesArray,
       type: MapFishPrintV2WMSSerializer.TYPE_WMS
     };
-
-    return serialized;
   }
 }
 

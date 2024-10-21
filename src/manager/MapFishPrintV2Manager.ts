@@ -1,14 +1,16 @@
-import { getCenter } from 'ol/extent';
-import OlSourceTileWMS from 'ol/source/TileWMS';
-import OlSourceImageWMS from 'ol/source/ImageWMS';
-import OlSourceWMTS from 'ol/source/WMTS';
+import {getCenter} from 'ol/extent';
 import OlLayer from 'ol/layer/Layer';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
+import OlSourceTileWMS from 'ol/source/TileWMS';
+import OlSourceWMTS from 'ol/source/WMTS';
 
-import BaseMapFishPrintManager, { BaseMapFishPrintManagerOpts } from './BaseMapFishPrintManager';
-import MapFishPrintV2WMSSerializer from '../serializer/MapFishPrintV2WMSSerializer';
 import MapFishPrintV2VectorSerializer from '../serializer/MapFishPrintV2VectorSerializer';
-import Shared from '../util/Shared';
+import MapFishPrintV2WMSSerializer from '../serializer/MapFishPrintV2WMSSerializer';
+
 import Logger from '../util/Logger';
+import Shared from '../util/Shared';
+
+import BaseMapFishPrintManager, {BaseMapFishPrintManagerOpts} from './BaseMapFishPrintManager';
 
 export type MapFishPrintV2ManagerOpts = BaseMapFishPrintManagerOpts & {};
 
@@ -17,7 +19,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   /**
    * The capabilities endpoint of the print service.
    */
-  static INFO_JSON_ENDPOINT: string = 'info.json';
+  static INFO_JSON_ENDPOINT = 'info.json';
 
   /**
    * The constructor
@@ -46,10 +48,10 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
   }
 
   /**
-   * Calls the print servlet to create a output file in the requested format
+   * Calls the print servlet to create an output file in the requested format
    * and forces a download of the created output.
    *
-   * Note: The manager has to been initialized prior this method's usage.
+   * Note: The manager has to be initialized prior this method's usage.
    *
    * @param forceDownload Whether to force a direct download of the
    *                      print result or to return the download url.
@@ -113,10 +115,8 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
     this._layout = layout;
 
     this.setPrintMapSize({
-      // @ts-ignore
-      width: layout.map.width,
-      // @ts-ignore
-      height: layout.map.height
+      width: layout.map?.width ?? 0,
+      height: layout.map?.height ?? 0
     });
 
     this.updatePrintExtent();
@@ -178,7 +178,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
         return acc;
       }, []);
 
-    const payload = {
+    return {
       units: mapProjection.getUnits(),
       srs: mapProjection.getCode(),
       layout: this.getLayout()?.name,
@@ -193,8 +193,6 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
       legends: serializedLegends,
       ...this.customParams
     };
-
-    return payload;
   }
 
   /**
@@ -250,9 +248,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
 
     this.validateResponse(response);
 
-    const responseJson = await response.json();
-
-    return responseJson;
+    return await response.json();
   }
 }
 

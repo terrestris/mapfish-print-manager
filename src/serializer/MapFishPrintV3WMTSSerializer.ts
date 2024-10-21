@@ -1,17 +1,18 @@
+import _isNil from 'lodash/isNil';
+import OlLayer from 'ol/layer/Layer';
 import OlSource from 'ol/source/Source';
 import OlSourceWMTS from 'ol/source/WMTS';
-import OlLayer from 'ol/layer/Layer';
 import OlTileGridWMTS from 'ol/tilegrid/WMTS';
 
 import BaseSerializer from './BaseSerializer';
-import _isNil from 'lodash/isNil';
+
 
 export class MapFishPrintV3WMTSSerializer implements BaseSerializer {
 
   /**
    * The WMS layer type identificator.
    */
-  static TYPE_WMTS: string = 'wmts';
+  static TYPE_WMTS = 'wmts';
 
   validateSource(source: OlSource): source is OlSourceWMTS {
     return source instanceof OlSourceWMTS;

@@ -1,21 +1,13 @@
 import OlCollection from 'ol/Collection';
-import OlLayerVector from 'ol/layer/Vector';
-import OlSourceVector from 'ol/source/Vector';
-import OlInteractionPointer, {
-  Options as OlInteractionPointerOpts
-} from 'ol/interaction/Pointer';
 import {
   Coordinate as OlCoordinate
 } from 'ol/coordinate';
-import OlStyleStyle from 'ol/style/Style';
-import OlStyleStroke from 'ol/style/Stroke';
-import OlStyleFill from 'ol/style/Fill';
-import OlStyleImage from 'ol/style/Image';
-import OlStyleRegularShape from 'ol/style/RegularShape';
-import OlMap from 'ol/Map';
+import { Condition as OlEventsConditionType } from 'ol/events/condition';
+import OlBaseEvent from 'ol/events/Event';
 import {
-  Pixel as OlPixel
-} from 'ol/pixel';
+  getCenter,
+  boundingExtent
+} from 'ol/extent';
 import OlFeature, {
   FeatureLike as OlFeatureLike
 } from 'ol/Feature';
@@ -23,16 +15,24 @@ import {
   Geometry as OlGeometry
 } from 'ol/geom';
 import OlGeomPoint from 'ol/geom/Point';
-import OlMapBrowserEvent from 'ol/MapBrowserEvent';
-import OlBaseEvent from 'ol/events/Event';
-import { Condition as OlEventsConditionType } from 'ol/events/condition';
 import { fromExtent } from 'ol/geom/Polygon';
+import OlInteractionPointer, {
+  Options as OlInteractionPointerOpts
+} from 'ol/interaction/Pointer';
+import OlLayerVector from 'ol/layer/Vector';
+import OlMap from 'ol/Map';
+import OlMapBrowserEvent from 'ol/MapBrowserEvent';
 import {
-  getCenter,
-  boundingExtent
-} from 'ol/extent';
+  Pixel as OlPixel
+} from 'ol/pixel';
+import OlSourceVector from 'ol/source/Vector';
+import OlStyleFill from 'ol/style/Fill';
+import OlStyleImage from 'ol/style/Image';
+import OlStyleRegularShape from 'ol/style/RegularShape';
+import OlStyleStroke from 'ol/style/Stroke';
+import OlStyleStyle from 'ol/style/Style';
 
-export type InteractionTransformEventOptions = {
+export interface InteractionTransformEventOptions {
   feature?: OlFeature;
   pixel?: OlPixel;
   coordinate?: OlCoordinate;
@@ -40,7 +40,7 @@ export type InteractionTransformEventOptions = {
   delta?: [number, number];
   scale?: [number, number];
   oldgeom?: OlGeometry;
-};
+}
 
 export class InteractionTransformEvent extends OlBaseEvent {
   feature?;
@@ -98,9 +98,7 @@ export type OlInteractionTransformOpts = OlInteractionPointerOpts & {
  *  translateend | scalestart | scaling | scaleend
  */
 export class OlInteractionTransform extends OlInteractionPointer {
-  style?: {
-    [key: string]: OlStyleStyle[];
-  };
+  style?: Record<string, OlStyleStyle[]>;
 
   overlayLayer_?: OlLayerVector<OlSourceVector>;
 
@@ -141,22 +139,20 @@ export class OlInteractionTransform extends OlInteractionPointer {
   /**
    * Cursors for transform
    */
-  Cursors: {
-    [key: string]: string;
-  } = {
-      default: 'auto',
-      select: 'pointer',
-      translate: 'move',
-      rotate: 'move',
-      scale: 'ne-resize',
-      scale1: 'nw-resize',
-      scale2: 'ne-resize',
-      scale3: 'nw-resize',
-      scalev: 'e-resize',
-      scaleh1: 'n-resize',
-      scalev2: 'e-resize',
-      scaleh3: 'n-resize'
-    };
+  Cursors: Record<string, string> = {
+    default: 'auto',
+    select: 'pointer',
+    translate: 'move',
+    rotate: 'move',
+    scale: 'ne-resize',
+    scale1: 'nw-resize',
+    scale2: 'ne-resize',
+    scale3: 'nw-resize',
+    scalev: 'e-resize',
+    scaleh1: 'n-resize',
+    scalev2: 'e-resize',
+    scaleh3: 'n-resize'
+  };
 
   constructor(options: OlInteractionTransformOpts) {
     super(options);
@@ -618,8 +614,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
 
       return true;
     } else {
-      // @ts-ignore
-      this.feature_ = feature;
+      this.feature_ = feature as OlFeature;
       this.ispt_ = this.feature_
         ? this.feature_?.getGeometry()?.getType() === 'Point'
         : false;

@@ -1,5 +1,5 @@
 /* eslint-env node */
-/* eslint-disable no-console */
+ 
 
 const ghpages = require('gh-pages');
 const url = require('url');

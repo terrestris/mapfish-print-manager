@@ -1,40 +1,41 @@
-import OlSource from 'ol/source/Source';
-import OlSourceVector from 'ol/source/Vector';
+import get from 'lodash/get';
+import _isNil from 'lodash/isNil';
+import pickBy from 'lodash/pickBy';
+import OlFeature from 'ol/Feature';
+import OlFormatGeoJSON from 'ol/format/GeoJSON';
+import OlGeometryCircle from 'ol/geom/Circle';
+import { fromCircle } from 'ol/geom/Polygon';
 import OlLayer from 'ol/layer/Layer';
 import OlLayerVector from 'ol/layer/Vector';
-import OlFormatGeoJSON from 'ol/format/GeoJSON';
-import OlStyleStyle from 'ol/style/Style';
-import OlStyleRegularShape from 'ol/style/RegularShape';
-import { fromCircle } from 'ol/geom/Polygon';
-import OlGeometryCircle from 'ol/geom/Circle';
-import OlFeature from 'ol/Feature';
-import OlStyleIcon from 'ol/style/Icon';
+import OlSource from 'ol/source/Source';
+import OlSourceVector from 'ol/source/Vector';
 import OlStyleCircle from 'ol/style/Circle';
-import OlStyleImage from 'ol/style/Image';
-import OlStyleText from 'ol/style/Text';
-import OlStyleStroke from 'ol/style/Stroke';
 import OlStyleFill from 'ol/style/Fill';
-import get from 'lodash/get';
-import pickBy from 'lodash/pickBy';
+import OlStyleIcon from 'ol/style/Icon';
+import OlStyleImage from 'ol/style/Image';
+import OlStyleRegularShape from 'ol/style/RegularShape';
+import OlStyleStroke from 'ol/style/Stroke';
+import OlStyleStyle from 'ol/style/Style';
+import OlStyleText from 'ol/style/Text';
 import parseColor from 'parse-color';
 import parseFont, { IFont } from 'parse-css-font';
 
 import BaseSerializer from './BaseSerializer';
-import _isNil from 'lodash/isNil';
+
 
 export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
 
   /**
    * The vector GeoJSON type identificator.
    */
-  static TYPE_GEOJSON: string = 'geojson';
+  static TYPE_GEOJSON = 'geojson';
 
   /**
    * The property to get the style dictionary key from.
    *
    * @type {string}
    */
-  static FEAT_STYLE_PROPERTY: string = '_style';
+  static FEAT_STYLE_PROPERTY = '_style';
 
   validateSource(source: OlSource): source is OlSourceVector {
     return source instanceof OlSourceVector;
@@ -60,12 +61,8 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
     const features = source.getFeatures();
     const format = new OlFormatGeoJSON();
     const serializedFeatures: any[] = [];
-    const serializedStyles: {
-      [key: string]: any;
-    } = {};
-    const serializedStylesDict: {
-      [key: string]: number;
-    } = {};
+    const serializedStyles: Record<string, any> = {};
+    const serializedStylesDict: Record<string, number> = {};
     let styleName;
     let styleId = 0;
 
@@ -77,8 +74,6 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
         return;
       }
 
-      let serializedFeature: any;
-
       // as GeoJSON format doesn't support circle geometries, we need to
       // transform circles to polygons.
       if (geometry instanceof OlGeometryCircle) {
@@ -87,7 +82,7 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
         polyFeature.setStyle(style);
         feature = polyFeature;
       }
-      serializedFeature = format.writeFeatureObject(feature);
+      const serializedFeature = format.writeFeatureObject(feature);
 
       let styles;
       let styleFunction = feature.getStyleFunction();
