@@ -17,11 +17,6 @@ export default tsEslint.config({
     'src/**/*.ts',
     'spec/**/*.spec.ts'
   ],
-  ignores: [
-    '**/*.spec.ts',
-    '**/dist/*.js',
-    '**/jest/__mocks__/*.ts'
-  ],
   languageOptions: {
     ecmaVersion: 2022,
     globals: globals.browser,

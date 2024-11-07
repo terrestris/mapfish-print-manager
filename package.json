@@ -29,7 +29,7 @@
     "clean:dist": "rimraf ./dist/*",
     "clean:docs": "rimraf ./build/docs/*",
     "clean:examples": "rimraf ./build/examples/*",
-    "lint": "eslint -c eslint.config.mjs",
+    "lint": "eslint -c eslint.config.mjs src/ spec/",
     "lint:fix": "npm run lint -- --fix",
     "postpublish": "node ./tasks/update-gh-pages.cjs",
     "prepare": "husky",
