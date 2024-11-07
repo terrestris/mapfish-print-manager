@@ -1,20 +1,19 @@
-import OlLayerVector from 'ol/layer/Vector';
-import OlLayerTile from 'ol/layer/Tile';
-import OlSourceVector from 'ol/source/Vector';
-import OlSourceOSM from 'ol/source/OSM';
-import OlStyleStyle from 'ol/style/Style';
-import OlStyleCircle from 'ol/style/Circle';
-import OlStyleText from 'ol/style/Text';
-import OlStyleStroke from 'ol/style/Stroke';
-import OlStyleFill from 'ol/style/Fill';
 import OlFeature from 'ol/Feature';
-import OlGeomPoint from 'ol/geom/Point';
+import { Geometry } from 'ol/geom';
 import OlGeomLineString from 'ol/geom/LineString';
+import OlGeomPoint from 'ol/geom/Point';
 import OlGeomPolygon from 'ol/geom/Polygon';
+import OlLayerTile from 'ol/layer/Tile';
+import OlLayerVector from 'ol/layer/Vector';
+import OlSourceOSM from 'ol/source/OSM';
+import OlSourceVector from 'ol/source/Vector';
+import OlStyleCircle from 'ol/style/Circle';
+import OlStyleFill from 'ol/style/Fill';
+import OlStyleStroke from 'ol/style/Stroke';
+import OlStyleStyle from 'ol/style/Style';
+import OlStyleText from 'ol/style/Text';
 
 import { MapFishPrintV2VectorSerializer } from '../../src/serializer/MapFishPrintV2VectorSerializer';
-import { Geometry } from 'ol/geom';
-import Feature from 'ol/Feature';
 
 describe('MapFishPrintV2VectorSerializer', () => {
   let serializer: MapFishPrintV2VectorSerializer;
@@ -197,7 +196,7 @@ describe('MapFishPrintV2VectorSerializer', () => {
       ]])
     });
 
-    const features: Feature<Geometry>[] = [
+    const features: OlFeature<Geometry>[] = [
       pointFeature1,
       pointFeature2,
       lineFeature,

@@ -12,8 +12,6 @@ export class MapFishPrintV2WMSSerializer implements BaseSerializer {
    */
   static TYPE_WMS = 'WMS';
 
-  constructor() { }
-
   validateSource(source: OlSource): source is OlSourceImageWMS | OlSourceTileWMS {
     return source instanceof OlSourceImageWMS || source instanceof OlSourceTileWMS;
   };

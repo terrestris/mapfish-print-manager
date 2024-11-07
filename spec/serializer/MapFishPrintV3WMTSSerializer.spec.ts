@@ -1,8 +1,9 @@
 import OlLayerTile from 'ol/layer/Tile';
 
-import { MapFishPrintV3WMTSSerializer } from '../../src/serializer/MapFishPrintV3WMTSSerializer';
 import OlSourceWMTS from 'ol/source/WMTS';
 import OlTileGridWMTS from 'ol/tilegrid/WMTS';
+
+import { MapFishPrintV3WMTSSerializer } from '../../src/serializer/MapFishPrintV3WMTSSerializer';
 
 describe('MapFishPrintV3WMTSSerializer', () => {
   let serializer: MapFishPrintV3WMTSSerializer;
@@ -19,9 +20,13 @@ describe('MapFishPrintV3WMTSSerializer', () => {
     const layer = new OlLayerTile({
       source: new OlSourceWMTS({
         layer: ' test',
-        matrixSet: undefined,
+        matrixSet: 'example',
         style: 'default',
-        tileGrid: undefined,
+        tileGrid: new OlTileGridWMTS({
+          matrixIds: ['0'],
+          resolutions: [1000],
+          origin: [19, 0.9]
+        })
       })
     });
 

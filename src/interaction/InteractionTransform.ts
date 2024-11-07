@@ -356,8 +356,8 @@ export class OlInteractionTransform extends OlInteractionPointer {
       this.style[style] = [olstyle];
     }
 
-    for (let i = 0; i < this.style[style].length; i++) {
-      const im = this.style[style][i].getImage();
+    for (const st of this.style[style]) {
+      const im = st.getImage();
       if (im) {
         if (style === 'rotate') {
           im.getAnchor()[0] = -5;
@@ -366,7 +366,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
           im.setScale(1.8);
         }
       }
-      const tx = this.style[style][i].getText();
+      const tx = st.getText();
       if (tx) {
         if (style === 'rotate') {
           tx.setOffsetX(this.isTouch ? 14 : 7);
@@ -376,6 +376,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
         }
       }
     }
+
     this.drawSketch_(false);
   }
 
@@ -383,6 +384,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
    * Get Feature at pixel
    */
   getFeatureAtPixel_(pixel: OlPixel) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     let found: {
       feature?: OlFeatureLike;
@@ -416,9 +418,8 @@ export class OlInteractionTransform extends OlInteractionPointer {
       // eslint-disable-next-line no-underscore-dangle
       if (self.layers_) {
         // eslint-disable-next-line no-underscore-dangle
-        for (let i = 0; i < self.layers_.length; i++) {
-          // eslint-disable-next-line no-underscore-dangle
-          if (self.layers_[i] === layer) {
+        for (const lyr of self.layers_) {
+          if (lyr === layer) {
             found = { feature: feature };
             return true;
           }

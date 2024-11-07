@@ -4,15 +4,14 @@ import {
   FetchMock
 } from 'jest-fetch-mock';
 
-import OlMap from 'ol/Map';
-import OlView from 'ol/View';
 import OlLayerVector from 'ol/layer/Vector';
+import OlMap from 'ol/Map';
 import OlSourceVector from 'ol/source/Vector';
-
-import { MapFishPrintV3Manager, V3CustomMapParams } from '../../src/manager/MapFishPrintV3Manager';
+import OlView from 'ol/View';
 
 import printAppsMockResponse from '../../assets/v3/apps.json';
 import printCapabilitiesMockResponse from '../../assets/v3/capabilities.json';
+import { MapFishPrintV3Manager, V3CustomMapParams } from '../../src/manager/MapFishPrintV3Manager';
 
 describe('MapFishPrintV3Manager', () => {
 
@@ -80,6 +79,7 @@ describe('MapFishPrintV3Manager', () => {
       url: 'https://mock:8080/print/pdf/'
     });
 
+    // @ts-expect-error protected method
     const response = await manager.loadPrintApps();
 
     expect(response).toEqual(printAppsMockResponse);
@@ -96,6 +96,7 @@ describe('MapFishPrintV3Manager', () => {
 
     const printApp = 'default';
 
+    // @ts-expect-error protected method
     const response = await manager.loadAppCapabilities(printApp);
 
     expect(response.app).toBe(printCapabilitiesMockResponse.app);
@@ -107,6 +108,7 @@ describe('MapFishPrintV3Manager', () => {
         map: testMap,
         url: 'https://mock:8080/print/pdf/'
       });
+      // @ts-expect-error protected method
       expect(manager.getBasePath).not.toBeUndefined();
     });
   });

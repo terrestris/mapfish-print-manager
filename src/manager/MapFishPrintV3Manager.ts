@@ -11,14 +11,14 @@ import scales from '../config/scales';
 
 import MapFishPrintV3GeoJsonSerializer from '../serializer/MapFishPrintV3GeoJsonSerializer';
 import MapFishPrintV3OSMSerializer from '../serializer/MapFishPrintV3OSMSerializer';
+import MapFishPrintV3StamenSerializer from '../serializer/MapFishPrintV3StamenSerializer';
 import MapFishPrintV3TiledWMSSerializer from '../serializer/MapFishPrintV3TiledWMSSerializer';
 import MapFishPrintV3WMSSerializer from '../serializer/MapFishPrintV3WMSSerializer';
 import MapFishPrintV3WMTSSerializer from '../serializer/MapFishPrintV3WMTSSerializer';
 import MapFishPrintV3XYZSerializer from '../serializer/MapFishPrintV3XYZSerializer';
-import MapFishPrintV3StamenSerializer from '../serializer/MapFishPrintV3StamenSerializer';
 
-import Shared from '../util/Shared';
 import Logger from '../util/Logger';
+import Shared from '../util/Shared';
 
 import BaseMapFishPrintManager, { BaseMapFishPrintManagerOpts } from './BaseMapFishPrintManager';
 

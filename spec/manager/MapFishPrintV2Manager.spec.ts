@@ -4,16 +4,16 @@ import {
   FetchMock
 } from 'jest-fetch-mock';
 
-import OlMap from 'ol/Map';
 import OlLayerImage from 'ol/layer/Image';
-import OlSourceImageWMS from 'ol/source/ImageWMS';
-import OlView from 'ol/View';
 import OlLayerVector from 'ol/layer/Vector';
+import OlMap from 'ol/Map';
+import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceVector from 'ol/source/Vector';
-
-import { MapFishPrintV2Manager } from '../../src/index';
+import OlView from 'ol/View';
 
 import mockResponse from '../../assets/v2/info.json';
+
+import { MapFishPrintV2Manager } from '../../src/index';
 
 describe('MapFishPrintV2Manager', () => {
 

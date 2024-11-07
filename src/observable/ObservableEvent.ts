@@ -8,7 +8,7 @@ export class ObservableEvent {
   /**
    * The callback functions of the event.
    */
-  callbacks: Function[] = [];
+  callbacks: ((data: any) => void)[] = [];
 
   constructor(eventName: string) {
     this.eventName = eventName;
@@ -19,7 +19,7 @@ export class ObservableEvent {
    *
    * @param callback The callback function to register.
    */
-  registerCallback(callback: Function) {
+  registerCallback(callback: (data: any) => void) {
     this.callbacks.push(callback);
   }
 
@@ -28,7 +28,7 @@ export class ObservableEvent {
    *
    * @param callback The callback to unregister.
    */
-  unregisterCallback(callback: Function) {
+  unregisterCallback(callback: (data: any) => void) {
     const index = this.callbacks.indexOf(callback);
     if (index > -1) {
       this.callbacks.splice(index, 1);
