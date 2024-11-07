@@ -1,3 +1,12 @@
+## [16.0.1](https://github.com/terrestris/mapfish-print-manager/compare/v16.0.0...v16.0.1) (2024-11-07)
+
+
+### Bug Fixes
+
+* apply XYZ and stamen/stadia serializers by default ([5baa344](https://github.com/terrestris/mapfish-print-manager/commit/5baa3444d54a5c2cd93d312b787668e665dfcd64))
+* remove extent layer and transform interaction always, don't reuse them ([ce68a6b](https://github.com/terrestris/mapfish-print-manager/commit/ce68a6bfd1f2d35344fa4bc647eee85a929adb96))
+* type parameters ([15ac673](https://github.com/terrestris/mapfish-print-manager/commit/15ac673e1482b913f049de63e4115ff73e8512a1))
+
 # [16.0.0](https://github.com/terrestris/mapfish-print-manager/compare/v15.0.0...v16.0.0) (2024-10-21)
 
 
