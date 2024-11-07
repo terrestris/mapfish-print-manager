@@ -1,14 +1,14 @@
-import OlMap from 'ol/Map';
-import OlView from 'ol/View';
+import OlCollection from 'ol/Collection';
 import OlInteractionDragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
-import OlLayerVector from 'ol/layer/Vector';
+import OlLayerGroup from 'ol/layer/Group';
 import OlLayerImage from 'ol/layer/Image';
 import OlLayerTile from 'ol/layer/Tile';
+import OlLayerVector from 'ol/layer/Vector';
+import OlMap from 'ol/Map';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceVector from 'ol/source/Vector';
-import OlLayerGroup from 'ol/layer/Group';
-import OlCollection from 'ol/Collection';
+import OlView from 'ol/View';
 
 import { Shared } from '../../src/util/Shared';
 
@@ -104,7 +104,7 @@ describe('Shared', () => {
 
       const layerArrayReturned = Shared.getMapLayers(map);
       expect(layerArrayReturned).toHaveLength(names.length + 1);
-      for (var i = 0; i < names.length; i++) {
+      for (let i = 0; i < names.length; i++) {
         expect(layerArrayReturned[i + 1].get('name')).toEqual(names[i]);
       }
     });

@@ -7,14 +7,16 @@ import OlLayer from 'ol/layer/Layer';
 import queryString from 'query-string';
 import URL from 'url-parse';
 
-
 import scales from '../config/scales';
-import MapFishPrintV3GeoJsonSerializer from '../serializer/MapFishPrintV3GeoJsonSerializer';
 
+import MapFishPrintV3GeoJsonSerializer from '../serializer/MapFishPrintV3GeoJsonSerializer';
 import MapFishPrintV3OSMSerializer from '../serializer/MapFishPrintV3OSMSerializer';
+import MapFishPrintV3StamenSerializer from '../serializer/MapFishPrintV3StamenSerializer';
 import MapFishPrintV3TiledWMSSerializer from '../serializer/MapFishPrintV3TiledWMSSerializer';
 import MapFishPrintV3WMSSerializer from '../serializer/MapFishPrintV3WMSSerializer';
 import MapFishPrintV3WMTSSerializer from '../serializer/MapFishPrintV3WMTSSerializer';
+import MapFishPrintV3XYZSerializer from '../serializer/MapFishPrintV3XYZSerializer';
+
 import Logger from '../util/Logger';
 import Shared from '../util/Shared';
 
@@ -102,7 +104,9 @@ export class MapFishPrintV3Manager extends BaseMapFishPrintManager {
         new MapFishPrintV3OSMSerializer(),
         new MapFishPrintV3TiledWMSSerializer(),
         new MapFishPrintV3WMSSerializer(),
-        new MapFishPrintV3WMTSSerializer()
+        new MapFishPrintV3WMTSSerializer(),
+        new MapFishPrintV3XYZSerializer(),
+        new MapFishPrintV3StamenSerializer()
       ];
     }
   }

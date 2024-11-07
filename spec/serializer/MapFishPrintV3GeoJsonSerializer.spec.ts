@@ -1,14 +1,14 @@
+import OlFeature from 'ol/Feature';
+import { Geometry } from 'ol/geom';
+import OlGeomLineString from 'ol/geom/LineString';
+import OlGeomPoint from 'ol/geom/Point';
+import OlGeomPolygon from 'ol/geom/Polygon';
 import OlLayerImage from 'ol/layer/Image';
 import OlLayerVector from 'ol/layer/Vector';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceVector from 'ol/source/Vector';
-import OlFeature from 'ol/Feature';
-import OlGeomPoint from 'ol/geom/Point';
-import OlGeomLineString from 'ol/geom/LineString';
-import OlGeomPolygon from 'ol/geom/Polygon';
 
 import { MapFishPrintV3GeoJsonSerializer } from '../../src/serializer/MapFishPrintV3GeoJsonSerializer';
-import { Geometry } from 'ol/geom';
 
 describe('MapFishPrintV3GeoJsonSerializer', () => {
   let serializer: MapFishPrintV3GeoJsonSerializer;
@@ -146,9 +146,5 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
       failOnError: false,
       renderAsSvg: false
     });
-  });
-
-  it('accepts additional serializer opts', () => {
-
   });
 });

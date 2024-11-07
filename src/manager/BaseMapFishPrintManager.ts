@@ -54,7 +54,7 @@ export interface BaseMapFishPrintManagerOpts {
   /**
    * Additional headers to be send to the print servlet.
    */
-  headers?: any;
+  headers?: Record<string, any>;
   /**
    * The authentication credentials mode. Default is to 'same-origin'.
    */
@@ -64,7 +64,7 @@ export interface BaseMapFishPrintManagerOpts {
    * e.g. useful for complex layout definitions on the server side that
    * require additional parameters. Optional.
    */
-  customParams?: any;
+  customParams?: Record<string, any>;
   /**
    * The layer to show the actual print extent on. If not provided, a default
    * one will be created.
@@ -583,16 +583,18 @@ export class BaseMapFishPrintManager extends Observable {
       extentLayer.on('postrender', this.onExtentLayerPostRender.bind(this));
 
       this.extentLayer = extentLayer;
-
-      if (
-        Shared.getLayersByName(
-          this.map,
-          BaseMapFishPrintManager.EXTENT_LAYER_NAME
-        ).length === 0
-      ) {
-        this.map.addLayer(this.extentLayer);
-      }
     }
+
+    const existingLayers = Shared.getLayersByName(
+      this.map,
+      BaseMapFishPrintManager.EXTENT_LAYER_NAME
+    );
+
+    if (existingLayers.length > 0) {
+      existingLayers.forEach(layer => this.map.removeLayer(layer));
+    }
+
+    this.map.addLayer(this.extentLayer);
   }
 
   /**
@@ -694,31 +696,35 @@ export class BaseMapFishPrintManager extends Observable {
    * Initializes the transform interaction.
    */
   protected initTransformInteraction() {
-    if (
-      Shared.getInteractionsByName(
-        this.map,
-        BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME
-      ).length === 0
-    ) {
-      const transform = new InteractionTransform({
-        features: this._extentFeature ? [this._extentFeature] : undefined,
-        translateFeature: true,
-        translate: true,
-        stretch: false,
-        scale: true,
-        rotate: true,
-        ...this.transformOpts
-      });
+    const transform = new InteractionTransform({
+      features: this._extentFeature ? [this._extentFeature] : undefined,
+      translateFeature: true,
+      translate: true,
+      stretch: false,
+      scale: true,
+      rotate: true,
+      ...this.transformOpts
+    });
 
-      transform.setActive(true);
+    transform.setActive(true);
 
-      transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
+    transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
 
-      // @ts-expect-error scaling is a valid event type for this custom interaction
-      transform.on('scaling', this.onTransformScaling.bind(this));
+    // @ts-expect-error scaling is a valid event type for this custom interaction
+    transform.on('scaling', this.onTransformScaling.bind(this));
 
-      this.map.addInteraction(transform);
+    const existingInteractions = Shared.getInteractionsByName(
+      this.map,
+      BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME
+    );
+
+    if (existingInteractions.length > 0) {
+      existingInteractions.forEach(interaction =>
+        this.map.removeInteraction(interaction)
+      );
     }
+
+    this.map.addInteraction(transform);
   }
 
   /**

@@ -5,7 +5,7 @@ export class Observable {
   /**
    * The registered events.
    */
-  protected events: any = {};
+  protected events: Record<string, ObservableEvent> = {};
 
   /**
    * Registers an event.
@@ -13,7 +13,7 @@ export class Observable {
    * @param name The name of the event to register.
    * @param callback The callback function to register.
    */
-  on(name: string, callback: Function) {
+  on(name: string, callback: (data: any) => void) {
     let event = this.events[name];
     if (!event) {
       event = new ObservableEvent(name);
@@ -28,7 +28,7 @@ export class Observable {
   * @param name The name of the event to unregister.
   * @param callback The callback function to unregister.
   */
-  un(name: string, callback: Function) {
+  un(name: string, callback: (data: any) => void) {
     const event = this.events[name];
     if (event && event.callbacks.indexOf(callback) > -1) {
       event.unregisterCallback(callback);

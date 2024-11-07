@@ -1,6 +1,6 @@
 import OlLayerTile from 'ol/layer/Tile';
-import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceOSM from 'ol/source/OSM';
+import OlSourceTileWMS from 'ol/source/TileWMS';
 
 import { MapFishPrintV3TiledWMSSerializer } from '../../src/serializer/MapFishPrintV3TiledWMSSerializer';
 
