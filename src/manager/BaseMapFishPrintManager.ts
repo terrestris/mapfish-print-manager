@@ -583,16 +583,18 @@ export class BaseMapFishPrintManager extends Observable {
       extentLayer.on('postrender', this.onExtentLayerPostRender.bind(this));
 
       this.extentLayer = extentLayer;
-
-      if (
-        Shared.getLayersByName(
-          this.map,
-          BaseMapFishPrintManager.EXTENT_LAYER_NAME
-        ).length === 0
-      ) {
-        this.map.addLayer(this.extentLayer);
-      }
     }
+
+    const existingLayers = Shared.getLayersByName(
+      this.map,
+      BaseMapFishPrintManager.EXTENT_LAYER_NAME
+    );
+
+    if (existingLayers.length > 0) {
+      existingLayers.forEach(layer => this.map.removeLayer(layer));
+    }
+
+    this.map.addLayer(this.extentLayer);
   }
 
   /**
@@ -694,31 +696,35 @@ export class BaseMapFishPrintManager extends Observable {
    * Initializes the transform interaction.
    */
   protected initTransformInteraction() {
-    if (
-      Shared.getInteractionsByName(
-        this.map,
-        BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME
-      ).length === 0
-    ) {
-      const transform = new InteractionTransform({
-        features: this._extentFeature ? [this._extentFeature] : undefined,
-        translateFeature: true,
-        translate: true,
-        stretch: false,
-        scale: true,
-        rotate: true,
-        ...this.transformOpts
-      });
+    const transform = new InteractionTransform({
+      features: this._extentFeature ? [this._extentFeature] : undefined,
+      translateFeature: true,
+      translate: true,
+      stretch: false,
+      scale: true,
+      rotate: true,
+      ...this.transformOpts
+    });
 
-      transform.setActive(true);
+    transform.setActive(true);
 
-      transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
+    transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
 
-      // @ts-expect-error scaling is a valid event type for this custom interaction
-      transform.on('scaling', this.onTransformScaling.bind(this));
+    // @ts-expect-error scaling is a valid event type for this custom interaction
+    transform.on('scaling', this.onTransformScaling.bind(this));
 
-      this.map.addInteraction(transform);
+    const existingInteractions = Shared.getInteractionsByName(
+      this.map,
+      BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME
+    );
+
+    if (existingInteractions.length > 0) {
+      existingInteractions.forEach(interaction =>
+        this.map.removeInteraction(interaction)
+      );
     }
+
+    this.map.addInteraction(transform);
   }
 
   /**
