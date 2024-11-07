@@ -54,7 +54,7 @@ export interface BaseMapFishPrintManagerOpts {
   /**
    * Additional headers to be send to the print servlet.
    */
-  headers?: any;
+  headers?: Record<string, any>;
   /**
    * The authentication credentials mode. Default is to 'same-origin'.
    */
@@ -64,7 +64,7 @@ export interface BaseMapFishPrintManagerOpts {
    * e.g. useful for complex layout definitions on the server side that
    * require additional parameters. Optional.
    */
-  customParams?: any;
+  customParams?: Record<string, any>;
   /**
    * The layer to show the actual print extent on. If not provided, a default
    * one will be created.
