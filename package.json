@@ -36,7 +36,7 @@
     "prepublishOnly": "npm run build:dist && npm run build:docs",
     "pretest": "npm run clean:dist && npm run typecheck && npm run lint",
     "start": "webpack-dev-server --config webpack.dev.cjs",
-    "test": "jest --maxWorkers=4 --coverage --config jest.config.cjs",
+    "test": "jest --maxWorkers=50% --coverage --config jest.config.cjs",
     "test:watch": "jest --watchAll --config jest.config.cjs",
     "typecheck": "tsc --pretty --noEmit"
   },
