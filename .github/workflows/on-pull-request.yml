@@ -33,7 +33,7 @@ jobs:
       run: npm ci
 
     - name: Run typecheck, lint and tests 🧪
-      run: npm test
+      run: npm run check
 
     - name: Build artifacts 🏗️
       run: npm run build:docs && npm run build:examples && npm run build:dist
