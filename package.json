@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "build": "npm run clean && npm run build:dist",
-    "build:dist": "npm run clean:dist && tsc -p .",
+    "build:dist": "npm run clean:dist && tsc -p ./tsconfig.build.json",
     "build:docs": "npm run clean:docs && typedoc",
     "build:examples": "npm run clean:examples && webpack --config webpack.prod.cjs",
     "clean": "npm run clean:dist && npm run clean:examples && npm run clean:docs",
