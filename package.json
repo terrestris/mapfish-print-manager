@@ -35,7 +35,7 @@
     "build:dist": "npm run clean:dist && babel src --out-dir dist && tsc --pretty",
     "build:docs": "npm run clean:docs && typedoc",
     "prepublishOnly": "npm run build:dist && npm run build:docs",
-    "release": "np --no-yarn",
+    "release": "np --no-yarn --any-branch && git push https://github.com/terrestris/mapfish-print-manager.git master --tags",
     "postpublish": "node ./tasks/update-gh-pages.js"
   },
   "dependencies": {
