@@ -47,7 +47,7 @@
     "url-parse": "^1.5.10"
   },
   "peerDependencies": {
-    "ol": "^6.0"
+    "ol": "^6"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",
@@ -69,7 +69,7 @@
     "jest-canvas-mock": "^2.4.0",
     "jest-fetch-mock": "^3.0.3",
     "np": "^5.2.1",
-    "ol": "^6.4.3",
+    "ol": "^6.5.0",
     "rimraf": "^3.0.2",
     "typedoc": "^0.22.15",
     "typescript": "^4.2.4",

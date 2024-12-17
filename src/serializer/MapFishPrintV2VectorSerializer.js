@@ -18,8 +18,7 @@ import OlLayerVector from 'ol/layer/Vector';
 import get from 'lodash/get';
 import pickBy from 'lodash/pickBy';
 import parseColor from 'parse-color';
-// eslint-disable-next-line no-unused-vars
-import parseFont, { IFont } from 'parse-css-font';
+import parseFont from 'parse-css-font';
 
 import BaseSerializer from './BaseSerializer';
 
@@ -231,7 +230,7 @@ export class MapFishPrintV2VectorSerializer extends BaseSerializer {
     }
 
     if (textStyle && textStyle.text) {
-      const parsedFont = /** @type {IFont} */ (parseFont(textStyle.font));
+      const parsedFont = /** @type {import("parse-css-font").IFont}} */ (parseFont(textStyle.font));
       style = {
         ...style,
         ...{

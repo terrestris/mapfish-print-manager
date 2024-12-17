@@ -7,7 +7,7 @@ import OlSourceVector from 'ol/source/Vector';
 import OlFeature from 'ol/Feature';
 import OlRenderEvent from 'ol/render/Event';
 import OlLayer from 'ol/layer/Layer';
-import {containsExtent, Extent as OlExtent, getCenter, getSize} from 'ol/extent';
+import {containsExtent, getCenter, getSize} from 'ol/extent';
 import OlPolygon, {fromExtent} from 'ol/geom/Polygon';
 
 import OlStyleStyle from 'ol/style/Style';
@@ -317,7 +317,6 @@ export class BaseMapFishPrintManager extends Observable {
   initPrintExtentLayer() {
     if (!(this.extentLayer instanceof OlLayerVector)) {
       const extentLayer = new OlLayerVector({
-        name: BaseMapFishPrintManager.EXTENT_LAYER_NAME,
         source: new OlSourceVector(),
         style: new OlStyleStyle({
           fill: new OlStyleFill({
@@ -326,6 +325,7 @@ export class BaseMapFishPrintManager extends Observable {
         })
       });
 
+      extentLayer.set('name', BaseMapFishPrintManager.EXTENT_LAYER_NAME);
       extentLayer.on('prerender', this.onExtentLayerPreRender.bind(this));
       extentLayer.on('postrender', this.onExtentLayerPostRender.bind(this));
 
@@ -345,7 +345,9 @@ export class BaseMapFishPrintManager extends Observable {
    */
   onExtentLayerPreRender(olEvt) {
     const ctx = olEvt.context;
-    ctx.save();
+    if (ctx instanceof CanvasRenderingContext2D) {
+      ctx.save();
+    }
   }
 
   /**
@@ -355,6 +357,9 @@ export class BaseMapFishPrintManager extends Observable {
    */
   onExtentLayerPostRender(olEvt) {
     const ctx = olEvt.context;
+    if (! (ctx instanceof CanvasRenderingContext2D)) {
+      return;
+    }
     const canvas = ctx.canvas;
     const width = canvas.width;
     const height = canvas.height;
@@ -427,6 +432,7 @@ export class BaseMapFishPrintManager extends Observable {
 
       transform.set('name', BaseMapFishPrintManager.TRANSFORM_INTERACTION_NAME);
 
+      // @ts-ignore
       transform.on('scaling', this.onTransformScaling.bind(this));
 
       this.map.addInteraction(transform);
@@ -538,7 +544,7 @@ export class BaseMapFishPrintManager extends Observable {
    * @param {number} [scale] The scale to calculate the extent for. If not given,
    *                       the current scale of the provider will be used.
    *
-   * @return {OlExtent} The extent.
+   * @return {import("ol/extent").Extent} The extent.
    */
   calculatePrintExtent(scale) {
     const printMapSize = this.getPrintMapSize();

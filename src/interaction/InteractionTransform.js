@@ -14,10 +14,8 @@ import OlGeometry from 'ol/geom/Geometry';
 import OlPluggableMap from 'ol/PluggableMap';
 import OlBaseEvent from 'ol/events/Event';
 import OlMapBrowserEvent from 'ol/MapBrowserEvent';
-// eslint-disable-next-line no-unused-vars
-import { Coordinate as OlCoordinate } from 'ol/coordinate';
-import { Pixel as OlPixel } from 'ol/pixel';
 import { fromExtent } from 'ol/geom/Polygon';
+
 import {
   getCenter,
   boundingExtent
@@ -26,8 +24,8 @@ import {
 /**
  * @typedef {Object} InteractionTransformEventOptions
  * @property {OlFeature} feature
- * @property {OlPixel} [pixel]
- * @property {OlCoordinate} [coordinate]
+ * @property {import("ol/pixel").Pixel} [pixel]
+ * @property {import("ol/coordinate").Coordinate} [coordinate]
  * @property {number} [angle]
  * @property {[number, number]} [delta]
  * @property {[number, number]} [scale]
@@ -105,7 +103,6 @@ export class OlInteractionTransform extends OlInteractionPointer {
         features: this.handles_,
         useSpatialIndex: false
       }),
-      name: 'Transform overlay',
       // Return the style according to the handle type.
       style: feature => {
         return (this.style[
@@ -115,6 +112,7 @@ export class OlInteractionTransform extends OlInteractionPointer {
         ]);
       }
     });
+    this.overlayLayer_.set('name', 'Transform overlay');
 
     /** Collection of feature to transform */
     this.features_ = options.features;
@@ -339,7 +337,6 @@ export class OlInteractionTransform extends OlInteractionPointer {
   }
 
   /** Get Feature at pixel
-   * @param {OlPixel} pixel
    * @return {{
    *   feature?: OlFeature,
    *   handle?: string,

@@ -4,3 +4,5 @@ build
 dist
 *.log
 npm-debug.log*
+coverage
+*.iml

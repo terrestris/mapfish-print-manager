@@ -1,4 +1,4 @@
-import {Extent as OlExtent, getCenter} from 'ol/extent';
+import { getCenter } from 'ol/extent';
 import OlSourceTileWMS from 'ol/source/TileWMS';
 import OlSourceImageWMS from 'ol/source/ImageWMS';
 import OlSourceWMTS from 'ol/source/WMTS';
@@ -257,7 +257,7 @@ export class MapFishPrintV2Manager extends BaseMapFishPrintManager {
    *
    * @param {number} scale The scale to calculate the extent for. If not given,
    *                       the current scale of the provider will be used.
-   * @return {OlExtent} The extent.
+   * @return {import("ol/extent").Extent} The extent.
    */
   calculatePrintExtent(scale) {
     const printMapSize = this.getLayout().map;
