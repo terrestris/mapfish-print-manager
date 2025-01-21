@@ -8,7 +8,6 @@
   },
   "license": "MIT",
   "author": "terrestris GmbH & Co. KG <info@terrestris.de>",
-  "type": "module",
   "contributors": [
     {
       "name": "Daniel Koch",
@@ -16,6 +15,7 @@
       "url": "https://github.com/dnlkoch"
     }
   ],
+  "type": "module",
   "main": "dist/index.js",
   "files": [
     "dist"
@@ -25,26 +25,26 @@
     "build:dist": "npm run clean:dist && tsc -p ./tsconfig.build.json",
     "build:docs": "npm run clean:docs && typedoc",
     "build:examples": "npm run clean:examples && webpack --config webpack.prod.cjs",
-    "clean": "npm run clean:dist && npm run clean:examples && npm run clean:docs",
     "check": "npm run typecheck && npm run lint && npm run test",
+    "clean": "npm run clean:dist && npm run clean:examples && npm run clean:docs",
     "clean:dist": "rimraf ./dist/*",
     "clean:docs": "rimraf ./build/docs/*",
     "clean:examples": "rimraf ./build/examples/*",
     "lint": "eslint -c eslint.config.mjs src/ spec/",
     "lint:fix": "npm run lint -- --fix",
-    "postpublish": "node ./tasks/update-gh-pages.cjs",
     "prepare": "husky",
     "prepublishOnly": "npm run build:dist && npm run build:docs",
+    "postpublish": "node ./tasks/update-gh-pages.cjs",
     "start": "webpack-dev-server --config webpack.dev.cjs",
     "test": "jest --maxWorkers=50% --coverage --config jest.config.cjs",
     "test:watch": "jest --watchAll --config jest.config.cjs",
     "typecheck": "tsc --pretty --noEmit"
   },
   "dependencies": {
+    "css-font-parser": "^2.0.1",
     "js-logger": "^1.6.1",
     "lodash": "^4.17.21",
     "parse-color": "^1.0.0",
-    "parse-css-font": "^4.0.0",
     "query-string": "^9.0.0",
     "url-parse": "^1.5.10"
   },
@@ -52,8 +52,8 @@
     "@babel/cli": "^7.25.7",
     "@babel/core": "^7.25.8",
     "@babel/eslint-parser": "^7.25.8",
-    "@babel/preset-env": "^7.25.8",
     "@babel/plugin-transform-class-properties": "^7.25.7",
+    "@babel/preset-env": "^7.25.8",
     "@babel/preset-typescript": "^7.25.7",
     "@commitlint/cli": "^19.0.1",
     "@commitlint/config-conventional": "^19.0.0",
