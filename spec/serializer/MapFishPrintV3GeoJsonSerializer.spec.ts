@@ -53,7 +53,6 @@ describe('MapFishPrintV3GeoJsonSerializer', () => {
   });
 
   it('serializes a layer with a Vector source (including features)', () => {
-
     const features: OlFeature<Geometry>[] = [
       new OlFeature({
         geometry: new OlGeomPoint([0, 0])

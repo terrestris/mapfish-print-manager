@@ -1,3 +1,4 @@
+import { parseFont } from 'css-font-parser';
 import get from 'lodash/get';
 import _isNil from 'lodash/isNil';
 import pickBy from 'lodash/pickBy';
@@ -18,10 +19,8 @@ import OlStyleStroke from 'ol/style/Stroke';
 import OlStyleStyle from 'ol/style/Style';
 import OlStyleText from 'ol/style/Text';
 import parseColor from 'parse-color';
-import parseFont, { IFont } from 'parse-css-font';
 
 import BaseSerializer from './BaseSerializer';
-
 
 export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
 
@@ -212,16 +211,17 @@ export class MapFishPrintV3GeoJsonSerializer implements BaseSerializer {
     }
 
     if (textStyle && textStyle.text) {
-      const parsedFont = textStyle.font ? parseFont(textStyle.font) as IFont : undefined;
+      const parsedFont = textStyle.font ? parseFont(textStyle.font) : undefined;
+
       const fontColor = get(textStyle, 'fill.color') as string;
       style = {
         ...style,
         ...{
           label: textStyle.text,
-          fontFamily: parsedFont?.family?.join(','),
-          fontSize: parsedFont?.size,
-          fontWeight: parsedFont?.weight,
-          fontStyle: parsedFont?.style,
+          fontFamily: parsedFont?.['font-family']?.join(','),
+          fontSize: parsedFont?.['font-size'],
+          fontWeight: parsedFont?.['font-weight'],
+          fontStyle: parsedFont?.['font-style'],
           fontColor: parseColor(fontColor).hex,
           fontOpacity: get(parseColor(fontColor), 'rgba[3]'),
           strokeOpacity: 0,
