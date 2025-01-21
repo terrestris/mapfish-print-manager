@@ -1,3 +1,10 @@
+## [16.0.2](https://github.com/terrestris/mapfish-print-manager/compare/v16.0.1...v16.0.2) (2025-01-21)
+
+
+### Bug Fixes
+
+* replace parse-css-font with css-font-parser ([b02d5cb](https://github.com/terrestris/mapfish-print-manager/commit/b02d5cb44595223e3edd9ae1ec7d33719f01acde))
+
 ## [16.0.1](https://github.com/terrestris/mapfish-print-manager/compare/v16.0.0...v16.0.1) (2024-11-07)
 
 
