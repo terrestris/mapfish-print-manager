@@ -74,7 +74,7 @@
     "@typescript-eslint/eslint-plugin": "^8.10.0",
     "@typescript-eslint/parser": "^8.10.0",
     "@webpack-cli/serve": "^3.0.0",
-    "babel-jest": "^29.7.0",
+    "babel-jest": "^30.0.0",
     "babel-loader": "^10.0.0",
     "canvas": "^2.10.2",
     "css-loader": "^7.1.0",
