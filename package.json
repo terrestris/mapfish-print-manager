@@ -76,7 +76,7 @@
     "@webpack-cli/serve": "^3.0.0",
     "babel-jest": "^30.0.0",
     "babel-loader": "^10.0.0",
-    "canvas": "^2.10.2",
+    "canvas": "^3.1.1",
     "css-loader": "^7.1.0",
     "eslint": "^9.13.0",
     "eslint-plugin-import": "^2.31.0",
