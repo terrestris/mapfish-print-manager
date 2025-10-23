@@ -15,8 +15,16 @@ module.exports = {
     '<rootDir>/dist/'
   ],
   collectCoverageFrom: [
-    'src/**/*.{ts,js}'
+    'src/**/*.{ts,js}',
+    '!src/config/**/*.{ts,js}',
+    '!src/**/*.d.ts',
+    '!src/index.ts',
   ],
+  reporters: [
+    'default',
+    '@casualbot/jest-sonar-reporter'
+  ],
+  coverageReporters: ['json-summary', 'lcov', 'text'],
   coverageDirectory: '<rootDir>/coverage',
   testEnvironment: 'jsdom',
   testRegex: '/spec/.*\\.spec.(ts|js)$'
