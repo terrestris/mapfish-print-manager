@@ -20,10 +20,6 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/index.ts',
   ],
-  reporters: [
-    'default',
-    '@casualbot/jest-sonar-reporter'
-  ],
   coverageReporters: ['json-summary', 'lcov', 'text'],
   coverageDirectory: '<rootDir>/coverage',
   testEnvironment: 'jsdom',
