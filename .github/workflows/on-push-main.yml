@@ -3,7 +3,7 @@ name: Build latest release
 on:
   push:
     branches:
-      - main
+      - sonarqube-fix
 
 jobs:
   build:
@@ -39,20 +39,20 @@ jobs:
         run: |
           echo "VERSION=$(node -pe "require('./package.json').version")" >> $GITHUB_ENV
 
-      - name: Deploy docs (latest) 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.2.5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: build/docs
-          target-folder: latest
+      # - name: Deploy docs (latest) 🚀
+      #   uses: JamesIves/github-pages-deploy-action@v4.2.5
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: gh-pages
+      #     folder: build/docs
+      #     target-folder: latest
 
-      - name: Release 🚀
-        env:
-          HUSKY: 0
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
+      # - name: Release 🚀
+      #   env:
+      #     HUSKY: 0
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #   run: npx semantic-release
 
       - name: Generate coverage 🧪
         run: npm test
