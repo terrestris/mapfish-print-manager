@@ -1,3 +1,15 @@
+# [16.1.0](https://github.com/terrestris/mapfish-print-manager/compare/v16.0.2...v16.1.0) (2025-10-28)
+
+
+### Bug Fixes
+
+* use default reporter ([57b6e18](https://github.com/terrestris/mapfish-print-manager/commit/57b6e182d0ab226e717b17b4b76976c910d23757))
+
+
+### Features
+
+* add sonarqube scan ([0440f3e](https://github.com/terrestris/mapfish-print-manager/commit/0440f3e012a41a051d17c3ebf8fd01bfa88bcb8e))
+
 ## [16.0.2](https://github.com/terrestris/mapfish-print-manager/compare/v16.0.1...v16.0.2) (2025-01-21)
 
 
