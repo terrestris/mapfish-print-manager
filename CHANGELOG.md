@@ -1,3 +1,10 @@
+## [16.1.1](https://github.com/terrestris/mapfish-print-manager/compare/v16.1.0...v16.1.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* remove unneeded path from sonar-project.properties ([f9c4c4b](https://github.com/terrestris/mapfish-print-manager/commit/f9c4c4b9fb61a695c8f2e83a4b801b917759bea8))
+
 # [16.1.0](https://github.com/terrestris/mapfish-print-manager/compare/v16.0.2...v16.1.0) (2025-10-28)
 
 
