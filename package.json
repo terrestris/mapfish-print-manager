@@ -89,7 +89,7 @@
     "jest-fetch-mock": "^3.0.3",
     "ol": "^10.2.0",
     "rimraf": "^6.0.0",
-    "semantic-release": "^24.0.0",
+    "semantic-release": "^25.0.1",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.4.1",
     "typedoc": "^0.28.0",
