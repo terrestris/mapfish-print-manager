@@ -5,35 +5,29 @@ on: pull_request
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
-
     steps:
-    - name: Checkout sources 🔰
-      uses: actions/checkout@v4
+      - name: Checkout sources 🔰
+        uses: actions/checkout@v5
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: Setup Node.js 🧮
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
 
-    - name: Cache Node.js modules 💾
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.OS }}-node-
-          ${{ runner.OS }}-
+      - name: Cache Node.js modules 💾
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-
 
-    - name: Install dependencies ⏬
-      run: npm ci
+      - name: Install dependencies ⏬
+        run: npm ci
 
-    - name: Run typecheck, lint and tests 🧪
-      run: npm run check
+      - name: Run typecheck, lint and tests 🧪
+        run: npm run check
 
-    - name: Build artifacts 🏗️
-      run: npm run build:docs && npm run build:examples && npm run build:dist
+      - name: Build artifacts 🏗️
+        run: npm run build:docs && npm run build:examples && npm run build:dist

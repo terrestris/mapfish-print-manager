@@ -76,7 +76,6 @@
     "@webpack-cli/serve": "^3.0.0",
     "babel-jest": "^30.0.0",
     "babel-loader": "^10.0.0",
-    "canvas": "^2.10.2",
     "css-loader": "^7.1.0",
     "eslint": "^9.13.0",
     "eslint-plugin-import": "^2.31.0",
@@ -104,7 +103,7 @@
     "ol": ">=10"
   },
   "engines": {
-    "node": ">=20",
-    "npm": ">=10"
+    "node": ">=24",
+    "npm": ">=11"
   }
 }
