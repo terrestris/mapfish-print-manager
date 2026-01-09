@@ -47,7 +47,8 @@ describe('MapFishPrintV3WMTSSerializer', () => {
         tileGrid: new OlTileGridWMTS({
           matrixIds: ['0'],
           resolutions: [1000],
-          origin: [19, 0.9]
+          origin: [19, 0.9],
+          tileSizes: [[256, 256]]
         }),
         requestEncoding: 'REST'
       }),
@@ -63,7 +64,7 @@ describe('MapFishPrintV3WMTSSerializer', () => {
       customParams: undefined,
       dimensionParams: {},
       dimensions: undefined,
-      failOnError: true,
+      failOnError: false,
       imageFormat: 'image/jpeg',
       layer: 'test',
       matrices: [{
@@ -97,7 +98,8 @@ describe('MapFishPrintV3WMTSSerializer', () => {
         tileGrid: new OlTileGridWMTS({
           matrixIds: ['0'],
           resolutions: [1000],
-          origin: [19, 0.9]
+          origin: [19, 0.9],
+          tileSizes: [[256, 256]]
         }),
         requestEncoding: 'REST',
         dimensions: {
@@ -118,7 +120,7 @@ describe('MapFishPrintV3WMTSSerializer', () => {
         Time: 'current'
       },
       dimensions: ['Time'],
-      failOnError: true,
+      failOnError: false,
       imageFormat: 'image/jpeg',
       layer: 'test',
       matrices: [{
