@@ -1,3 +1,12 @@
+## [16.1.2](https://github.com/terrestris/mapfish-print-manager/compare/v16.1.1...v16.1.2) (2026-01-12)
+
+
+### Bug Fixes
+
+* test ([d4dcc72](https://github.com/terrestris/mapfish-print-manager/commit/d4dcc72eb7c0fd799b55bd0f10f8a6c35bd9c81e))
+* trusted publisher ([4ce5467](https://github.com/terrestris/mapfish-print-manager/commit/4ce5467fffde577676e34f5d440fcccf1b7e30f5))
+* wmts serializer ([734c7c9](https://github.com/terrestris/mapfish-print-manager/commit/734c7c9cba28be6460eb8fa8a1fc97be8a10277f))
+
 ## [16.1.1](https://github.com/terrestris/mapfish-print-manager/compare/v16.1.0...v16.1.1) (2025-10-29)
 
 
