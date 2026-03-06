@@ -1,3 +1,10 @@
+## [16.1.3](https://github.com/terrestris/mapfish-print-manager/compare/v16.1.2...v16.1.3) (2026-03-06)
+
+
+### Bug Fixes
+
+* tilesize ([8cee71b](https://github.com/terrestris/mapfish-print-manager/commit/8cee71ba4227343202ce894cd35cefacafa81bb5))
+
 ## [16.1.2](https://github.com/terrestris/mapfish-print-manager/compare/v16.1.1...v16.1.2) (2026-01-12)
 
 
