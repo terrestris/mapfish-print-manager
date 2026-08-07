@@ -65,7 +65,7 @@ jobs:
         run: npm test
 
       - name: Run SonarQube analysis 🔍
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6
         with:
           projectBaseDir: .
         env:
