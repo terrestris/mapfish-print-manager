@@ -49,12 +49,12 @@
     "url-parse": "^1.5.10"
   },
   "devDependencies": {
-    "@babel/cli": "^7.25.7",
-    "@babel/core": "^7.25.8",
-    "@babel/eslint-parser": "^7.25.8",
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.29.6",
+    "@babel/eslint-parser": "^7.28.6",
     "@babel/plugin-transform-class-properties": "^7.25.7",
     "@babel/preset-env": "^7.25.8",
-    "@babel/preset-typescript": "^7.25.7",
+    "@babel/preset-typescript": "^7.28.5",
     "@commitlint/cli": "^21.0.0",
     "@commitlint/config-conventional": "^21.0.1",
     "@eslint/eslintrc": "^3.3.5",
