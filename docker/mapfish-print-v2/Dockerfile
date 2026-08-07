@@ -1,4 +1,4 @@
-FROM terrestris/tomcat:8.5.37
+FROM terrestris/tomcat:8.5.37@sha256:d6690234734e4dbbff3f90a68f30c5158d236ba47fdf19e4f67b2a94f16de8fb
 
 ARG MAPFISH2_VERSION
 
