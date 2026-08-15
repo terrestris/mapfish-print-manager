@@ -80,7 +80,7 @@
     "eslint": "9.14.0",
     "eslint-plugin-import": "2.32.0",
     "gh-pages": "6.3.0",
-    "globals": "17.10.0",
+    "globals": "17.11.0",
     "husky": "9.1.7",
     "jest": "30.4.2",
     "jest-canvas-mock": "2.5.8",
