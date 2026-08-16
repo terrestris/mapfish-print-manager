@@ -73,7 +73,7 @@
     "@types/url-parse": "1.4.11",
     "@typescript-eslint/eslint-plugin": "8.54.0",
     "@typescript-eslint/parser": "8.59.3",
-    "@webpack-cli/serve": "3.0.0",
+    "@webpack-cli/serve": "3.0.1",
     "babel-jest": "30.4.1",
     "babel-loader": "10.1.1",
     "css-loader": "7.1.4",
