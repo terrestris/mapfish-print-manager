@@ -45,7 +45,7 @@
     "js-logger": "^1.6.1",
     "lodash": "^4.17.21",
     "parse-color": "^1.0.0",
-    "query-string": "^9.0.0",
+    "query-string": "^10.0.0",
     "url-parse": "^1.5.10"
   },
   "devDependencies": {
